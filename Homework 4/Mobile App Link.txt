@@ -1,0 +1,5 @@
+https://studio.code.org/projects/applab/4IYVejHOoyTQxGUBWSDAJUcfGWCy7sOE7PJWdbNV0Qs
+
+I had originally planned to use the Canvas for a lot of stuff, and had sliders to change the RGB value of the brush, but no matter what I tried to do, the canvas wouldn't show up. I could not figure it out, and could not find anything useful on Google, so I just removed it sadly. 
+
+If I create a new project and implement a canvas, it works, but if I try to add a canvas to this project, it just doesn't work. I have no idea why, but what I ended up with is quite the abomination but hey, it works so there's that!
