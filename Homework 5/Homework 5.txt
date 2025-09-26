@@ -1,0 +1,3 @@
+This is terrible and I'm sorry, but I believe it checks all the requirements. I did not have a good time with Alice, it was super confusing to work the way I thought it should work, and I accidentally clicked the "x" on my "Main Function" tab and bricked the entire thing and had to start over since I couldn't restore it or reload it. 
+
+Hopefully next weeks project will be better.
