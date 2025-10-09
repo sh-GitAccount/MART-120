@@ -1,0 +1,49 @@
+/* DOES THIS COUNT AS AN EXTERNAL CSS LIBRARY*/  /* DOES THIS COUNT AS AN EXTERNAL CSS LIBRARY*/
+/* DOES THIS COUNT AS AN EXTERNAL CSS LIBRARY*/  /* DOES THIS COUNT AS AN EXTERNAL CSS LIBRARY*/
+
+div {
+    font-weight: 900; font-family: 'Trebuchet MS', 'Lucida Sans Unicode', 'Lucida Grande', 'Lucida Sans', Arial, sans-serif; color: pink; text-shadow: 2px 2px #000000; 
+}
+
+h3 {
+    font-size: larger; 
+}
+
+span.Big{
+    font-size: xx-large;
+}
+
+ul.Small {
+    font-size: x-small;
+}
+
+@-webkit-keyframes glow {
+  from {
+    text-shadow: 0 0 10px #fff, 0 0 20px #fff, 0 0 30px #e60073, 0 0 40px #e60073, 0 0 50px #e60073, 0 0 60px #e60073, 0 0 70px #e60073;
+  }
+  to {
+    text-shadow: 0 0 20px #fff, 0 0 30px #ff4da6, 0 0 40px #ff4da6, 0 0 50px #ff4da6, 0 0 60px #ff4da6, 0 0 70px #ff4da6, 0 0 80px #ff4da6;
+  }
+}
+
+#superSickStyle {
+    font-weight: 400;
+      font-size: 80px;
+  color: #156666;
+  text-align: left;
+  -webkit-animation: glow 1s ease-in-out infinite alternate;
+  -moz-animation: glow 1s ease-in-out infinite alternate;
+  animation: glow 1s ease-in-out infinite alternate;
+}
+
+#superBoringStyle {
+    font-size: medium; color: black; font-family: 'Times New Roman', Times, serif;
+}
+
+p.Bright{
+  font-size: larger; color: rgb(171, 198, 221);  text-shadow: 2px 2px #000000; 
+}
+
+ul.Bright {
+  font-size: larger; color: rgb(248, 255, 236);  text-shadow: 2px 2px #22043b; 
+}
