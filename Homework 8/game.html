@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Homework 8</title>
+    <script>
+        var actualAnswer;
+        var correct=0;
+        var lives=10;
+
+    function printQuestion() {
+    var number1, number2;
+
+        for (var i =0; i < 5; i++){
+        number1 = Math.floor(Math.random() * 10);
+        number2 = Math.floor(Math.random() * 10);
+        }
+            actualAnswer = number1 + number2;
+            document.getElementById("question").innerHTML = "What is " + number1 + " + " + number2;
+        };
+
+        function checkAnswer()
+        {
+            var myAnswer = document.getElementById("answer").value;
+            if(myAnswer == actualAnswer)
+            {
+               document.getElementById("message").innerHTML = "Wow you're a genius! You answered " + myAnswer;
+               document.getElementById("answer").value = "";
+               correct ++;
+               lives--;
+               updateScore();
+               updateLives();
+               printQuestion();
+            } else
+            {
+               document.getElementById("message").innerHTML = "NOPE WRONNGGG! The correct answer was " + actualAnswer;
+               lives--;
+               updateScore();
+               updateLives();
+            }
+        }
+        function updateScore(){
+        document.getElementById("score").innerHTML = "Your score is: " + correct;
+        }
+        function updateLives(){
+        document.getElementById("livesLeft").innerHTML = "Remaining: " + lives;
+        }
+    
+
+    </script>
+</head>
+
+<body onload="printQuestion();">
+    <div id ="question"></div>
+
+            <tr>
+                <td>Answer</td>
+                <td><input type="text" id="answer"></td>
+            </tr>
+    <br>       
+    <button id ="Submit" onClick="checkAnswer();">Submit</button>
+    <br>
+    <div id="message"></div>
+    <br><br>
+    <div id="score"></div>
+    <div id="livesLeft"></div>
+    <br>
+
+<a href="index.html">
+    <input type="button" style="background-color: rgb(155, 124, 170);" value="Go to Form">
+</a>
+
+
+</body>
+</html>

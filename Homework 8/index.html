@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Form Page</title>
+
+    <script>
+    var tosAgreed;
+    var nameEntered;
+    var emailEntered;
+
+    function getName()
+    {
+        var name = document.getElementById("userName").value;
+         if (name == ""){
+         window.alert("Please enter name.");
+         document.getElementById("userName").style.backgroundColor ="red";
+         document.getElementById("userName").focus();
+         allAgreed();
+         return;
+
+        }   else{
+            nameEntered = true;
+            document.getElementById("nameMessage").innerHTML = "Name entered: " +name;    
+            document.getElementById("userName").style.backgroundColor = "transparent";
+            nameMessage.style.display ="block";
+            }
+    }
+
+        function getEmail()
+    {
+        var email = document.getElementById("userEmail").value;
+         if (email == ""){
+         window.alert("Please enter valid email.");
+         document.getElementById("userEmail").style.backgroundColor ="red";
+         document.getElementById("userEmail").focus();
+         allAgreed();
+         return;
+
+        }   else{
+            emailEntered = true;
+            document.getElementById("emailMessage").innerHTML = "Email entered: " +email;
+            document.getElementById("userEmail").style.backgroundColor = "transparent";
+            emailMessage.style.display ="block";
+        }
+    }
+
+    function checkBox() 
+    {
+    var checkBox = document.getElementById("myCheck");
+    var text = document.getElementById("text");
+    if (checkBox.checked == true){
+        tosAgreed = true;
+        tosMessage2.style.display = "block";
+        tosMessage.style.display = "none"; 
+        allAgreed();
+        return;
+
+        }   else{
+            tosMessage.style.display="block";
+            tosMessage.style.color="red";
+            window.alert("You must agree to the thing!!");
+        }
+    }
+
+  function allAgreed() {
+    if (tosAgreed && nameEntered && emailEntered){
+        userName.style.display ="none";
+        nameLabel.style.display ="none";
+
+        userEmail.style.display ="none";
+        emailLabel.style.display ="none";
+
+        myCheck.style.display ="none";
+        Submit.style.display ="none";
+
+        done.style.display ="block";
+        finishBtn.style.display ="block";
+
+    }
+
+    else{
+        return;
+    }
+  }
+
+    allAgreed();
+    </script>
+</head>
+
+<body>
+    <p></p>
+    <h1>Terms of Service</h1>
+<p>Please fill out your name, email, and agree to the Terms of Service.</p>
+    <tr>
+         <label id="nameLabel" for="userName">Name: </label>
+        <td><input type="text" id="userName";></td>
+    </tr>
+    <p id="nameMessage" style="display:none"></p>
+    <br>
+    <tr>
+         <label id="emailLabel" for="userEmail">Email: </label>
+        <td><input type="text" id="userEmail";></td>
+    </tr>
+    <br>
+    <p id="emailMessage" style="display:none"></p>
+
+    <br>       
+    <button id ="Submit" onClick="getName(); getEmail(); checkBox();">Submit</button>
+    <br>
+    <p>By checking this box, I agree to the terms of service.</p>
+    <p id="tosMessage" style="display:none";> You must agree to the Terms of Service!</p> <!-- If tos not checked-->
+    <p id="tosMessage2" style="display:none";> Thank you.</p> <!-- If checked-->
+    <div></div> <!-- If   checked-->
+    <input type="checkbox" id="myCheck" onclick="checkBox()">
+    <p id="text" style="display:none">Checkbox is CHECKED!</p>
+    <p id="done" style="display:none">Hooray you finished everything great job, proud of you!</p>
+    
+    <button id="finishBtn" style="background-color: chartreuse;" type="finish" hidden>- FINISH -</button>
+    <br><br><br>
+<a href="game.html">
+    <input type="button" style="background-color: rgb(155, 124, 170);" value="Go to Game">
+</a>
+
+</body>
+</html>
