@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link rel="stylesheet" type="text/css" href="style.css"> <!-- This is the external css sheet reference line-->
+    <meta charset="UTF-8">
+    <title>This is the Main Page!</title>
+</head>
+
+<body>
+    <link rel="stylesheet" type="text/css" href="style.css">  <!-- Must also put this in the <body> section so that it can be found, otherwise the computer wouldn't know where to look -->
+
+            <!-- Below are two different "Embedded Styles"-->
+                     <!-- Embedded Style 1-->
+                    <!-- The "span" is the selector, which detemines what the <style> will actually affect-->
+    <style> span {              
+        font-weight: 900; font-family: cursive;  color: aquamarine;}
+    </style>
+                      <!-- Embedded Style 2-->
+                      <!-- The "div" is the selector, which detemines what the <style> will actually affect-->
+  <style> div 
+        {
+        font-weight: 900; 
+        font-family: cursive; 
+        color: rgb(177, 37, 153);  
+    }
+    </style> <!-- The exact layout doesn't matter, as long as everything is in the right order. 
+    The compiler will figure it out. I prefer the above style for saving space, but this format is easier to read and understand as a human.-->
+
+    <h1>Greetings mortal, welcome to page 1 of Homework 6!</h1>
+    <span>Hello there, fancy meeting a place like you on a site like this. Wow, terrific.</span>
+
+
+<br>
+
+<!-- External Class 1-->
+<ul class="Small"> Some of my favorite restaurants are
+    <li><a href="https://tokyoteriyakioregon.com/"> Tokyo Teriyaki</a> </li>
+    <li><a href="https://www.mackenzieriverpizza.com/"> Mackenzie River Pizza></a> </li>
+    <li><a href="https://www.wendys.com/"> Wendy's</a> </li>
+</ul> 
+
+<br>
+<ol>When I'm online, I like to visit
+<li><a href="https://www.youtube.com"> YouTube</a> </li>
+<li><a href="https://old.reddit.com"> Reddit</a> </li>
+<li><a href="https://www.hulu.com"> Hulu</a> </li>
+</ol> 
+
+<br>
+<br>
+<br>
+<a href="FormPage.html">
+    <input type="button" value="Page 2 Get">
+</a>
+<br>
+<a href="Contact.html">
+    <input type="button" value="Contact Us">
+</a>
+</body>
+</html>

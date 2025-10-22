@@ -47,3 +47,17 @@ p.Bright{
 ul.Bright {
   font-size: larger; color: rgb(248, 255, 236);  text-shadow: 2px 2px #22043b; 
 }
+
+body.page--one {
+  background-image: url("bg.png");
+  background-blend-mode: none;
+  background-position: center;
+  background-repeat: round;
+}
+
+body.page--two {
+  background-image: url("bg.png");
+  background-blend-mode: soft-light;
+  background-position: center;
+  background-repeat: round;
+}
