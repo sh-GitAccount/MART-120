@@ -76,11 +76,6 @@ function ClickCircle() {
     circle(mouse_X, mouse_Y, 20);
 }
 
-/* Function to call player x/y (Used this for debugging the "EXIT" thing) */
-function CallConsoleLog(){
-    console.log("Player coordinates: X " + player_X + " :: Player coordinates: Y " + player_Y)
-}
-
 // `` -- __ Motion && Position __ -- `` \\
 function SpeedChange(){   // Updates the speeds and direction every 60 frames
  if (frame_Time >= 60){
@@ -151,7 +146,6 @@ function Movement() {   // Handles movement of objects and frame timer! We be mo
   if (keyIsDown(d)) {player_X += 5;} else if (keyIsDown(a)) {player_X -= 5;};
 
    frame_Time++;
-  CallConsoleLog();
   }
 }
 
