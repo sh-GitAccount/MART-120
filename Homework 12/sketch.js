@@ -71,7 +71,6 @@ function ClickCircle() {
     mouse_X = mouseX;
     mouse_Y = mouseY;
     console.log("Mouse coordinates: X " + mouse_X + " :: Y " + mouse_Y);
-    console.log("Speed Changer: " + speed_Changer)
   }
     circle(mouse_X, mouse_Y, 20);
 }
@@ -167,7 +166,7 @@ function VictoryMessage(){
     fill(200, 200, 200);
     stroke(5);
     textSize(26);
-    text("Victory 💅", width/2-50, height/2-50);
+    text("Victory!!", width/2-50, height/2-50);
  }
 }
 
