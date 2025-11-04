@@ -1,161 +1,131 @@
+var eyeX, eyeSpeed = 2.5;
+var hairY1 = 250, hairSpeedY1 = random(1.5, 3);
+var hairY2 = 250, hairSpeedY2 = random(1.5, 3);
+var pupilX1, pupilY1 = 250, pupilSpeedX1 = random(1, 2.5), pupilSpeedY1 = random(1, 2.5);
+var pupilX2, pupilY2 = 250, pupilSpeedX2 = random(1, 2.5), pupilSpeedY2 = random(1, 2.5);
+var signatureX, signatureY;
+var signatureColor, eyeColor, pupilColor;
 
-var left_EyeX = 80;
-var left_EyeY = 180;
-var left_EyeDir = Math.floor(Math.random() * (12)) + 1;
+// Animation control variables
+var headScale = 1;
+var headScaleDirection = 1;
+var headScaleSpeed = 0.01;
 
-var right_EyeX = 225;   
-var right_EyeY = 180;
-var right_EyeDir = Math.floor(Math.random() * (12)) + 1;
+var signatureMoveDirection = 'right';
+var signatureSize = 16;
+var signatureSizeRate = 0.1;
+var signatureCycleCount = 0;
 
-var body_X = 130;
-var body_Y = 400;
-var body_XDir = Math.floor(Math.random() * (5)) + 1;
-var body_YDir = Math.floor(Math.random() * (5)) + 1;
+var titleText = "Animated Character";
+var titleSize = 24;
+var titleSizeRate = 0.1;
+var titleCycleCount = 0;
 
-var mouth_X =150;
-var mouth_Y = 320
-var mouth_Dir = Math.floor(Math.random() * (5)) + 1;
+function setup() {
+  createCanvas(400, 400);
 
-var iris_X = 80;
-var iris_Y = 180
-var iris_DirX = Math.floor(Math.random() * (5)) + 1;
-var iris_DirY = Math.floor(Math.random() * (5)) + 1;
+  eyeX = width / 2;
+  pupilX1 = width / 2 - 165;
+  pupilX2 = width / 2 + 165;
+  signatureX = width - 10;
+  signatureY = height - 10;
 
-var moveSpeed = Math.floor(Math.random() * (25)) + 1;;
-var size = 2;
-var count = 0;
-var sizeDirection = 2;
+  signatureColor = color(0);
+  eyeColor = color(255);
+  pupilColor = color(0);
 
-//Noticed that if I used "textSize" as a variable name, it bugged out..
-var dynamicTextSize = 20;
-var textDir=1;
+  console.log("Setup complete. All animations ready.");
+}
 
-function setup()
-    {
-        createCanvas(300,500);
-        console.log("moveSpeed: "+ moveSpeed);  
-  
-    }
-function draw()
-    {   
-        fill("white"); 
-        background(220);
-        textSize(30);
-        text('\'Le Face de\'Blanc', 30, 30);
-        fill("blue"); 
-        fill("white");
-        //Head Shape
-        ellipse(150, 225, 250, 350);
+function draw() {
+  background(220);
 
-        //Left Eye
-        ellipse(left_EyeX, left_EyeY, 80, 40);
-            left_EyeX+=left_EyeDir;
-            if(left_EyeX >= 296 || left_EyeX <= 22)
-            {
-                left_EyeDir *= -1;
-            }
+  push();
+  translate(width / 2, height / 2 + 25);
+  translate(-width / 2, -height / 2 - 25);
 
+  fill(50, 20, 20);
+  rect(width / 2 - 125, height / 2 - 100, 250, 200);
+  triangle(width / 2 - 125, 100, width / 2 + 125, 100, width / 2, 50);
 
-        //Right Eye
-        ellipse(right_EyeX, right_EyeY, 80, 40);
-        fill("white"); 
-        right_EyeX+=right_EyeDir;
-            if(right_EyeX >= 296 || right_EyeX <= 22)
-            {
-                right_EyeDir *= -1;
-            }        
+  fill(255, 230, 196);
+  rectMode(CENTER);
+  rect(width / 2, height / 2 + 25, 200, 250);
+  rectMode(CORNER);
 
-        //Schnoz
-        triangle(180, 250, 130, 225, 130, 250);
-        fill("blue");    
+  fill("pink");
+  arc(width / 2, 250, 80, 20, 0, PI);
+  fill(255, 230, 196);
+  rect(width / 2 - 2, 70, 5, 30);
+  pop();
 
-        //Left Iris             
-        circle(iris_X,iris_Y,25);
-        iris_X+=iris_DirX;
-            if(iris_X >= 290 || iris_X <= 22)
-            {
-                iris_DirX *= -1;
-            }
+  headScale += headScaleDirection * headScaleSpeed;
+  if (headScale > 1.1 || headScale < 0.9) headScaleDirection *= -1;
+  scale(headScale);
 
-        iris_Y+=iris_DirY;
-            if(iris_Y >= 480 || iris_Y <= 22)
-            {
-                iris_DirY *= -1;
-            }  
+  // Hair
+  fill(50, 20, 20);
+  hairY1 += hairSpeedY1;
+  if (hairY1 > 300 || hairY1 < 200) hairSpeedY1 *= -1;
+  hairY2 += hairSpeedY2;
+  if (hairY2 > 300 || hairY2 < 200) hairSpeedY2 *= -1;
+  triangle(width / 2 - 125, 100, width / 2 - 125, hairY1, width / 2 - 165, hairY1 - 50);
+  triangle(width / 2 + 125, 100, width / 2 + 125, hairY2, width / 2 + 165, hairY2 - 50);
 
-        //Right Iris
-        circle(225,180,25);
-        fill("white"); 
-        
-        //Pupils
-        point(80, 180,)
-        point(225, 180,)
-        
-        //Eyebrow
-        line(100, 155, 50, 150);
-        line(200, 155, 250, 150);
-        
-        //Body
-        rect(body_X, body_Y, 45,80); 
-        body_Y+=body_YDir;
-            if(body_Y >= 405 || body_Y <= 22)
-            {
-                body_YDir == moveSpeed;
-                body_YDir *= -1;
-            } 
+  // Eyes
+  fill(eyeColor);
+  eyeX += eyeSpeed;
+  if (eyeX > width / 2 + 30 || eyeX < width / 2 - 30) {
+    eyeSpeed *= -1;
+    eyeColor = color(random(255), random(255), random(255));
+    console.log("Eyes changed color and bounced X-axis.");
+  }
+  rect(eyeX - 80, 180, 50, 40);
+  rect(eyeX + 80, 180, 50, 40);
 
-        line(130, 420, 80, 450);
-        line(175, 420, 225, 450);
-        line(160, 480, 165, 500);
-        line(140, 480, 145, 500);
+  // Pupils
+  fill(pupilColor);
+  pupilX1 += pupilSpeedX1;
+  pupilY1 += pupilSpeedY1;
+  if (pupilX1 > width / 2 - 125 || pupilX1 < width / 2 - 165) pupilSpeedX1 *= -1;
+  if (pupilY1 > 300 || pupilY1 < 200) pupilSpeedY1 *= -1;
+  ellipse(pupilX1 - 150, pupilY1 - 65, 5, 5);
 
-        //Mouth
-        ellipse(mouth_X, mouth_Y, 100, 25);
-        mouth_Y+=mouth_Dir;
-            if(mouth_Y >= 405 || mouth_Y <= 22)
-            {
-                mouth_Dir *= -1;
-            } 
-        
-        //Signature
-        fill("black");
-        textSize(dynamicTextSize);
-        text("~Steven", 10, 495);
+  pupilX2 += pupilSpeedX2;
+  pupilY2 += pupilSpeedY2;
+  if (pupilX2 > width / 2 + 165 || pupilX2 < width / 2 + 125) pupilSpeedX2 *= -1;
+  if (pupilY2 > 300 || pupilY2 < 200) pupilSpeedY2 *= -1;
+  ellipse(pupilX2 + 150, pupilY2 - 65, 5, 5);
 
-        //Text Size Changerupper
-        dynamicTextSize += textDir * 0.5;
-        if (dynamicTextSize > 40 || dynamicTextSize < 20) {
-            textDir *= -1;
-        }
+  // Signature animation
+  textSize(signatureSize);
+  textAlign(RIGHT, BOTTOM);
+  fill(signatureColor);
+  text("Jadynn Yocum", signatureX, signatureY);
 
-        size+= sizeDirection;
-        count++;
-        
-            if(count > 100)
-            {
-                sizeDirection *=-1;
-                count = 0;
-                moveSpeed = Math.floor(Math.random() * 25) +5;   
-                //console.log("moveSpeed: "+ moveSpeed);  
+  if (signatureMoveDirection === 'right') {
+    signatureX += 1;
+    if (signatureX >= width - 10) { signatureMoveDirection = 'down'; signatureColor = color(random(255)); }
+  } else if (signatureMoveDirection === 'down') {
+    signatureY += 1;
+    if (signatureY >= height - 10) { signatureMoveDirection = 'left'; signatureColor = color(random(255)); }
+  } else if (signatureMoveDirection === 'left') {
+    signatureX -= 1;
+    if (signatureX <= width - 150) { signatureMoveDirection = 'up'; signatureColor = color(random(255)); }
+  } else if (signatureMoveDirection === 'up') {
+    signatureY -= 1;
+    if (signatureY <= height - 100) { signatureMoveDirection = 'right'; signatureColor = color(random(255)); }
+  }
 
-                left_EyeDir = Math.floor(Math.random() * (6)) + 1;
-                //console.log("left_EyeDir: "+ left_EyeDir);  
+  signatureSize += signatureSizeRate;
+  if (signatureSize >= 20 || signatureSize <= 16) signatureSizeRate *= -1;
 
-                right_EyeDir = Math.floor(Math.random() * (12)) + 1;
-                //console.log("right_EyeDir: "+ right_EyeDir);  
+  // Title
+  textSize(titleSize);
+  textAlign(CENTER, TOP);
+  fill(0);
+  text(titleText, width / 2, 30);
 
-                body_XDir = Math.floor(Math.random() * (5)) + 1;
-                body_YDir = Math.floor(Math.random() * (5)) + 1;
-                //console.log("body_XDir: "+ body_XDir);  
-                //console.log("body_YDir: "+ body_YDir);  
-
-                mouth_Dir = Math.floor(Math.random() * (5)) + 1;
-                //console.log("mouth_Dir: "+ mouth_Dir);  
-
-                iris_DirX = Math.floor(Math.random() * (5)) + 1;
-                iris_DirY = Math.floor(Math.random() * (5)) + 1;
-                //console.log("iris_DirX: "+ iris_DirX);  
-                //console.log("iris_DirY: "+ iris_DirY);  
-
-            }
-    }
+  titleSize += titleSizeRate;
+  if (titleSize >= 28 || titleSize <= 24) titleSizeRate *= -1;
+}
