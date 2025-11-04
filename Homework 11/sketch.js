@@ -1,29 +1,26 @@
 // Variable intialization an' such
-const min = 4;
-const max = 12;
-
-const s = 83;
-const w = 87;
-const a = 65;
-const d = 68;
-
 var player_X = 35;
 var player_Y = 565;
 var diameter = 25;
-var grow_Speed = 0.55;
+var grow_Speed = 0.65;
+
+var s = 83;
+var w = 87;
+var a = 65;
+var d = 68;
 
 var mouse_X;
 var mouse_Y;
 
 var obs1_X = 40;
 var obs1_Y = 40;
-var obs1_SpeedX = 5;
-var obs1_SpeedY = 5;
+var obs1_SpeedX = 2;
+var obs1_SpeedY = 2;
 
 var obs2_X = 222;
 var obs2_Y = 333;
-var obs2_SpeedX = 7;
-var obs2_SpeedY = 7;
+var obs2_SpeedX = 2;
+var obs2_SpeedY = 2;
 
 var frame_Time =0;
 var game_State = true;
@@ -41,7 +38,7 @@ function ConcentricCircle(x, y, outer_diameter, inner_diameter, outer_red, outer
   circle(x, y, inner_diameter);
 }
 
-//  `` -- __ Scene Setup / Initialization __ -- ``  \\
+// `` -- __ Scene Setup/ Initialization __ -- `` \\
 function CreateBorders()
 {
     // Border Fill Color
@@ -68,40 +65,57 @@ function CreateObs(){     // Creates Obstacle 1
   circle(obs2_X, obs2_Y, 35);
 }
 
-// Makin dem dere circle ya 'earin' me now?
+// Makin dem dere circledrawer ya 'earin' me now?
 function ClickCircle() {
   if (mouseIsPressed && mouseButton === LEFT) {
     mouse_X = mouseX;
     mouse_Y = mouseY;
+    console.log("Mouse coordinates: X " + mouse_X + " :: Y " + mouse_Y);
+    console.log("Speed Changer: " + speed_Changer)
   }
     circle(mouse_X, mouse_Y, 20);
 }
 
+/* Function to call player x/y (Used this for debugging the "EXIT" thing) */
+function CallConsoleLog(){
+    console.log("Player coordinates: X " + player_X + " :: Player coordinates: Y " + player_Y)
+}
+
 // `` -- __ Motion && Position __ -- `` \\
-function MoveObs(){           // Moves the things
+function SpeedChange(){   // Updates the speeds and direction every 60 frames
+ if (frame_Time >= 60){
+    speed_Changer = Math.floor(Math.random() * 2) + 1;
+    if (speed_Changer === 1){
+      // Function to get random speeds, using POSITIVE values for the Obstacles          
+      obs1_SpeedX = Math.floor(Math.random() *+ (5)) + 4 ;
+      obs1_SpeedY = Math.floor(Math.random() *+ (6)) + 8 ;
+      obs2_SpeedX = Math.floor(Math.random() *+ (6)) + 8 ;
+      obs2_Speedy = Math.floor(Math.random() *+ (5)) + 4 ;
+      frame_Time = 0;
+      }else 
+      // Function to get random speeds, using NEGATIVE values for the Obstacles          
+        obs1_SpeedX = Math.floor(Math.random() *- (6)) + 8 ;
+        obs1_SpeedY = Math.floor(Math.random() *- (5)) + 4 ;
+        obs2_SpeedX = Math.floor(Math.random() *- (5)) + 4 ;
+        obs2_Speedy = Math.floor(Math.random() *- (6)) + 8 ;
+        frame_Time = 0;
+      }
+}
+function MoveObs(){ 
   if (game_State === true) {
-    if (frame_Time >= 40) {   // Speed/Direction changer
-      obs1_SpeedX = (Math.random() < 0.5 ? -1 : 1) * (Math.floor(Math.random() * (max - min + 1)) + min);
-      obs1_SpeedY = (Math.random() < 0.5 ? -1 : 1) * (Math.floor(Math.random() * (max - min + 1)) + min);
-      obs2_SpeedX = (Math.random() < 0.5 ? -1 : 1) * (Math.floor(Math.random() * (max - min + 1)) + min);
-      obs2_SpeedY = (Math.random() < 0.5 ? -1 : 1) * (Math.floor(Math.random() * (max - min + 1)) + min);
-    frame_Time = 0;
-    }    
-      {
-      if (obs1_X > width)  obs1_X = 0;
-      if (obs1_X < 0)      obs1_X = width;
-      if (obs1_Y > height) obs1_Y = 0;
-      if (obs1_Y < 0)      obs1_Y = height;
-      
+    {
+    if (obs1_X > width)  obs1_X = 0;
+    if (obs1_X < 0)      obs1_X = width;
+    if (obs1_Y > height) obs1_Y = 0;
+    if (obs1_Y < 0)      obs1_Y = height;
     obs1_X += obs1_SpeedX;
     obs1_Y += obs1_SpeedY;
     }  
-      {
-      if (obs2_X > width)  obs2_X = 0;
-      if (obs2_X < 0)      obs2_X = width;
-      if (obs2_Y > height) obs2_Y = 0;
-      if (obs2_Y < 0)      obs2_Y = height;
-      
+    {
+    if (obs2_X > width)  obs2_X = 0;
+    if (obs2_X < 0)      obs2_X = width;
+    if (obs2_Y > height) obs2_Y = 0;
+    if (obs2_Y < 0)      obs2_Y = height;
     obs2_Y += obs2_SpeedY;
     obs2_X += obs2_SpeedX;
     }
@@ -110,6 +124,24 @@ function MoveObs(){           // Moves the things
 
 function Movement() {   // Handles movement of objects and frame timer! We be movin' mon
   if (game_State === true) {
+  {
+    if (obs1_X > width)  obs1_X = 0;
+    if (obs1_X < 0)      obs1_X = width;
+    if (obs1_Y > height) obs1_Y = 0;
+    if (obs1_Y < 0)      obs1_Y = height;
+      obs1_X += obs1_SpeedX;
+      obs1_Y += obs1_SpeedY;
+  }  
+  
+  {
+    if (obs2_X > width)  obs2_X = 0;
+    if (obs2_X < 0)      obs2_X = width;
+    if (obs2_Y > height) obs2_Y = 0;
+    if (obs2_Y < 0)      obs2_Y = height;
+      obs2_Y += obs2_SpeedY;
+      obs2_X += obs2_SpeedX;
+  }
+    
   if (player_X >= 800)  {player_X = 20;};
   if (player_X <= 0)    {player_X = 780;};
   if (player_Y >= 600)  {player_Y = 20;};
@@ -118,11 +150,15 @@ function Movement() {   // Handles movement of objects and frame timer! We be mo
   if (keyIsDown(s)) {player_Y += 5;} else if (keyIsDown(w)) {player_Y -= 5;};
   if (keyIsDown(d)) {player_X += 5;} else if (keyIsDown(a)) {player_X -= 5;};
 
-  frame_Time++;
+   frame_Time++;
+  CallConsoleLog();
+  }
+}
+
+function ChangeDiameter() {   // Changes diameter of player blip
   diameter += grow_Speed;   
-    if (diameter >= 40 || diameter <= 20) {
+  if (diameter >= 40 || diameter <= 20) {
     grow_Speed *= -1; 
-    }
   }
 }
 
@@ -134,11 +170,10 @@ function DrawExit(){    // Draws the "Exit" label
 function VictoryMessage(){
    if (player_X >= 740 && player_Y <= 15){
     game_State = false;
-    fill(175, 225, 190);
-    stroke(4);
-    textSize(28);
-    text("Victory!", width/2-50, height/2-50);
-    console.log("Game was win. Terminating.")
+    fill(200, 200, 200);
+    stroke(5);
+    textSize(26);
+    text("Victory 💅", width/2-50, height/2-50);
  }
 }
 
@@ -156,4 +191,7 @@ function draw() {
   CreateBorders();  // function to generate a border around the screen.
   DrawExit();       // function to generate the exit
   VictoryMessage(); // function to display the “You win” message.
+
+  SpeedChange();    // Changes Obstacles Speeds 
+  ChangeDiameter(); // Growin and Shrinkin  
 }
