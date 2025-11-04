@@ -10,7 +10,7 @@ const d = 68;
 var player_X = 35;
 var player_Y = 565;
 var diameter = 25;
-var grow_Speed = 0.65;
+var grow_Speed = 0.55;
 
 var mouse_X;
 var mouse_Y;
@@ -118,14 +118,11 @@ function Movement() {   // Handles movement of objects and frame timer! We be mo
   if (keyIsDown(s)) {player_Y += 5;} else if (keyIsDown(w)) {player_Y -= 5;};
   if (keyIsDown(d)) {player_X += 5;} else if (keyIsDown(a)) {player_X -= 5;};
 
-   frame_Time++;
-  }
-}
-
-function ChangeDiameter() {   // Changes diameter of player blip
+  frame_Time++;
   diameter += grow_Speed;   
-  if (diameter >= 40 || diameter <= 20) {
+    if (diameter >= 40 || diameter <= 20) {
     grow_Speed *= -1; 
+    }
   }
 }
 
@@ -141,6 +138,7 @@ function VictoryMessage(){
     stroke(4);
     textSize(28);
     text("Victory!", width/2-50, height/2-50);
+    console.log("Game was win. Terminating.")
  }
 }
 
@@ -158,6 +156,4 @@ function draw() {
   CreateBorders();  // function to generate a border around the screen.
   DrawExit();       // function to generate the exit
   VictoryMessage(); // function to display the “You win” message.
-
-  ChangeDiameter(); // Growin and Shrinkin  
 }
