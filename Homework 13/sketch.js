@@ -11,7 +11,7 @@ var frame_Time =0;
 var game_State = true;
 
 // Sets of arrays for obstacles
-var obsCount = 15;  // Using an external variables rather than a variable in the for loop. Just seems easier I guess.
+var obsCount = 8;  // Using an external variables rather than a variable in the for loop. Just seems easier I guess.
 var obs_X = []; 
 var obs_Y = []; 
 var obs_Diameter = []; 
