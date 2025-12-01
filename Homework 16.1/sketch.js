@@ -1,0 +1,600 @@
+function preload() {
+  console.log("Preloading assets, sounds, images, etc");
+  //UI/Menu sfx
+  sounds.error = [];
+  sounds.equipattachment = [];
+  sounds.removeattachment = [];
+  sounds.confirm = [];
+  sounds.select = [];
+  sounds.gamestart = [];
+  sounds.getpowerup = [];
+  sounds.getexptoken = [];
+  sounds.getability = [];
+  sounds.getsupport = [];
+
+  // Ability Sounds
+  sounds.charging = [];
+  sounds.barrier = [];
+  sounds.bomb = [];
+  sounds.flash = [];
+  sounds.singularity = [];
+  sounds.abilitydecimator = [];
+  sounds.abilitylightningbolt = [];
+
+  // All other sounds
+  sounds.blast = [];
+  sounds.bounce = [];
+  sounds.death = [];
+  sounds.deathchungusjr = [];
+  sounds.deathchungus = [];
+  sounds.deathchungussr = [];
+  sounds.deathdiamond = [];
+  sounds.deathdisc = [];
+  sounds.deathgrower = [];
+  sounds.deathminidiamond = [];
+  sounds.deathlilfella = [];
+  sounds.hitchungusjr = [];
+  sounds.hitchungus = [];
+  sounds.hitchungussr = [];
+  sounds.hitdiamond = [];
+  sounds.hitdisc = [];
+  sounds.hitgrower = [];
+  sounds.hitminidiamond = [];
+  sounds.hitlilfella = [];
+  sounds.levelup = [];
+  sounds.playerhit = [];
+  sounds.shotfullauto = [];
+  sounds.shotshotgun = [];
+  sounds.shotsingle = [];
+  sounds.shotbit = [];
+  sounds.shotblaster = [];
+  sounds.shotcannon = [];
+
+  // Preload for ship sprites
+  shipImages[1] = loadImage('Images/ship_1.png');
+  shipImages[2] = loadImage('Images/ship_2.png');
+  shipImages[3] = loadImage('Images/ship_3.png');
+  shipImages[4] = loadImage('Images/ship_4.png');
+
+  // Support Object images
+  bitImage = loadImage('Images/bit.png');
+  cannonImage = loadImage('Images/cannon.png');
+  blasterImage = loadImage('Images/blaster.png');
+  itemTable.powerup.spriteSheet = loadImage('Images/powerup_spritesheet.png');
+  itemTable.exptoken.spriteSheet = loadImage('Images/exptoken_spritesheet.png');
+  itemTable.ability.spriteSheet = loadImage('Images/ability_spritesheet.png');
+  itemTable.support.spriteSheet = loadImage('Images/ability_spritesheet.png');
+
+  for (i = 0; i < SOUND_COUNT; i++) {
+    // UI/Menu Sfx
+    sounds.charging.push(loadSound('../Audio/Charging.ogg'));
+    sounds.error.push(loadSound('../Audio/Error.ogg'));
+    sounds.equipattachment.push(loadSound('../Audio/EquipAttachment.ogg'));
+    sounds.removeattachment.push(loadSound('../Audio/RemoveAttachment.ogg'));
+    sounds.confirm.push(loadSound('../Audio/Confirm.ogg'));
+    sounds.select.push(loadSound('../Audio/Select.ogg'));
+    sounds.gamestart.push(loadSound('../Audio/GameStart.ogg'));
+    sounds.getpowerup.push(loadSound('../Audio/GetPowerUp.ogg'));
+    sounds.getexptoken.push(loadSound('../Audio/GetExpToken.ogg'));
+    sounds.getability.push(loadSound('../Audio/GetAbility.ogg'));
+    sounds.getsupport.push(loadSound('../Audio/GetSupport.ogg'));
+    sounds.charging.push(loadSound('../Audio/Charging.ogg'));
+
+    // Ability sounds
+    sounds.barrier.push(loadSound('../Audio/Barrier.ogg'));
+    sounds.bomb.push(loadSound('../Audio/Bomb.ogg'));
+    sounds.flash.push(loadSound('../Audio/Flash.ogg'));
+    sounds.singularity.push(loadSound('../Audio/Singularity.ogg'));
+    sounds.abilitydecimator.push(loadSound('../Audio/AbilityDecimator.ogg'));
+    sounds.abilitylightningbolt.push(loadSound('../Audio/AbilityLightningBolt.ogg'));
+
+    // Other sounds
+    sounds.blast.push(loadSound('../Audio/Blast.ogg'));
+    sounds.bounce.push(loadSound('../Audio/Bounce.ogg'));
+    sounds.death.push(loadSound('../Audio/Death.ogg'));
+    sounds.deathchungusjr.push(loadSound('../Audio/DeathChungusJr.ogg'));
+    sounds.deathchungus.push(loadSound('../Audio/DeathChungus.ogg'));
+    sounds.deathchungussr.push(loadSound('../Audio/DeathChungusSr.ogg'));
+    sounds.deathdiamond.push(loadSound('../Audio/DeathDiamond.ogg'));
+    sounds.deathdisc.push(loadSound('../Audio/DeathDisc.ogg'));
+    sounds.deathgrower.push(loadSound('../Audio/DeathGrower.ogg'));
+    sounds.deathminidiamond.push(loadSound('../Audio/DeathMiniDiamond.ogg'));
+    sounds.deathlilfella.push(loadSound('../Audio/DeathLilfella.ogg'));
+    sounds.hitchungusjr.push(loadSound('../Audio/HitChungusJr.ogg'));
+    sounds.hitchungus.push(loadSound('../Audio/HitChungus.ogg'));
+    sounds.hitchungussr.push(loadSound('../Audio/HitChungusSr.ogg'));
+    sounds.hitdiamond.push(loadSound('../Audio/HitDiamond.ogg'));
+    sounds.hitdisc.push(loadSound('../Audio/HitDisc.ogg'));
+    sounds.hitgrower.push(loadSound('../Audio/HitGrower.ogg'));
+    sounds.hitminidiamond.push(loadSound('../Audio/HitMiniDiamond.ogg'));
+    sounds.hitlilfella.push(loadSound('../Audio/HitLilfella.ogg'));
+    sounds.levelup.push(loadSound('../Audio/LevelUp.ogg'));
+    sounds.playerhit.push(loadSound('../Audio/PlayerHit.ogg'));
+    sounds.shotfullauto.push(loadSound('../Audio/ShotFullAuto.ogg'));
+    sounds.shotshotgun.push(loadSound('../Audio/ShotShotgun.ogg'));
+    sounds.shotsingle.push(loadSound('../Audio/ShotSingle.ogg'));
+    sounds.shotbit.push(loadSound('../Audio/ShotBit.ogg'));
+    sounds.shotblaster.push(loadSound('../Audio/ShotBlaster.ogg'));
+    sounds.shotcannon.push(loadSound('../Audio/ShotCannon.ogg'));
+  }
+  for (let id in attachmentLevels) {
+    let attBase = attachmentLevels[id];
+    if (attBase.baseIcon) {
+      console.log("Loading image: " + attBase.baseIcon);
+      attachmentImages[id] = loadImage(attBase.baseIcon,
+        () => console.log("Successfully loaded: " + attBase.baseIcon),
+        () => console.log("FAILED to load: " + attBase.baseIcon)
+      );
+      grayscaleAttachmentImages[id] = loadImage(attBase.baseIcon,
+        function (img) {
+          img.filter(GRAY);
+          console.log("Grayscale created: " + attBase.baseIcon);
+        },
+        () => console.log("FAILED to create grayscale: " + attBase.baseIcon)
+      );
+    }
+  }
+}
+
+// Setup Canvas
+function setup() {
+  loadGame();
+  InitializeAttachmentLevels();
+  setInterval(saveGame, 3000);
+  createCanvas(1500, 1200); // 1500 1200
+  // UnlockAbility("flash"); // breaks things so disabling for now
+  UnlockAbility("shield");
+  UnlockAbility("bomb");
+  UnlockAbility("autofirebarrage");
+  UnlockAbility("spiralshot");
+  UnlockAbility("lightningbolt");
+  UnlockAbility("singularity");
+  UnlockAbility("decimator");
+}
+// =================== \\
+// Misc helper functions
+
+// Converts mouseX to cameraX 
+function GetWorldMouseX() {
+  return mouseX + cameraX;
+}
+function GetWorldMouseY() {
+  return mouseY + cameraY;
+}
+
+// Math function to get distance 
+function distance(x1, y1, x2, y2) {
+  return Math.sqrt((x2 - x1) ** 2 + (y2 - y1) ** 2);
+}
+
+// DIsplay FPS
+function DisplayFPS() {
+  fill(0);
+  textSize(14);
+  textAlign(LEFT);
+  text("FPS: " + frameRate().toFixed(1), 10, height - 40);
+}
+
+// Sets Min/Max values for stats so you can't get -1 Shot Delay for example
+function ClampStats() {
+  shot_Penetration = Math.max(0, Math.min(shot_Penetration, shot_Penetration_MAX));
+  shot_Power = Math.max(1, Math.min(shot_Power, shot_Power_MAX));
+  shot_Count = Math.max(1, Math.min(shot_Count, shot_Count_MAX));
+  cooldown_Reduction = Math.max(0, Math.min(cooldown_Reduction, cdr_MAX));
+  shot_Speed = Math.max(1, Math.min(shot_Speed, shot_Speed_MAX));
+  shot_Diameter = Math.max(1, Math.min(shot_Diameter, shot_Diameter_MAX));
+  shot_Duration = Math.max(1, Math.min(shot_Duration, shot_Duration_MAX));
+  shot_Delay = Math.max(shot_Delay_MIN, shot_Delay);
+}
+
+// Handles cooldown reduction math
+function GetCooldownReduction() {
+  // Capped at 80% max
+  let reductionPercent = cooldown_Reduction / (cooldown_Reduction + 100);
+  reductionPercent = min(reductionPercent, 0.8);  // Cap at 80%
+  return reductionPercent;
+}
+
+function drawPolygon(sides, x, y, radius, rotation = 0) {
+  beginShape();
+  for (let i = 0; i < sides; i++) {
+    const angle = TWO_PI / sides * i + rotation;
+    const px = x + cos(angle) * radius;
+    const py = y + sin(angle) * radius;
+    vertex(px, py);
+  }
+  endShape(CLOSE);
+}
+
+// Level up handler
+function LevelUp() {
+  playSound('levelup');
+  Level += 1;
+  if (Level === 10 || Level === 20 || Level === 30) {
+    ShowSupportChoices();
+  }
+
+  max_Health += 1; // Base max health increase
+  player_Health += 1;
+  exp_Next = Math.trunc(25 + (1 + Level ** 3) * 1.5);
+  exp = 0;
+  RecalculateConversions();
+  ClampStats();
+}
+
+// Gets nearest enemy so we can shoot it in the face and or ass
+function GetNearestEnemy(x, y, enemyArray) {
+  let nearest = null;
+  let bestDist = Infinity;
+
+  for (let i = 0; i < enemyArray.length; i++) {
+    const enemy = enemyArray[i];
+    if (enemy.health <= 0) continue;
+
+    const dx = enemy.x - x;
+    const dy = enemy.y - y;
+    const distSq = dx * dx + dy * dy;
+
+    if (distSq < bestDist) {
+      bestDist = distSq;
+      nearest = { index: i, distSq };
+    }
+  }
+
+  return nearest;
+}
+
+// define ConcentricCircle function 
+function ConcentricCircle(x, y, outer_diameter, inner_diameter, outer_red, outer_green, outer_blue, inner_red, inner_green, inner_blue) {
+  strokeWeight(2);
+  fill(outer_red, outer_green, outer_blue);
+  circle(x, y, outer_diameter);
+  fill(inner_red, inner_green, inner_blue);
+  circle(x, y, inner_diameter);
+}
+
+// Das Dooble Squarzen
+function DoubleSquare(x, y, outer_diameter, inner_diameter, outer_red, outer_green, outer_blue, inner_red, inner_green, inner_blue) {
+  rectMode(CENTER);
+  strokeWeight(1);
+  fill(outer_red, outer_green, outer_blue);
+  square(x, y, outer_diameter);
+  fill(inner_red, inner_green, inner_blue);
+  square(x, y, inner_diameter);
+}
+
+// Double Diamond shape
+function DoubleDiamond(x, y, outer_diameter, inner_diameter, outer_red, outer_green, outer_blue, inner_red, inner_green, inner_blue) {
+  strokeWeight(2);
+  fill(outer_red, outer_green, outer_blue);
+  halfOuter = outer_diameter / 2;
+  quad(x, y - halfOuter, x + halfOuter, y, x, y + halfOuter, x - halfOuter, y);
+  strokeWeight(1);
+  fill(inner_red, inner_green, inner_blue);
+  halfInner = inner_diameter / 2;
+  quad(x, y - halfInner, x + halfInner, y, x, y + halfInner, x - halfInner, y);
+}
+
+// RNG 
+function getRandomNumber(number) {
+  return Math.floor(Math.random() * 55) + 35;
+}
+// =================== \\
+
+
+
+
+// creates some random shit 
+// WAY TOO LAGGY - Not going to use this for now
+
+/*
+function GenerateWorldObstacles(count = 20) {
+  worldObstacles = [];
+  
+  for (let i = 0; i < count; i++) {
+    let x = random(-2000, 2000);
+    let y = random(-2000, 2000);
+    let size = random(40, 100);
+    
+    worldObstacles.push({
+      x: x,
+      y: y,
+      size: size,
+      type: random(["rock", "tree", "debris"])
+    });
+  }
+}
+
+//  DRAW OBSTACLES - 
+function DrawWorldObstacles() {
+  push();
+  noStroke();
+  
+  for (let obstacle of worldObstacles) {
+    // Only draw if visible on screen (add buffer for safety)
+    let screenX = obstacle.x - cameraX;
+    let screenY = obstacle.y - cameraY;
+    let buffer = obstacle.size + 50;
+    
+    if (screenX < -buffer || screenX > width + buffer ||
+        screenY < -buffer || screenY > height + buffer) {
+      continue; // Skip drawing this obstacle
+    }
+    
+    switch (obstacle.type) {
+      case "rock":
+        fill(120, 100, 80);
+        ellipse(obstacle.x, obstacle.y, obstacle.size);
+        break;
+      case "tree":
+        fill(80, 140, 60);
+        rect(obstacle.x - obstacle.size/3, obstacle.y - obstacle.size/2, 
+             obstacle.size/1.5, obstacle.size);
+        break;
+      case "debris":
+        fill(100, 100, 100);
+        rect(obstacle.x - obstacle.size/2, obstacle.y - obstacle.size/2, 
+             obstacle.size, obstacle.size);
+        break;
+    }
+  }
+  pop();
+}
+
+// prevents player movement 
+function CheckObstacleCollision() {
+  const playerRadius = player_Hitbox / 2;
+  const checkRadius = 300; // Only check obstacles within 300px of player
+  
+  for (let obstacle of worldObstacles) {
+    // Quick distance check first
+    let distToObstacle = dist(player_X, player_Y, obstacle.x, obstacle.y);
+    if (distToObstacle > checkRadius) continue; // Skip far obstacles
+    
+    let dx = player_X - obstacle.x;
+    let dy = player_Y - obstacle.y;
+    let minDistance = playerRadius + obstacle.size / 2;
+    
+    if (distToObstacle < minDistance) {
+      let angle = atan2(dy, dx);
+      let pushDistance = minDistance - distToObstacle + 2;
+      
+      player_X += cos(angle) * pushDistance;
+      player_Y += sin(angle) * pushDistance;
+    }
+  }
+}
+      */ // ---======================================================== obstacles
+
+function DamageEnemiesInRadius(radius, damageAmount) {
+  for (let i = enemies.length - 1; i >= 0; i--) {
+    const enemy = enemies[i];
+    
+    // Use your custom distance function
+    if (distance(player_X, player_Y, enemy.x, enemy.y) < radius) {
+      enemy.health -= damageAmount;
+      damageCount++;
+      
+      playSound('hit');
+      
+      if (enemy.health <= 0) {
+        // KillEnemy only takes index parameter
+        KillEnemy(i);
+      }
+    }
+  }
+}
+
+// Rudimentary collision checker used in the check collisionS
+function CheckCollision(x1, y1, d1, x2, y2, d2) {
+  const r1 = d1 / 2;
+  const r2 = d2 / 2;
+  return dist(x1, y1, x2, y2) < r1 + r2;
+}
+
+// Function for checking if immune and doing damage/collision rather than having the same block of code over and over and over
+function DamageCheckByType(damage) {
+  if (!immune) {
+    let actualDamage = HitShield(damage);
+    playSound('playerhit');
+    immune = true;
+    hit_Timer = 60;
+    player_Health -= actualDamage;
+  }
+}
+
+function CheckCollisions() {
+  // Check enemies
+  for (let enemy of enemies) {
+    if (CheckCollision(player_X, player_Y, player_Hitbox, enemy.x, enemy.y, enemy.diameter)) {
+      DamageCheckByType(ENEMY_TYPES[enemy.type.toUpperCase()]);
+    }
+  }
+
+  // Check obstacles 
+  for (let chip of chips) {
+    if (CheckCollision(player_X, player_Y, player_Hitbox, chip.x, chip.y, chip.diameter)) {
+      DamageCheckByType(ENEMY_TYPES.CHIP);
+    }
+  }
+}
+
+// Handles player collision
+function handleCollision(targetX, targetY, targetDiameter, targetHealth, targetXSpeed, targetYSpeed, expReward, goldReward, hitSound, deathSound, i, enemyType) {
+  for (let t = targetX.length - 1; t >= 0; t--) {
+    if (CheckCollision(shot_X[i], shot_Y[i], shot_Diameter_Array[i], targetX[t], targetY[t], targetDiameter[t])) {
+      if (shot_HitEnemies[i].includes(t)) continue;
+      shot_HitEnemies[i].push(t);
+      targetHealth[t] -= shot_PowerArray[i];
+      playSound(hitSound);
+      if (enemyType === "disc") {
+        targetXSpeed[t] = Math.floor(Math.random() * 8) - 4;
+        targetYSpeed[t] = Math.floor(Math.random() * 8) - 4;
+      }
+      if (targetHealth[t] <= 0) {
+        KillEnemy(
+          enemyType,
+          targetX[t],
+          targetY[t],
+          targetDiameter[t],
+          expReward,
+          goldReward,
+          deathSound,
+          t,
+          targetXSpeed,
+          targetYSpeed,
+          targetHealth
+        );
+
+        targetX.splice(t, 1);
+        targetY.splice(t, 1);
+        targetDiameter.splice(t, 1);
+        if (targetXSpeed) targetXSpeed.splice(t, 1);
+        if (targetYSpeed) targetYSpeed.splice(t, 1);
+        targetHealth.splice(t, 1);
+      }
+      SpliceShot(i);
+      break;
+    }
+  }
+}
+
+// Helps to adjust spacing 
+function drawTextColumns(x, y, lineHeight, size, ...columns) {
+  const columnWidth = 200;
+  textSize(size);
+
+  for (let col = 0; col < columns.length; col++) {
+    textAlign(LEFT);
+    text(columns[col], x + (col * columnWidth), y);
+  }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+// Replacement for the old "Draw" will now do stuff here
+function Drawgame_Screen() {
+  DrawBackgroundLayers();
+  //DrawObstacleZone();
+  if (justRestarted) {
+    ResetAbilityCooldownSystem();
+    ResetAllAbilities();
+    justRestarted = false;
+    return;   
+  }
+  
+  UpdateAbilityCooldown();
+  UpdateBarrage();
+  UpdateSpiral();
+  UpdateDecimator();
+  UpdateLightningBolt();
+  UpdateSingularity();
+
+  time++;
+  // Update player 
+  MovePlayer();
+  // CheckObstacleCollision() ; Might enable later when fix lag
+  
+  // ===== Game space stuff that gets drawn on screen ===== \\
+  push();
+  translate(-cameraX, -cameraY);
+  
+  CreatePlayer();
+  DrawShield();        
+  // DrawWorldObstacles(); Might enable later when fix lag
+  UpdateSupports();
+  UpdateShield();
+  //DrawShieldHUD();    
+  UpdateCannons();
+  Shot();
+  MoveShot();
+  UpdateWaves(activeWaves);
+  MoveEnemies();
+  DrawEnemies();
+  CheckCollisions();
+  CheckShotCollisions();
+  DrawBombExplosions();
+  Immune();            
+  
+  pop();
+  
+  // ===== UI THAT STAYS FIXED ON SCREEN ===== \\
+  DisplayFPS();
+  CursorUpdate();
+  CreateBorders();
+  UpdateHud();        
+  VictoryMessage();
+  fill(100);
+  textSize(14);
+  textAlign(LEFT);
+  text("Press Z to pause", 10, height - 20);
+}
+
+// `` -- __ DRAW __ -- `` \\  What is my purpose? You call the real functions. Oh. My. God.
+function draw() {
+    if (game_Screen === "menu") {
+    DrawMenuScreen();
+    CursorUpdate();
+  }
+  else if (game_Screen === "shop") {
+    DrawShopScreen();
+  }
+  else if (game_Screen === "shipSelection") {
+    DrawShipSelectionScreen();
+    HandleShipSelection();
+    CursorUpdate();
+  }       
+  else if (game_Screen === "playing") {
+    Drawgame_Screen();
+    CursorUpdate();
+    CheckShotCollisions();
+  }
+  else if (game_Screen === "paused") {
+    DrawPauseScreen();
+    CursorUpdate();
+  }
+  else if (game_Screen === "gameOver") {
+    console.log("ON GAME OVER SCREEN");
+    DrawGameOverScreen();
+    CursorUpdate();
+  }
+}
