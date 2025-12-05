@@ -25,7 +25,7 @@ var cobs_Y = [];
 var cobs_Diameter = []; 
 var cobs_XSpeed = [];
 var cobs_YSpeed = [];
-var cobs_Cooldown = 0; // Used to prevent mouse click from generating infinity obstacles at once
+var cobs_Cooldown = 0; // Used to prevent mouse click from generating infinity cobstacles at once
 
 const s = 83;
 const w = 87;
