@@ -19,6 +19,14 @@ var obs_XSpeed = [];
 var obs_YSpeed = [];
 var obs_Cooldown = 0; // Used to prevent mouse click from generating infinity obstacles at once
 
+var cobsCount = 0;
+var cobs_X = []; 
+var cobs_Y = []; 
+var cobs_Diameter = []; 
+var cobs_XSpeed = [];
+var cobs_YSpeed = [];
+var cobs_Cooldown = 0; // Used to prevent mouse click from generating infinity obstacles at once
+
 const s = 83;
 const w = 87;
 const a = 65;
@@ -33,6 +41,7 @@ function setup() {
 // Creates the parameters which the CreateObs uses to draw the obstacles
 function DrawObstacles(){   
   for (var i = 0; i < obsCount; i++) {      // get all the random numbers to create a circles
+
     obs_X[i] = getRandomNumber(800);
     obs_Y[i] = getRandomNumber(600);
     obs_Diameter[i] = Math.floor(Math.random() * 30) + 40;
@@ -88,6 +97,20 @@ for (var i = 0; i < obs_X.length; i++) {
    // console.log("Created Circle number: " + obs_X.length)
 }
 
+function CreateCobs(){     // Creates the Obstacles using concentric circles
+for (var i = 0; i < obs_X.length; i++) {
+  ConcentricCircle(
+    cobs_X[i],
+    cobs_Y[i],
+    cobs_Diameter[i],
+    cobs_Diameter[i] / 2,
+    50, 120, 250, 250, 50, 120
+    
+    );
+  }
+   // console.log("Created Circle number: " + obs_X.length)
+}
+
 // Makin dem dere circledrawer ya 'earin' me now?
 function ClickCircle() {
   if (mouseIsPressed && mouseButton === LEFT  && obs_Cooldown === 0) {
@@ -97,14 +120,23 @@ function ClickCircle() {
     frame_Time_Freeze = frame_Time;
     console.log("Frametime Freeze = " + frame_Time_Freeze);
 
-    obs_X[obsCount] = mouse_X;
-    obs_Y[obsCount] = mouse_Y;
-    obs_Diameter[obsCount] = 20;
-    obs_XSpeed[obsCount] = Math.floor(Math.random() * 12) - 6;
-    obs_YSpeed[obsCount] = Math.floor(Math.random() * 12) - 6;
+    cobs_X[cobsCount] = mouse_X;    // Changed from "obs" to "cobs" - very clever naming convention.
+    cobs_Y[cobsCount] = mouse_Y;
+    cobs_Diameter[cobsCount] = 20;
+    cobs_XSpeed[cobsCount] = Math.floor(Math.random() * 12) - 6;
+    cobs_YSpeed[cobsCount] = Math.floor(Math.random() * 12) - 6;
     
-    obsCount++;
+    cobsCount++;
     obs_Cooldown = 20    
+    MoveCobs();
+  }  
+}
+
+// Used to move cobs once when mouse is clicked.
+function MoveCobs() {     // Added the MoveCobs function 
+  for (let i = 0; i < cobsCount; i++) {
+    cobs_X[i] += cobs_XSpeed[i];
+    cobs_Y[i] += cobs_YSpeed[i];
   }
 }
 
@@ -175,6 +207,7 @@ function draw() {
   ClickCircle();    // function that draws an object to the screen when pressing the mouse.
 
   CreateObs();      // function that creates multiple obstacles of different sizes and colors on the screen 
+  CreateCobs();     // Unfortunately these cobs are not made of corn 
   MoveObs();        // different functions to move each of the obstacles around randomly around the screen. If they leave the screen, have them come back on the other side.
 
   CreateBorders();  // function to generate a border around the screen.

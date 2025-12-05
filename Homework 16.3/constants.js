@@ -3,6 +3,8 @@
 // Ability Stats
 var abilityStats = {};
 
+var nebulaOff = true; // handles the background thing, use to disable lagginess
+
 const abilityBaseStats = {
   bomb: {
     cooldown: 1000,
@@ -360,7 +362,7 @@ const dropTable = {
   lilfella: [
     { item: "exptoken", chance: 0.45, amount: 3 },
     { item: "goldtoken", chance: 0.15, amount: 4 },
-    { item: "sucker", chance: 0.004}  
+    { item: "sucker", chance: 0.008}  
   ],
 
   dia: [
@@ -373,20 +375,20 @@ const dropTable = {
   grower: [
     { item: "exptoken", chance: .5, amount: 3 },
     { item: "goldtoken", chance: 0.4, amount: 8 },
-    { item: "sucker", chance: 0.001}  
+    { item: "sucker", chance: 0.004}  
   ],
 
   chungusjr: [
     { item: "midexptoken", chance: 1.0, amount: 12 },
     { item: "goldtoken", chance: 0.3, amount: 16 },
-    { item: "sucker", chance: 0.005} 
+    { item: "sucker", chance: 0.01} 
   ],
 
   chungus:  [
    { item: "midexptoken", chance: 1.0, amount: 12 },    
    { item: "powerup", chance: 0.2},
    { item: "goldtoken", chance: 0.35, amount: 28 },
-   { item: "sucker", chance: 0.005}           
+   { item: "sucker", chance: 0.008}           
   ],
 
   chungussr: [
@@ -405,7 +407,7 @@ const dropTable = {
   gigadia: [
    { item: "midexptoken", chance: 0.3, amount: 15},
    { item: "goldtoken", chance: 0.4, amount: 12 },
-   { item: "sucker", chance: 0.025}    
+   { item: "sucker", chance: 0.125}    
   ]
 };
 

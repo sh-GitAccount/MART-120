@@ -64,6 +64,11 @@ function preload() {
   sounds.ilikemoney = [];
   sounds.helpmetomcruise = [];
 
+  // Load music
+  musicTracks.menuTheme = loadSound('../Audio/MenuTheme.ogg');
+  musicTracks.stageTheme = loadSound('../Audio/StageTheme.ogg');
+  musicTracks.deathTheme = loadSound('../Audio/DeathTheme.ogg');
+
   // Preload for ship sprites
   shipImages[1] = loadImage('Images/ship_1.png');
   shipImages[2] = loadImage('Images/ship_2.png');
@@ -170,6 +175,7 @@ function preload() {
 // Setup Canvas
 function setup() {
   loadGame();
+  playMusicTrack('menuTheme');
   InitializeAttachmentLevels();
   setInterval(saveGame, 6000); // 10s auto save timer
   createCanvas(1500, 1200); // 1500 1200 // will change to 1280 * 1024
@@ -257,7 +263,7 @@ function distance(x1, y1, x2, y2) {
 // Debug frame/milli counters - will remove later
 // DIsplay FPS
 function DisplayFPS() {
-  fill(0);
+  fill(200);
   textSize(14);
   textAlign(LEFT);
   text("FPS: " + frameRate().toFixed(1), 10, height - 40);
