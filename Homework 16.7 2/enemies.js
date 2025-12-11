@@ -292,7 +292,7 @@ function SpawnEnemy(type, x, y, spawnSide = null, parentDiameter = 40) {
 // Boss spawner
 function SpawnBoss(type, x, y) {
   let boss;
-
+  
   if (stage ===1 ){
     boss = {
       type: type,
@@ -303,18 +303,18 @@ function SpawnBoss(type, x, y) {
       
       // Center body
       center: {
-        health: 4500,
+        health: 9000,
         diameter: 80,
-        maxHealth: 4500,
+        maxHealth: 9000,
         hitSound: "boss1centerhit",
         deathSound: "boss1centerdeath"
       },
       
       // Left body
       left: {
-        health: 2000,
+        health: 4000,
         diameter: 60,
-        maxHealth: 2000,
+        maxHealth: 5000,
         offsetX: -100,
         hitSound: "boss1lefthit",
         deathSound: "boss1leftdeath"
@@ -322,9 +322,9 @@ function SpawnBoss(type, x, y) {
       
       // Right body
       right: {
-        health: 2500,
+        health: 5000,
         diameter: 60,
-        maxHealth: 2500,
+        maxHealth: 5000,
         offsetX: 100,
         hitSound: "boss1righthit",
         deathSound: "boss1rightdeath"

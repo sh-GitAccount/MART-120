@@ -3,7 +3,7 @@
 // TItle screen
 var menuPulseAlpha = 0;
 var menuPulseDir = 1;
-
+var hardMode = false;
 // Powers option 
 let powerChoicePulseAlpha = 0;
 let powerChoicePulseDir = 1;
@@ -709,7 +709,7 @@ const attachmentLevels = {
         ]
       },
       2: {
-        cost: 2800,
+        cost: 3500,
         itemInfo: "Increases Shot Count by 3, reduces Shot Speed by 1.",
         stats: [
           { stat: "shot_Count", value: 3 },
@@ -717,7 +717,7 @@ const attachmentLevels = {
         ]
       },
       3: {
-        cost: 3500,
+        cost: 5000,
         itemInfo: "Increases Shot Count by 4.",
         stats: [
           { stat: "shot_Count", value: 4 }
@@ -861,16 +861,16 @@ const attachmentLevels = {
     levels: {
       0: { 
         cost: 800, 
-        itemInfo: "Increases Cooldown Reduction by 24 and reduces Shield Charge time by 6.", 
+        itemInfo: "Increases Cooldown Reduction by 16 and reduces Shield Charge time by 6.", 
         stats: [
           { stat: "shield_Cooldown", value: 6 },
-          { stat: "cooldown_Reduction", value: 24 }] },
+          { stat: "cooldown_Reduction", value: 16 }] },
       1: { 
         cost: 1200, 
-        itemInfo: "Increases Cooldown Reduction by 30 and reduces Shield Charge time by 12.", 
+        itemInfo: "Increases Cooldown Reduction by 26 and reduces Shield Charge time by 12.", 
         stats: [
           { stat: "shield_Cooldown", value: 12 },
-          { stat: "cooldown_Reduction", value: 30 }] },
+          { stat: "cooldown_Reduction", value: 26 }] },
       2: { 
         cost: 2500, 
         itemInfo: "Increases Cooldown Reduction by 36 and reduces Shield Charge time by 18.", 

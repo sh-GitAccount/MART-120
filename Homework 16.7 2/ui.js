@@ -1298,7 +1298,7 @@ function DrawVictoryScreen() {
   text("Damage Dealt:", rightColX - 80, statsStartY);
   fill(255);
   textSize(24);
-  text(damage_Dealt, rightColX + 20, statsStartY);
+  text(Math.floor(damage_Dealt), rightColX + 20, statsStartY);
   
   fill(220, 170, 0);
   textSize(24);
@@ -1476,8 +1476,6 @@ function HandleReturnToTitle() {
   console.log("Current Gold added to Total Gold value and reset to 0!");
 
   ResetBossProjectiles();
-  boss.isAlive = false;
-
   playMusicTrack('menuTheme');
   playSound("confirm");
   ResetAllArrays();
