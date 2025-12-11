@@ -317,7 +317,7 @@ const BOUNCE_COOLDOWN = 15; // frames between bounces
 // Attachment stuff
 var attachments = [];
 var equippedAttachments = [];
-var maxEquipped = 0;
+var maxEquipped = 2;
 var hoveredAttachmentId = null;
 var mouseOverAttachmentX = 0;
 var mouseOverAttachmentY = 0;

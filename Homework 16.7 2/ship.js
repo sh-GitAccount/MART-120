@@ -127,6 +127,7 @@ function ApplyShipStats() {
   }
 
   // apply all equipped attachment stats
+  
   for (let attachmentId of equippedAttachments) {
     const attachmentData = GetCurrentAttachmentData(attachmentId);
     if (attachmentData && attachmentData.stats) {
@@ -142,7 +143,6 @@ function ApplyShipStats() {
       );
     }
   }
-
   ApplyAllUnlockedUpgrades();
   RecalculateConversions();
   ClampStats();
@@ -150,12 +150,15 @@ function ApplyShipStats() {
 
 // Apply all unlocked upgrades to player stats
 function ApplyAllUnlockedUpgrades() {
-  for (let upgradeId in upgradeLevels_Current) {
+  console.log("unlockedUpgrades:", unlockedUpgrades);
+  for (let upgradeId of unlockedUpgrades) {  
     const level = upgradeLevels_Current[upgradeId] || 0;
+    console.log("Applying upgrade", upgradeId, "at level", level);
     if (level >= 0) {
       const upgradeData = GetUpgradeLevelData(upgradeId, level);
       if (upgradeData && upgradeData.stats) {
         for (let statObj of upgradeData.stats) {
+          console.log("  - Applying stat:", statObj.stat, "value:", statObj.value);
           ApplyStat(statObj.stat, statObj.value);
         }
       }
@@ -207,7 +210,7 @@ function HandleShipSelection() {
         Math.abs(mouseY - shipY) < clickArea) {
         selectedShip = i;
         playSound('select');
-        ApplyShipStats();
+//        ApplyShipStats();    // debug
         DetermineFirePattern();
         shipSelectionDelayCounter = 20;
         break;
