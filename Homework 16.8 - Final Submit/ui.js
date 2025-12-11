@@ -33,7 +33,6 @@ function DrawButton(x, y, w, h, label) {
 }
 
 // Creates the main menu screen when the game is first loaded
-
 function DrawMenuScreen() {
     enemies = [];
     background(12, 12, 36);
@@ -361,7 +360,7 @@ function drawShopConfirmationTooltip(id, gridStartX, gridStartY, rows, cols, cel
     fill(150);
     text("Already at MAX LEVEL", tooltipX + padding, tooltipY + padding + 50);
   } else {
-    // USE nextLevelData INSTEAD OF GetNextUpgradeCost
+    // USE nextLevelData
     if (nextLevelData && nextLevelData.cost !== null) {
       text("Upgrade to Level " + (currentLevel + 1) + " for: " + nextLevelData.cost + "g", tooltipX + padding, tooltipY + padding + 50);
     } else {
@@ -1337,7 +1336,7 @@ function DrawVictoryScreen() {
     text("All Stages Complete!", width / 2, buttonY - 40);
   }
   
-  // Draw RETURN TO STAGES button
+  // return button
   if (DrawButton(width / 2 + 20, buttonY, 160, 50, "BACK")) {
     totalGold += Gold;
     Gold = 0;
@@ -1365,13 +1364,12 @@ function DrawGameOverScreen() {
   // Draw layout for 2 columns to show stats
   const statsStartY = height / 2 - 80;
   const statsStartX = width / 2;
-  const columnSpacing = 380; // Space between left and right columns
-  const rowHeight = 50;
-  
-  // Left column X position (right-aligned text)
+  const columnSpacing = 380; 
+  const rowHeight = 50;  
+
   const leftColX = statsStartX - columnSpacing / 2;
-  // Right column X position (right-aligned text)
   const rightColX = statsStartX + columnSpacing / 2;
+
   strokeWeight(1);
   // Label color and style
   fill(150, 200, 255);
@@ -1524,7 +1522,7 @@ function DrawNebulaLayer() {
 
   for (let x = startX; x < endX; x += cellSize) {
     for (let y = startY; y < endY; y += cellSize) {
-      let noiseVal = noise(x * 0.003, y * 0.003); // REDUCED frequency from 0.006
+      let noiseVal = noise(x * 0.004, y * 0.004); 
       
       colorMode(HSB);
       let hueVal = map(noiseVal, 0, 1, stageTheme.nebulaHueMin, stageTheme.nebulaHueMax);
@@ -1615,23 +1613,6 @@ function CreateBorders() {
   pop();
 }
 
-function DrawObstacleZone() {  // think this is pretty much deprecated by now
-  push();
-  translate(-cameraX, -cameraY);
-  
-  if (stage === 1) {
-    fill(50, 20, 250);
-    stroke(220, 20, 20);
-    strokeWeight(2);
-    rect(width / 4, height / 4, 100, height / 2);
-    rect(width / 4, height / 4, width / 2, 100);
-    rect(width * .75, height / 4, 100, height / 2);
-    rect(width / 4, height / 4 + height / 2 - 100, width / 2, 100);
-  }
-  
-  pop();
-}
-
 function UpdateHud() {
 
   // --- TEXT STYLE ---
@@ -1688,7 +1669,7 @@ function UpdateHud() {
   textSize(28);
   textStyle(BOLD);
   textAlign(CENTER);
-  let seconds = Math.floor(time / 60);  // Convert frames to seconds (assuming 60fps)
+  let seconds = Math.floor(time / 60);  // Convert frames to seconds give or take fps variation
   let minutes = Math.floor(seconds / 60);
   let displaySeconds = seconds % 60;
   let timeString = minutes + ":" + (displaySeconds < 10 ? "0" : "") + displaySeconds;
@@ -1809,7 +1790,7 @@ function DrawShieldHUD() {
     text("COOLDOWN " + Math.floor(percentLeft) + "%", textX, textY);
   }
   
-  // Show damage absorbed (also in world space above shield)
+  // Show damage absorbed
   if (shield_Display_Timer > 0) {
     fill(100, 255, 100);
     textSize(16);

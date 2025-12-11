@@ -104,7 +104,7 @@ const d = 68;
 
 var time = 0;
 var frame_Time = 0;
-let gameTime = 0;      // seconds of active gameplay (no pause time)
+let gameTime = 0;      // seconds of active gameplay 
 let lastMillis = 0;
 game_Paused = true;
 
@@ -160,11 +160,10 @@ var player_Y;
 var player_Speed = 6;
 var diameter = 58;
 var grow_Speed = -0.05;
-var player_Hitbox = 48; // slightly smaller hitbox for player instead of using diameter, gives a bit of leeway so it's not pixel perfect
+var player_Hitbox = 48; // slightly smaller hitbox for player instead of using diameter, gives a bit of leeway
 
 var shield_Growth;
 var health_Growth;
-
 
 var shipAbilityCooldownTimer = 0;
 var shipAbilityOnCooldown = false;
@@ -206,7 +205,7 @@ var Gold = 0;
 var totalGold;
 var goldSpent = 0;
 
-var hit_Timer = 80; // Sets Hit Timer (immune time) so you take damage on spawn (shouldn't happen)
+var hit_Timer = 60; // Sets Hit Timer (immune time) so you take damage on spawn (shouldn't happen)
 var hit_Timer_Bonus = 0; // used to add bonus time to hit immunity timer
 var immune = true;   // Causes you to spawn immune, so you don't get spawn camped by the NPCs
 var statConversions = {};
@@ -271,7 +270,7 @@ var rightSweepShotDelay = 0;
 var leftSweepCooldownTimer = 0;
 var rightSweepCooldownTimer = 0;
 
-var cameraFixed = false; // Track if camera should follow player or stay fixed
+var cameraFixed = false; // Track if camera should follow player or stay fixed (boss fight thing) 
 
 // Enemy
 var enemies = [];
@@ -287,7 +286,7 @@ let chip_XSpeed = [];
 let chip_YSpeed = [];
 
 // Grower
-var max_Speed = 10;
+var max_Speed = 10; // Poor dude no longer grows say law vee
 
 // Shooty McBullet Stuff
 var shot_X = [];
@@ -313,7 +312,7 @@ var shot_Timer = [];
 var bounce_Value; // 
 var shot_BouncesRemaining = [];
 var shot_LastBounceTime = [];
-const BOUNCE_COOLDOWN = 10; // frames between bounces
+const BOUNCE_COOLDOWN = 15; // frames between bounces
 
 // Attachment stuff
 var attachments = [];
@@ -338,6 +337,7 @@ var fullAutoTimer = 0;
 var fullAutoShotsFired = 0;
 var fullAutoActive = false;
 
+// shot values for various mods
 var angle;
 var spread;
 var baseAngle;
@@ -397,7 +397,7 @@ const shot_Delay_MIN = 1;
 
 var burstCooldownTimer = 0;   // delay for shotygun style shots
 var burstCooldown;
-var burstCooldown_Bonus;
+var burstCooldown_Bonus;    // Never got around to implementing the _Bonus value scaling
 const burst_Cooldown_MIN = 4;
 
 // Support unit stuff
@@ -495,7 +495,7 @@ var areaDamage = 1;                // AoE Damage scaler
 
 const powerupOptions = [
   // Level 1-10 Power Ups
-  { name: "Power +2", apply: () => { shot_Power += 2; }, display: () => shot_Power + 2 },
+  { name: "Power +3", apply: () => { shot_Power += 3; }, display: () => shot_Power + 23 },
   { name: "Count +1", apply: () => { shot_Count += 1; }, display: () => shot_Count + 1 },
   { name: "Speed +1", apply: () => { shot_Speed += 1; }, display: () => shot_Speed + 1 },
   { name: "Delay -1", apply: () => { shot_Delay = Math.max(1, shot_Delay - 1); }, display: () => Math.max(1, shot_Delay - 1) },
@@ -683,7 +683,7 @@ const itemTable = {
     frameSpeed: 12,
     size: 20,
     spriteSheet: null
-  }*/
+  }*/   // NYI
 };
 
 // Attachment List/Info
@@ -1365,22 +1365,7 @@ const attachmentLevels = {
 */
 
 // N Y I
-const bombBoosterAttachment = {
-  name: "Bomb Amplifier",
-  levels: {
-    0: {
-      cost: 800,
-      itemInfo: "Increases Bomb damage by 5 and radius by 30.",
-      stats: [],
-      abilityMods: {  // New property for ability modifications
-        bomb: {
-          damage: 5,
-          radius: 30
-        }
-      }
-    }
-  }
-};
+
 // ModifyAbilityStat("bomb", "damage", 5);
 // ModifyAbilityStat("bomb", "radius", 30);
 
@@ -1820,13 +1805,13 @@ const ENEMY_TYPES = {
   SUPERDIA: 38,  
 
   LILFELLA: 8,
-  BIGFELLA: 28,
-  GIRTHYFELLA: 44,
+  BIGFELLA: 22,
+  GIRTHYFELLA: 36,
 
-  BOZO: 20,
-  BOZOG: 32,
-  TURBOZO: 48,
-  TURBOZOG: 60
+  BOZO: 18,
+  BOZOG: 24,
+  TURBOZO: 30,
+  TURBOZOG: 40
 };
 
 // Wave spawning stuff
@@ -2060,7 +2045,7 @@ const stage3Waves = [
 ];
 
 
-
+// Currently used for testing purposes
 const stage4Waves = [
   {
     startTime: 0, 
@@ -2073,12 +2058,12 @@ const stage4Waves = [
 const defaultSave = {
   Gold: 0,
   totalGold: 0,
-  attachmentsUnlocked: {},   // example: { "boost": true, "laser": true }
-  stagesCleared: {},         // example: { "stage1": true }
+  attachmentsUnlocked: {},   
+  stagesCleared: {},         
   stagesUnlocked: { "stage1": true }
 };
 
-// Ship stats and what not
+// === Ship stats and what not ===
 const shipStats = {
   1: {
     name: "Fox",
@@ -2194,9 +2179,9 @@ const shipStats = {
     shield_Growth: 1,    
     bounce_Value: 0,
     
-    ship_Info: "The OP ship. Shorter range shots, but they be crankin.",
+    ship_Info: "The OP ship. Shorter range shots, but they crank.",
     ship_Info2: "Garbo early game, but scale god.",
-    ship_Info3: "Fires projectiles in an array in front of the ship.",
+    ship_Info3: "Fires projectiles in an burst in front of the ship.",
     ship_Info4: "Ability: Bomb - Detonates an area around caster dealing heavy damage."
   }
 };
@@ -2249,7 +2234,7 @@ const bossProjectileConfigs = {
   }
 };
 
-// Helper function for check dialog box
+// === Helper function for check dialog box===
 function TryResumeGame() {
   // Only resume if ALL dialog queues are empty
   if (powerChoiceQueue.length === 0 && 

@@ -427,7 +427,7 @@ function RecalculateConversions() {
     }
   }
 
-  // Now apply conversions
+  // === apply conversions ===
   for (let key in statConversions) {
     if (key === "max_Health_to_shield_Value") {
       let convertedAmount = max_Health * statConversions[key];

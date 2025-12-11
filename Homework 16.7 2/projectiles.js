@@ -440,20 +440,49 @@ function FireBitShot(bitX, bitY, bitIndex) {
   AddShots(bitX, bitY, angles, Array(angles.length).fill(bit_Speed), diameters, 1, shot_Penetration);
 }
 
-// cannon aiming/spread/etc
+// === cannon aiming/spread/etc ===
 function FireCannonBurst(cannonX, cannonY, cannonIndex) {
   let actualX = cannonX;
   let actualY = cannonY;
-  let target = GetNearestEnemy(actualX, actualY, enemies);
-  if (!target) return;
-  let enemy = enemies[target.index];
-  let targetX = enemy.x;
-  let targetY = enemy.y;
+  
+  // Find nearest target 
+  let nearestEnemy = GetNearestEnemy(actualX, actualY, enemies);
+  let nearestBoss = null;
+  let bestDist = nearestEnemy ? nearestEnemy.distSq : Infinity;
+  
+  // Check v bosses
+  for (let b = 0; b < bosses.length; b++) {
+    const boss = bosses[b];
+    if (!boss || !boss.isAlive) continue;
+    
+    const dx = boss.worldX - actualX;
+    const dy = boss.worldY - actualY;
+    const distSq = dx * dx + dy * dy;
+    
+    if (distSq < bestDist) {
+      bestDist = distSq;
+      nearestBoss = { index: b, distSq, isBoss: true };
+      nearestEnemy = null;
+    }
+  }
+  
+  if (!nearestEnemy && !nearestBoss) return;
+  
+  let targetX, targetY;
+  if (nearestBoss) {
+    targetX = bosses[nearestBoss.index].worldX;
+    targetY = bosses[nearestBoss.index].worldY;
+  } else {
+    targetX = enemies[nearestEnemy.index].x;
+    targetY = enemies[nearestEnemy.index].y;
+  }
+  
   let baseAngle = Math.atan2(targetY - actualY, targetX - actualX);
   let burstCount = cannon_ShotCount + shot_Count * 2;
   let angles = [];
   let speeds = [];
   let diameters = [];
+  
   for (let s = 0; s < burstCount; s++) {
     let spread = Math.floor(Math.random() * 20) + 4;
     let angleOffset = burstCount > 1
@@ -463,7 +492,8 @@ function FireCannonBurst(cannonX, cannonY, cannonIndex) {
     speeds.push(cannon_Speed + (random() < 0.5 ? -3 : 3));
     diameters.push(shot_Diameter / 3);
   }
-  console.log("Cannon ${cannonIndex} firing from: (${actualX}, ${actualY})");
+  
+  console.log(`Cannon ${cannonIndex} firing from: (${actualX}, ${actualY})`);
   AddShots(actualX, actualY, angles, speeds, diameters, 2, shot_Penetration);
   playSound("shotcannon");
 }
@@ -625,7 +655,7 @@ function MoveShot() {
     let moveX = shot_xDistance[i];
     let moveY = shot_yDistance[i];
     
-    // Calculate rotation BEFORE wave pattern modifies movement
+    // Calculate rotation 
     let angle = atan2(shot_yDistance[i], shot_xDistance[i]);
 
     // Wave pattern 
@@ -756,7 +786,7 @@ function CheckShotCollisions() {
   for (let i = shot_X.length - 1; i >= 0; i--) {
     if (shot_PendingRemoval.includes(i)) continue;
     
-    // Skip shots that just bounced - prevent immediate re-collision
+    // Skip shots that just bounced 
     if (frameCount - shot_LastBounceTime[i] <= BOUNCE_COOLDOWN) {
       continue;
     }    

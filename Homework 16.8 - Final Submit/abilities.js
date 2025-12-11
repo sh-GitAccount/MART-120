@@ -50,7 +50,7 @@ const shipAbilities = {
     }
   },
   spiralshot: { 
-    name: "Spiral", 
+    name: "Spiral Shot", 
     cooldown: 900, 
     timer: 0, 
     onCooldown: false, 

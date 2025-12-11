@@ -16,7 +16,7 @@ function preload() {
   sounds.getgoldtoken = [];
   sounds.getsucker = [];
 
-//  sounds.getexploder = [];
+  //sounds.getexploder = [];
   sounds.getability = [];
   sounds.getsupport = [];
 
@@ -42,7 +42,6 @@ function preload() {
   sounds.diamondburstchain = [];
   sounds.cyclone = [];
   sounds.cyclonehit = [];
-
 
   // All other sounds
   sounds.blast = [];
@@ -290,7 +289,7 @@ function setup() {
   playMusicTrack('menuTheme');
   InitializeAttachmentLevels();
   InitializeUpgradeLevels();
-  setInterval(saveGame, 6000); // 10s auto save timer
+  setInterval(saveGame, 10000); // 10s auto save timer
   createCanvas(1500, 1200); // 1500 1200 // will change to 1280 * 1024
 }
 
@@ -643,7 +642,7 @@ function DrawBossBoundary() {
 function DamageCheckByType(damage) {
   if (!immune) {
     if(frequencyShifter && shield_Active && !shield_Hit) {
-      let healAmount = Math.round(shield_Value * (shift_Percentage / 100)); // rounds off those pesky non-whole numbaz
+      let healAmount = Math.round(shield_Value * (shift_Percentage / 100)); // rounds off 
       player_Health += healAmount;
       if (player_Health > max_Health){
         player_Health = max_Health;
@@ -667,7 +666,7 @@ function CheckCollisions() {
     }
   }
 
-  // Check bosses - use SCREEN coordinates for collision
+  // Check bosses 
   for (let boss of bosses) {
     if (!boss.isAlive) continue;
     

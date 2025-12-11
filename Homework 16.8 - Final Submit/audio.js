@@ -31,6 +31,7 @@ function playSound(soundName) {
   }
 }
 
+// === main music player ===
 function playMusicTrack(trackName) {
   // Cancel any pending fades
   if (musicFadeTimer) {
@@ -38,17 +39,17 @@ function playMusicTrack(trackName) {
     musicFadeTimer = null;
   }
 
-  // Stop previous track
+  // Stops previous track
   if (currentTrack && currentTrack.isPlaying()) {
     currentTrack.stop();
   }
 
-  // Start new track
+  // Starts new track
   if (musicTracks[trackName]) {
     currentTrack = musicTracks[trackName];
     currentTrackName = trackName;
     
-    // Apply the saved master volume to the new track
+    // Apply volume settings
     if (typeof currentTrack.setVolume === "function") {
       currentTrack.setVolume(musicMasterVolume);
     }
@@ -60,6 +61,7 @@ function playMusicTrack(trackName) {
   }
 }
 
+// ==== stops the jam ==== 
 function stopMusicTrack(fadeOutDuration = 1200) {
   // If nothing playing, nothing to do, have a smoke break
   if (!currentTrack || !currentTrack.isPlaying()) return;

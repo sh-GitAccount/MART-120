@@ -382,7 +382,7 @@ function getSpawnPositions(side, amount, radius) {
   const px = player_X;
   const py = player_Y;
   radius = radius || 300;
-  const MIN_SPAWN_DISTANCE = 300; // MINIMUM 300 units from player
+  const MIN_SPAWN_DISTANCE = 300; // min spawn 300 units from player
 
   // Helper function to check if position is far enough from player
   function isValidSpawnPosition(x, y) {
@@ -394,7 +394,7 @@ function getSpawnPositions(side, amount, radius) {
       for (let i = 0; i < amount; i++) {
         let x = px - 600;
         let y = py + (i * spacing) - (amount * spacing) / 2;
-        
+
         // 
         let attempts = 0;
         while (!isValidSpawnPosition(x, y) && attempts < 20) {
@@ -409,7 +409,7 @@ function getSpawnPositions(side, amount, radius) {
       for (let i = 0; i < amount; i++) {
         let x = px + 600;
         let y = py + (i * spacing) - (amount * spacing) / 2;
-        
+
         let attempts = 0;
         while (!isValidSpawnPosition(x, y) && attempts < 20) {
           y -= spacing * 0.5;
@@ -423,7 +423,7 @@ function getSpawnPositions(side, amount, radius) {
       for (let i = 0; i < amount; i++) {
         let x = px + (i * spacing) - (amount * spacing) / 2;
         let y = py - 600;
-        
+
         let attempts = 0;
         while (!isValidSpawnPosition(x, y) && attempts < 20) {
           x += spacing * 0.5;
@@ -437,7 +437,7 @@ function getSpawnPositions(side, amount, radius) {
       for (let i = 0; i < amount; i++) {
         let x = px + (i * spacing) - (amount * spacing) / 2;
         let y = py + 600;
-        
+
         let attempts = 0;
         while (!isValidSpawnPosition(x, y) && attempts < 20) {
           x -= spacing * 0.5;
@@ -458,7 +458,7 @@ function getSpawnPositions(side, amount, radius) {
         for (let col = 0; col < cols && count < amount; col++) {
           let x = startX + col * gridSpacing;
           let y = startY + row * gridSpacing;
-          
+
           // looks for safe spawn spot
           let foundValid = false;
           let attempts = 0;
@@ -483,11 +483,11 @@ function getSpawnPositions(side, amount, radius) {
       let adjustedRadius = Math.max(radius, MIN_SPAWN_DISTANCE + 50);
       const perimeter = 8 * adjustedRadius;
       const spacePerEnemy = perimeter / amount;
-      
+
       for (let i = 0; i < amount; i++) {
         let distanceAlongPerimeter = i * spacePerEnemy;
         let x, y;
-        
+
         // Calculate position on square perimeter
         if (distanceAlongPerimeter < 2 * adjustedRadius) {
           // Top edge (left to right)
@@ -506,7 +506,7 @@ function getSpawnPositions(side, amount, radius) {
           x = px - adjustedRadius;
           y = py + adjustedRadius - (distanceAlongPerimeter - 6 * adjustedRadius);
         }
-        
+
         // Verify it's actually far enough
         if (isValidSpawnPosition(x, y)) {
           positions.push({ x, y });
@@ -530,7 +530,7 @@ function getSpawnPositions(side, amount, radius) {
       for (let i = 0; i < amount; i++) {
         let x, y;
         let attempts = 0;
-        
+
         // Keep trying until find valid spawn position
         do {
           const angle = random() * TWO_PI;
@@ -539,7 +539,7 @@ function getSpawnPositions(side, amount, radius) {
           y = py + sin(angle) * r;
           attempts++;
         } while (!isValidSpawnPosition(x, y) && attempts < 20);
-        
+
         positions.push({ x, y });
       }
       break;
@@ -1041,13 +1041,13 @@ function DrawEnemies() {
 
       case "grower":
         Pyramid(e.x, e.y, e.diameter,
-          185, 165, 60,       // Outer spiral arms
-          255, 255, 100);    // Center circle
+          185, 165, 60,      
+          255, 255, 100);   
         break;
       case "biggrower":
         Pyramid(e.x, e.y, e.diameter,
-          185, 165, 60,       // Outer spiral arms
-          255, 255, 100);    // Center circle
+          185, 165, 60,      
+          255, 255, 100);    
         break;        
       case "gigagrower":
         FlowerPattern(e.x, e.y, e.diameter / 3, 6, e.diameter / 4,
@@ -1131,7 +1131,7 @@ function DrawBosses() {
   }
 }
 
-
+// === Draws our sad little boss === him just 3 circle :(
 function DrawBossPart(x, y, part, r, g, b) {
   push();
   fill(r, g, b);
@@ -1164,7 +1164,7 @@ function MoveEnemies() {
     let distToPlayer = dist(enemy.x, enemy.y, player_X, player_Y);
     
     // will cull if stray to far from player
-    if (distToPlayer > 3000) {
+    if (distToPlayer > 2000) {
       enemies.splice(i, 1);
       continue;
     }
@@ -1251,7 +1251,7 @@ function MoveEnemies() {
 function RandomWanderDisc(enemy, index) {
   const wanderSpeed = 3;
   const changeInterval = 120; // Frames between direction changes 
-  const wanderDistance = 325;
+  const wanderDistance = 325; // doesn't mean he is lost tho
   
   // Initialize timers if they don't exist
   if (!disc_DirectionChangeTimer[index]) {
@@ -1305,6 +1305,7 @@ function SeekPlayer(enemy) {
   }
 }
 
+// === used for enemy warping ===
 function WrapAroundScreen(enemy) {
   const wrapDistance = 200; // Distance off-screen before wrapping
   
@@ -1329,7 +1330,7 @@ function WrapAroundScreen(enemy) {
   }
 }
 
-
+// === some enemy bounce === 
 function BounceOffBoundaries(enemy) {
   // Define play area boundaries
   const bufferLeft = 40;
@@ -1432,7 +1433,7 @@ function getSpawnPositionsAroundPlayer(amount, radius) {
   for (let i = 0; i < amount; i++) {
     let x, y;
     let attempts = 0;    
-    // Tries to spawn in bounds
+    // Tries to spawn 
     do {
       const angle = random() * TWO_PI;
       const r = radius + random(-50, 50);
@@ -1451,71 +1452,73 @@ function getSpawnPositionsAroundPlayer(amount, radius) {
   return positions;
 }
 
+// === updates the waves and handles where/when things spawn
 function UpdateWaves() {
-    if (game_Paused) return;
+  if (game_Paused) return;
 
-    const nowSeconds = gameTime;
+  const nowSeconds = gameTime;
 
-    for (let wave of activeWaves) {
+  for (let wave of activeWaves) {
 
-        // Start wave
-        if (!wave.started && nowSeconds >= wave.startTime) {
-            wave.started = true;
-            wave.startGameTime = gameTime;
+    // Start wave
+    if (!wave.started && nowSeconds >= wave.startTime) {
+      wave.started = true;
+      wave.startGameTime = gameTime;
 
-            for (let spawn of wave.spawns) {
-                spawn.spawnIndex = 0;
-                spawn.repeatIndex = 0;
-                spawn.nextSpawnTime = spawn.delay || 0.5;
-            }
-        }
-
-        if (!wave.started) continue;
-
-        const elapsed = gameTime - wave.startGameTime;
-
-        for (let spawn of wave.spawns) {
-            const perCycle = spawn.amount || 1;
-            const repeats = spawn.repeat || 1;
-            const delay = spawn.delay || 0.5;
-            const cycleDelay = spawn.cycleDelay || delay * 2;
-            const radius = spawn.radius || 300;
-
-            while (spawn.repeatIndex < repeats && elapsed >= spawn.nextSpawnTime) {
-
-                if (spawn.type === "boss") {
-                    SpawnBoss(spawn.type, player_X, player_Y);
-                } else {
-                    const posList = getSpawnPositions(spawn.side, perCycle, radius);
-                    const pos = posList[spawn.spawnIndex];
-                    SpawnEnemy(spawn.type, pos.x, pos.y, spawn.side, spawn.parentDiameter);
-                }
-
-                spawn.spawnIndex++;
-
-                if (spawn.spawnIndex >= perCycle) {
-                    spawn.spawnIndex = 0;
-                    spawn.repeatIndex++;
-                    spawn.nextSpawnTime += cycleDelay;
-                } else {
-                    spawn.nextSpawnTime += delay;
-                }
-            }
-        }
+      for (let spawn of wave.spawns) {
+        spawn.spawnIndex = 0;
+        spawn.repeatIndex = 0;
+        spawn.nextSpawnTime = spawn.delay || 0.5;
+      }
     }
+
+    if (!wave.started) continue;
+
+    // Get time for waves
+    const elapsed = gameTime - wave.startGameTime;
+    for (let spawn of wave.spawns) {
+      const perCycle = spawn.amount || 1;
+      const repeats = spawn.repeat || 1;
+      const delay = spawn.delay || 0.5;
+      const cycleDelay = spawn.cycleDelay || delay * 2;
+      const radius = spawn.radius || 300;
+
+      while (spawn.repeatIndex < repeats && elapsed >= spawn.nextSpawnTime) {
+
+        if (spawn.type === "boss") {
+          SpawnBoss(spawn.type, player_X, player_Y);
+        } else {
+          const posList = getSpawnPositions(spawn.side, perCycle, radius);
+          const pos = posList[spawn.spawnIndex];
+          SpawnEnemy(spawn.type, pos.x, pos.y, spawn.side, spawn.parentDiameter);
+        }
+
+        spawn.spawnIndex++;
+
+        if (spawn.spawnIndex >= perCycle) {
+          spawn.spawnIndex = 0;
+          spawn.repeatIndex++;
+          spawn.nextSpawnTime += cycleDelay;
+        } else {
+          spawn.nextSpawnTime += delay;
+        }
+      }
+    }
+  }
 }
 
+// initialize wave settings
 function initWaves(waves) {
-    activeWaves = waves;
+  activeWaves = waves;
 
-    for (let wave of activeWaves) {
-        wave.started = false;
-        wave.startGameTime = 0;
+  for (let wave of activeWaves) {
+    wave.started = false;
+    wave.startGameTime = 0;
 
-        for (let spawn of wave.spawns) {
-            spawn.spawnIndex = 0;
-            spawn.repeatIndex = 0;
-            spawn.nextSpawnTime = 0;
-        }
+    for (let spawn of wave.spawns) {
+      spawn.spawnIndex = 0;
+      spawn.repeatIndex = 0;
+      spawn.nextSpawnTime = 0;
     }
+  }
 }

@@ -3,7 +3,7 @@
 // Gets key inputs for abilities 
 function keyPressed() {
   // Pause toggle
-  if (game_Screen === "playing" && (key === 'z' || key === 'Z') && !pauseKeyPressed && !warningActive && !activeSupportDialog && !activePowerupDialog) {
+  if (game_Screen === "playing" && (key === 'z' || key === 'Z') && !pauseKeyPressed && !warningActive && !activeSupportDialog && !activePowerupDialog  && !activePowerChoiceDialog) {
     game_Screen = "paused";
     game_Paused = true;
     game_State = false;
@@ -48,7 +48,7 @@ function keyPressed() {
     player_TargetRotation = 0;
   }
 
-  // Ability key binds, Q, E, F (ONLY during playing)
+  // Ability key binds, Q, E
   if (game_Screen === "playing") {
     if (key === 'q' || key === 'Q') {
       ActivateShipAbility("Shield");
@@ -70,7 +70,6 @@ function keyReleased() {
 
 // Gets mouse inputs
 function mousePressed() {
-
   // Menu START button very beginning first game screen
   buttonY = height - 80;
   if (game_Screen === "menu") {
@@ -198,14 +197,14 @@ function DrawTitleScreenConfirmation() {
   const dialogX = width / 2 - dialogWidth / 2;
   const dialogY = height / 2 - dialogHeight / 2;
 
-  // Semi-transparent overlay - RESET COLORS FIRST
+  // Semi-transparent overlay -
   push();
   fill(0, 0, 0, 100);
   noStroke();
   rect(0, 0, width, height);
   pop();
 
-  // Dialog box - RESET COLORS AND SET THEM EXPLICITLY
+  // Dialog box - 
   push();
   fill(40, 40, 80);
   stroke(150, 150, 200);
@@ -289,7 +288,7 @@ function HandleTitleScreenConfirmation(mx, my) {
   // NO button
   if (mx > noButtonX && mx < noButtonX + buttonWidth &&
       my > buttonsY && my < buttonsY + buttonHeight) {
-    // Cancelled - stay in pause menu
+
     titleScreenConfirmOpen = false;
     playSound("cancel");
     return;
@@ -298,7 +297,7 @@ function HandleTitleScreenConfirmation(mx, my) {
 
 // shop click
 function HandleShopClick(mx, my) {
-  // If confirmation box is open stop
+  // If confirmation box open
   if (shopConfirmOpen) {
     return; // 
   }
@@ -333,7 +332,7 @@ function HandleShopClick(mx, my) {
             return; 
           }
         }
-        // All checks passed, open confirmation
+        // FInaly do buy!
         shopSelectedAttachment = id;
         shopConfirmOpen = true;
         playSound("select");
@@ -343,5 +342,3 @@ function HandleShopClick(mx, my) {
     }
   }
 }
-
-

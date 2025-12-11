@@ -105,7 +105,6 @@ function ApplyShipStats() {
   baseMaxHealth = stats.baseMaxHealth;
   baseShieldValue = stats.baseShieldValue;
   
-  // RESET ABSORPTION RADIUS HERE
   itemAbsorptionRadius = stats.itemAbsorptionRadius;
   previousAbsorptionRadius = stats.itemAbsorptionRadius;
   maxEquipped = 2;
@@ -343,7 +342,3 @@ function HitShield(damage) {
   shield_Display_Timer = 90;  // Show for 30 frames (~0.5 seconds)  
   return remainingDamage;
 }
-
-
-
-

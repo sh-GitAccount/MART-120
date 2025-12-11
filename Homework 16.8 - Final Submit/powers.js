@@ -1,7 +1,4 @@
 // ==++ -- POWER SYSTEM (AUTO-TRIGGER) -- ++== \\
-// Powers automatically trigger when their cooldown expires
-// Each power has its own independent cooldown
-// Powers are separate from Ship Abilities and Shield Ability
 
 // ===== POWER STATE =====
 var powerStats = {};
@@ -14,8 +11,8 @@ var activePowers = {
   cyclone: { active: false, timer: 0, projectiles: [] } 
 };
 
-var powerCooldownTimer = {};  // { lightningbolt: 0, singularity: 0, ... }
-var powerOnCooldown = {};     // { lightningbolt: false, singularity: false, ... }
+var powerCooldownTimer = {}; 
+var powerOnCooldown = {};    
 
 const powerDescriptions = {
   lightningbolt: "Automatically calls down sequential lightning strikes on random enemies.",
@@ -36,11 +33,11 @@ const powerLevelDefs = {
     5: { cooldown: 340, boltCount: 7, boltDamage: 200, boltFrames: 22, range: 720 }
   },
   singularity: {
-    1: { cooldown: 600, radius: 100, sngularityDamage: 30, damagePerEnemy: 15, duration: 150, range: 550 },
-    2: { cooldown: 582, radius: 110, sngularityDamage: 40, damagePerEnemy: 20, duration: 170, range: 550 },
-    3: { cooldown: 564, radius: 120, sngularityDamage: 60, damagePerEnemy: 35, duration: 190, range: 550 },
-    4: { cooldown: 546, radius: 130, sngularityDamage: 100, damagePerEnemy: 50, duration: 210, range: 550 },
-    5: { cooldown: 528, radius: 140, sngularityDamage: 135, damagePerEnemy: 80, duration: 230, range: 550 }
+    1: { cooldown: 600, radius: 100, singularityDamage: 30, damagePerEnemy: 15, duration: 150, range: 550 },
+    2: { cooldown: 582, radius: 110, singularityDamage: 40, damagePerEnemy: 20, duration: 170, range: 550 },
+    3: { cooldown: 564, radius: 120, singularityDamage: 60, damagePerEnemy: 35, duration: 190, range: 550 },
+    4: { cooldown: 546, radius: 130, singularityDamage: 100, damagePerEnemy: 50, duration: 210, range: 550 },
+    5: { cooldown: 528, radius: 140, singularityDamage: 135, damagePerEnemy: 80, duration: 230, range: 550 }
   },
   fireball: {
     1: { cooldown: 480, radius: 40, fireballCount: 2, fireballDamage: 70, fireballFrames: 40, fireballPenetration: 0, range: 550 },
@@ -163,7 +160,7 @@ const powerModifierDefs = {
 
     // Diamond Burst mods
   diamondFork: {
-    name: "Splinter Shards",
+    name: "Shatter",
     appliesToPower: "diamondburst",
     baseEffect: 0.04,
     maxRank: 10,
@@ -181,7 +178,7 @@ const powerModifierDefs = {
 
   // Cyclone mods
   cycloneVolley: {
-    name: "Superstorm",
+    name: "Twin Cyclones",
     appliesToPower: "cyclone",
     baseEffect: 1,
     maxRank: 10,
@@ -189,7 +186,7 @@ const powerModifierDefs = {
     applyModifier: (rank) => rank * 0.25
   },
   cycloneDouble: {
-    name: "Twin Cyclones",
+    name: "Superstorm",
     appliesToPower: "cyclone",
     baseEffect: 15,
     maxRank: 10,
@@ -316,8 +313,7 @@ function UpdatePowers() {
   if (activePowers.fireball?.active) UpdateFireball();
   if (activePowers.freeze?.active) {
     UpdateFreeze();
-    UpdateFreezeShards(activePowers.freeze);
-  }
+    UpdateFreezeShards(activePowers.freeze);}
   if (activePowers.diamondburst?.active) UpdateDiamondBurst();
   if (activePowers.cyclone?.active) UpdateCyclone();
 }
@@ -399,9 +395,8 @@ function UpdateLightningBolt() {
   if (!state || !state.active) return;
 
   state.timer++;
-
   // Spawn queued initial bolts
- if (state.boltQueue && state.boltQueue.length > 0) {
+  if (state.boltQueue && state.boltQueue.length > 0) {
     const nextBolt = state.boltQueue[0];
     
     if (state.timer >= nextBolt.spawnTime) {
@@ -443,7 +438,6 @@ function UpdateLightningBolt() {
   }
 
   // Spawn queued echo bolts
-// Spawn queued echo bolts
   if (state.echoBoltQueue && state.echoBoltQueue.length > 0) {
     for (let e = state.echoBoltQueue.length - 1; e >= 0; e--) {
       const echoBolt = state.echoBoltQueue[e];
@@ -589,7 +583,7 @@ function UpdateLightningBolt() {
   }
 
 
-// Damage logic - process hits based on bolt target
+  // Damage logic
   for (let b = state.bolts.length - 1; b >= 0; b--) {
     const boltData = state.bolts[b];
     
@@ -614,9 +608,7 @@ function UpdateLightningBolt() {
         playSound('lightningecho');
       }
       
-      // Only normal bolts trigger chain and echo for bosses
       if (boltData.type === "normal") {
-        // For now, just echo. Chain to other bosses is complex
         if (Math.random() < powerStats.lightningbolt.boltEchoChance) {
           state.echoBoltQueue.push({
             spawnTime: state.timer + powerStats.lightningbolt.boltFrames,
@@ -659,18 +651,18 @@ function UpdateLightningBolt() {
           if (k === targetIndex) continue;
           if (!enemies[k] || enemies[k].health <= 0) continue;
           const chainDist = dist(targetEnemy.x, targetEnemy.y, enemies[k].x, enemies[k].y);
-          if (chainDist < 200) {
-            validChainTargets.push(k);
+          if (chainDist < 100) {
+            validChainTargets.push(enemies[k]);  // Store object reference
           }
         }
         
         if (validChainTargets.length > 0) {
-          const chainTargetIdx = validChainTargets[Math.floor(Math.random() * validChainTargets.length)];
+          const chainTarget = validChainTargets[Math.floor(Math.random() * validChainTargets.length)];
           
           state.chainBoltQueue.push({
             spawnTime: state.timer,
             sourcePos: { x: targetEnemy.x, y: targetEnemy.y },
-            targetEnemy: enemies[chainTargetIdx],  
+            targetEnemy: chainTarget,  // Store object reference instead of index
             type: "chain",
             sourceEnemy: targetIndex
           });
@@ -766,12 +758,12 @@ function UpdateSingularity() {
   pop();
   noStroke();
 
-    // pull logic -- not supposed to work on bosses or chip because chip is chip 
+  // pull logic -- not supposed to work on bosses or chip because chip is chip 
   enemies.forEach((enemy, i) => {
     if (enemy.type === "chip") return;
     const d = dist(enemy.x, enemy.y, state.x, state.y);
     if (d < powerStats.singularity.radius * 1.4) {
-      if (!state.caughtEnemies.includes(enemy)) state.caughtEnemies.push(enemy);  // Store object reference
+      if (!state.caughtEnemies.includes(enemy)) state.caughtEnemies.push(enemy);  
       const angle = atan2(state.y - enemy.y, state.x - enemy.x);
       const pullStrength = map(d, powerStats.singularity.radius * 4, 0, 0.5, 3);
       enemy.x += cos(angle) * pullStrength;
@@ -779,22 +771,31 @@ function UpdateSingularity() {
     }
   });
 
-
   // Damage logic
   if (state.timer >= powerStats.singularity.duration) {
+    const enemiesToKill = [];
+    
     state.caughtEnemies.forEach(enemyObj => {
       if (enemyObj && enemyObj.health > 0) {
-        const damageAmount = powerStats.singularity.damage + state.caughtEnemies.length * powerStats.singularity.damagePerEnemy;
+        const damageAmount = powerStats.singularity.singularityDamage + state.caughtEnemies.length * powerStats.singularity.damagePerEnemy;
         enemyObj.health -= damageAmount;
         damage_Dealt += damageAmount;
+        
         if (enemyObj.health <= 0) {
-          const index = enemies.indexOf(enemyObj);
-          if (index !== -1) KillEnemy(index);
+          enemiesToKill.push(enemyObj);
         }
       }
     });
     
-    // Damage bosses
+    // Kill enemies after damage pass completes
+    enemiesToKill.forEach(enemyObj => {
+      const index = enemies.indexOf(enemyObj);
+      if (index !== -1) {
+        KillEnemy(index);
+      }
+    });
+    
+    // Damage bosses 
     if (state.caughtBosses) {
       state.caughtBosses.forEach(b => {
         if (b >= 0 && b < bosses.length) {
@@ -802,7 +803,6 @@ function UpdateSingularity() {
           if (boss && boss.isAlive) {
             const damageAmount = powerStats.singularity.singularityDamage + state.caughtEnemies.length * powerStats.singularity.damagePerEnemy;
             
-            // Damage all parts that are alive
             if (boss.center.health > 0) {
               boss.center.health -= damageAmount;
               damage_Dealt += damageAmount;
@@ -955,14 +955,14 @@ function UpdateFireball() {
     for (let j = 0; j < enemies.length; j++) {
       const enemy = enemies[j];
       if (!enemy || enemy.health <= 0) continue;
-      if (fireball.hitEnemies.includes(enemy)) continue; 
+      if (fireball.hitEnemies.includes(enemy)) continue;  
       
       const distToFireball = dist(fireball.x, fireball.y, enemy.x, enemy.y);
       if (distToFireball < 20) {
         // Hit enemy
         enemy.health -= fireball.damage;
         damage_Dealt += fireball.damage;
-        fireball.hitEnemies.push(enemy);  // Store object reference instead of index
+        fireball.hitEnemies.push(enemy);  
         
         playSound(fireball.impactSound);        
         if (enemy.health <= 0) {
@@ -1125,10 +1125,10 @@ function UpdateFreeze() {
       // Create iceberg falling from above (similar distance to lightning bolts)
       state.icebergs.push({
         x: nextBolt.spawnX,
-        y: nextBolt.spawnY - 300, // Changed from 400 to 300
+        y: nextBolt.spawnY - 300, 
         targetY: nextBolt.spawnY,
         age: 0,
-        fallDuration: 25, // Reduced from 35 to 25 for quicker fall
+        fallDuration: 30, 
         maxFrames: 2,
         currentFrame: 0,
         frameTimer: 0,
@@ -1167,7 +1167,7 @@ function UpdateFreeze() {
       const spriteHeight = spriteSheet.height;
       
       // Scale the iceberg sprite based on the radius modifier
-      const radiusScale = (powerStats.freeze.radius || 200) / 200; // 200 is the base radius
+      const radiusScale = (powerStats.freeze.radius || 200) / 200; 
       const displaySize = 40 * radiusScale;
       
       push();
@@ -1232,7 +1232,7 @@ function UpdateFreeze() {
       // Create impact ring
       iceberg.impactRing = {
         age: 0,
-        maxAge: 15, // 15 frames to expand
+        maxAge: 15, // 15 frames to expand ring
         startRadius: 20,
         endRadius: radius
       };      
@@ -1242,7 +1242,7 @@ function UpdateFreeze() {
       const ring = iceberg.impactRing;
       const progress = ring.age / ring.maxAge;
       const currentRadius = ring.startRadius + (ring.endRadius - ring.startRadius) * progress;
-      const alpha = map(progress, 0, 1, 150, 0); // Fade out
+      const alpha = map(progress, 0, 1, 150, 0); // Fades out ring so it looks more smooth
       
       push();
       stroke(100, 180, 255, alpha);
@@ -1292,8 +1292,7 @@ function SpawnFreezeShards(x, y, shardCount = 3) {
   }
 }
 
-// Update ice shards in UpdateFreeze (add this inside the iceberg loop)
-// This handles moving and drawing ice shards
+// Draw and move ice shards 
 function UpdateFreezeShards(state) {
   if (!state.shards) return;
   
@@ -1337,13 +1336,13 @@ function UpdateFreezeShards(state) {
     for (let j = 0; j < enemies.length; j++) {
       const enemy = enemies[j];
       if (!enemy || enemy.health <= 0) continue;
-      if (shard.damageApplied.includes(j)) continue;
+      if (shard.damageApplied.includes(enemy)) continue;  //
       
       const distToShard = dist(shard.x, shard.y, enemy.x, enemy.y);
       if (distToShard < 20) {
         enemy.health -= powerStats.freeze.freezeDamage * 0.3;
         damage_Dealt += powerStats.freeze.freezeDamage * 0.3;
-        shard.damageApplied.push(j);
+        shard.damageApplied.push(enemy); 
         
         if (enemy.health <= 0) {
           KillEnemy(j);
@@ -1406,7 +1405,7 @@ function TriggerDiamondBurst(stats) {
   state.timer = 0;
   state.projectiles = [];
 
-  // Create burst of diamond projectiles radiating from player
+  // Create burst of diamond projectiles radiating from caster
   const burstCount = stats.burstCount;
   const angleStep = TWO_PI / burstCount;
   
@@ -1601,7 +1600,7 @@ function SpawnForkedDiamonds(sourceDiamond, targetEnemy) {
   
   // Spawn 2 weaker diamonds in slightly different directions
   for (let f = 0; f < 2; f++) {
-    const angleOffset = (f === 0 ? -0.3 : 0.3);
+    const angleOffset = (f === 0 ? -0.5 : 0.5);
     const newAngle = sourceDiamond.angle + angleOffset;
     const speed = 6; // Slower than original
     
@@ -1617,8 +1616,8 @@ function SpawnForkedDiamonds(sourceDiamond, targetEnemy) {
       frameTimer: 0,
       maxFrames: 2,
       frameDelay: 8,
-      damage: sourceDiamond.damage * 0.6, // Weaker forked diamonds
-      canFork: false, // Cannot fork again
+      damage: sourceDiamond.damage * 0.6, // forked diamond damage modifier
+      canFork: false, // Cannot fork again - prevents heinous infinite chain/fork loops that crash game lol
       canChain: false,
       forkChainCount: 0,
       maxForkChains: 1,
@@ -1782,7 +1781,7 @@ function UpdateCyclone() {
     if (!state || !state.active) return;
     state.timer++;
 
-// Process volley queue
+  // Process volley queue
   if (state.volleyQueue && state.volleyQueue.length > 0) {
     for (let v = state.volleyQueue.length - 1; v >= 0; v--) {
       const volley = state.volleyQueue[v];
@@ -1889,16 +1888,22 @@ function UpdateCyclone() {
       const enemy = enemies[j];
       if (!enemy || enemy.health <= 0) continue;
       
+      // Use per-target cooldown instead of one-time hit tracking
+      if (!cyclone.hitCooldowns) cyclone.hitCooldowns = {};
+      
       const distToCyclone = dist(cyclone.x, cyclone.y, enemy.x, enemy.y);
       if (distToCyclone < 20) {
-        // Check if cooldown is active for this enemy
+        // Check if this enemy is on cooldown
         const enemyId = enemies.indexOf(enemy);
-        if (cyclone.hitCooldowns[enemyId] && cyclone.hitCooldowns[enemyId] > 0) continue;
+        if (cyclone.hitCooldowns[enemyId] && cyclone.hitCooldowns[enemyId] > 0) {
+          cyclone.hitCooldowns[enemyId]--;
+          continue;
+        }
         
         // Hit enemy
         enemy.health -= cyclone.damage;
         damage_Dealt += cyclone.damage;
-        cyclone.hitCooldowns[enemyId] = 20;  // 20 frame cooldown before hitting again
+        cyclone.hitCooldowns[enemyId] = 20; // 20 frame cooldown
         
         playSound(cyclone.impactSound);
         
@@ -2002,9 +2007,23 @@ function Shuffle(array) {
   return shuffled;
 }
 
-function GetAvailablePowerChoices() {
-  const choices = [];
+// modifier images 
+function GetModifierImage(modifierName) {
+  if (!modifierImages) modifierImages = {};
   
+  if (!modifierImages[modifierName]) {
+    try {
+      modifierImages[modifierName] = loadImage(`../Images/modifier_${modifierName}.gif`);
+    } catch (e) {
+      console.warn("Failed to load modifier image:", modifierName);
+      return null;
+    }
+  }
+  return modifierImages[modifierName];
+}
+
+function GetAvailablePowerChoices() {
+  const choices = [];  
   if (Level === 1) {
     for (let powerName in powerLevelDefs) {
       if (!unlockedPowers.includes(powerName)) {
@@ -2028,10 +2047,19 @@ function GetAvailablePowerChoices() {
     
     for (let modifierName in powerModifierDefs) {
       const modDef = powerModifierDefs[modifierName];
-      const hasRequiredPower = unlockedPowers.includes(modDef.appliesToPower);
       const canLevelUp = (powerModifiers[modifierName] || 0) < modDef.maxRank;
       
-      if (hasRequiredPower && canLevelUp && Object.keys(powerModifiers).length < maxModifiers) {
+      // Check if this modifier's required power(s) are unlocked
+      let hasRequiredPower = false;
+      if (Array.isArray(modDef.appliesToPower)) {
+        // Generic modifier 
+        hasRequiredPower = modDef.appliesToPower.some(powerName => unlockedPowers.includes(powerName));
+      } else {
+        // Power-specific modifier
+        hasRequiredPower = unlockedPowers.includes(modDef.appliesToPower);
+      }
+      
+      if (hasRequiredPower && canLevelUp) {
         choices.push({ type: 'modifier', name: modifierName });
       }
     }
@@ -2093,7 +2121,7 @@ function CalculatePowerArea(powerName) {
   let baseArea = 0;
   if (powerStats[powerName].radius) baseArea = powerStats[powerName].radius;
   
-  // Only area powers scale with powersDiameter
+
   if (powerName === 'singularity' || powerName === 'bomb') {
     return baseArea * powersDiameter;
   }
@@ -2133,8 +2161,8 @@ function RecalculatePowerStats() {
     if (powerStats[powerName].boltDamage) {
       powerStats[powerName].boltDamage *= damageMult;
     }
-    if (powerStats[powerName].sngularityDamage) {
-      powerStats[powerName].sngularityDamage *= damageMult;
+    if (powerStats[powerName].singularityDamage) {
+      powerStats[powerName].singularityDamage *= damageMult;
     }
     if (powerStats[powerName].fireballDamage) {
       powerStats[powerName].fireballDamage *= damageMult;
@@ -2252,13 +2280,11 @@ function GetPowerLevelStats(powerName, level) {
 }
 
 // ==++ -- POWER CHOICE DIALOG SYSTEM -- ++== \\
-// Separate from powerups - displays when you level up and get to choose a power or modifier
-
 var powerChoiceQueue = [];
 var activePowerChoiceDialog = null;
 var powerChoiceHovered = null;
 
-var powerImages = {};  // { lightningbolt: imageObject, singularity: imageObject, ... }
+var powerImages = {};  
 
 // ===== LOAD POWER IMAGES ON DEMAND =====
 function GetPowerImage(powerName) {
@@ -2316,7 +2342,7 @@ function DrawPowerChoiceDialog() {
   }
 
   // --- DIALOG DIMENSIONS ---
-  const dialogWidth = 1000;
+  const dialogWidth = 1010;
   const dialogHeight = 450;
   const dialogX = width / 2 - dialogWidth / 2;
   const dialogY = height / 2 - dialogHeight / 2;
@@ -2337,7 +2363,7 @@ function DrawPowerChoiceDialog() {
   rect(dialogX, dialogY, dialogWidth, dialogHeight, 10);
   pop();
 
-  // --- TITLE WITH PULSE ---
+  // --- TITLE PULSE ---
   powerChoicePulseAlpha += powerChoicePulseDir * 3;
   if (powerChoicePulseAlpha >= 255) {
     powerChoicePulseAlpha = 255;
@@ -2356,8 +2382,20 @@ function DrawPowerChoiceDialog() {
   text("Choose Your Power", width / 2, dialogY + 15);
   pop();
 
+  // --- POWER/MODIFIER COUNT DISPLAY ---
+  push();
+  stroke(80, 200, 40);
+  strokeWeight(1);
+  textAlign(LEFT, TOP);
+  textSize(16);
+  fill(255, 135, 80);
+  const powerCount = unlockedPowers.length;
+  const modifierCount = Object.keys(powerModifiers).length;
+  text(`Total Powers: ${powerCount}/${maxPowers} | Total Modifiers: ${modifierCount}/${maxModifiers}`, width / 4 - 100, dialogY + 425);
+  pop();
+
   // --- CARD LAYOUT ---
-  const cardWidth = 240;
+  const cardWidth = 230;
   const cardHeight = 350;
   const cardSpacing = 18;
   const totalWidth = cardWidth * 4 + cardSpacing * 3;
@@ -2516,7 +2554,7 @@ function DrawPowerChoiceDialog() {
     pop();
 
     // --- Click handler
-    if (!dialogClickProtection && hovered && mouseIsPressed && 
+    if (!dialogClickConsumed && !dialogClickProtection && hovered && mouseIsPressed && 
         !activePowerupDialog && !activeSupportDialog) {
       UnlockPowerChoice(choice);
       activePowerChoiceDialog = null;
@@ -2524,7 +2562,6 @@ function DrawPowerChoiceDialog() {
       powerChoiceHovered = null;
       dialogClickConsumed = true;
     }
-
   });  
 
   // - 

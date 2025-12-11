@@ -13,7 +13,7 @@ function SpawnItem(x, y, itemType) {
 // Enemy drops handler
 function HandleEnemyDrops(x, y, enemy) {
   const drops = dropTable[enemy.type];
-  
+
   if (!drops) {
     return;
   }
@@ -21,7 +21,7 @@ function HandleEnemyDrops(x, y, enemy) {
   for (let drop of drops) {
     let roll = random();
     console.log("Drop chance:", drop.chance, "Random roll:", roll, "Success:", roll < drop.chance);
-    
+
     if (roll < drop.chance) {
       console.log(">>> DROP TRIGGERED! Item type:", drop.item);
       switch (drop.item) {
@@ -34,24 +34,24 @@ function HandleEnemyDrops(x, y, enemy) {
           let mamount = drop.amount ?? enemy.exp;
           SpawnMidExpToken(x, y, mamount);
           console.log("Spawned midexptoken at:", x, y, "Amount:", mamount);
-          break; 
+          break;
         case "bigexptoken":
           let bamount = drop.amount ?? enemy.exp;
           SpawnBigExpToken(x, y, bamount);
           console.log("Spawned bigexptoken at:", x, y, "Amount:", bamount);
-          break;                   
+          break;
 
 
         case "goldtoken":
           SpawnGoldToken(x, y);
           console.log("Spawned goldtoken at:", x, y);
-          break;       
-          
+          break;
+
         case "biggoldtoken":
           SpawnBigGoldToken(x, y);
           console.log("Spawned biggoldtoken at:", x, y);
-          break;               
-            
+          break;
+
         case "powerup":
           SpawnPowerup(x, y);
           console.log("Spawned powerup at:", x, y);
@@ -72,7 +72,7 @@ function HandleEnemyDrops(x, y, enemy) {
         case "exploder":
           SpawnSupport(x, y);
           console.log("Spawned exploder at:", x, y);
-          break;          
+          break;
 
         default:
           SpawnItem(x, y, drop.amount);
@@ -86,7 +86,7 @@ function HandleEnemyDrops(x, y, enemy) {
 
 function HandleBossDrops(x, y, bossType) {
   const drops = bossDropTable[bossType];
-  
+
   if (!drops) {
     console.log("No drops defined for boss type:", bossType);
     return;
@@ -94,7 +94,7 @@ function HandleBossDrops(x, y, bossType) {
 
   for (let drop of drops) {
     let roll = random();
-    
+
     if (roll < drop.chance) {
       switch (drop.item) {
         case "bigexptoken":
@@ -117,7 +117,7 @@ function HandleBossDrops(x, y, bossType) {
         case "biggoldtoken":
           SpawnBigGoldToken(x, y, drop.amount ?? 500);
           console.log("Boss dropped biggoldtoken!");
-          break;          
+          break;
       }
     }
   }
@@ -139,7 +139,6 @@ function SpawnAbility(x, y, abilityType) {
 
 // spawns the exp token
 function SpawnExpToken(x, y, amount) {
-  console.log("SpawnExpToken - Adding item at world coordinates X=" + x + ", Y=" + y + ", Amount=" + amount);
   items_X.push(x);
   items_Y.push(y);
   items_Type.push("exptoken");
@@ -148,7 +147,6 @@ function SpawnExpToken(x, y, amount) {
 }
 
 function SpawnMidExpToken(x, y, amount) {
-  console.log("SpawnMidExpToken - Adding item at world coordinates X=" + x + ", Y=" + y + ", Amount=" + amount);
   items_X.push(x);
   items_Y.push(y);
   items_Type.push("midexptoken");
@@ -157,7 +155,6 @@ function SpawnMidExpToken(x, y, amount) {
 }
 
 function SpawnBigExpToken(x, y, amount) {
-  console.log("SpawnBigExpToken - Adding item at world coordinates X=" + x + ", Y=" + y + ", Amount=" + amount);
   items_X.push(x);
   items_Y.push(y);
   items_Type.push("bigexptoken");
@@ -167,13 +164,12 @@ function SpawnBigExpToken(x, y, amount) {
 
 // Spawns support item
 function SpawnSupport(x, y) {
-  //  console.log("SpawnSupport called with:", x, y);  
   SpawnItem(x, y, "support");
 }
 
 // Goldtoken spawner
 function SpawnGoldToken(x, y, amount) {
-  const goldAmount = amount ?? 10; // Default to 5 gold if not specified
+  const goldAmount = amount ?? 10; // Default to 10 gold if not specified
   items_X.push(x);
   items_Y.push(y);
   items_Type.push("goldtoken");
@@ -213,17 +209,17 @@ function UpdateItems() {
   for (let i = items_X.length - 1; i >= 0; i--) {
     let itemType = items_Type[i];
     let itemData = itemTable[itemType];
-    
+
     // Calculate distance to player
     let distToPlayer = dist(items_X[i], items_Y[i], player_X, player_Y);
-    
+
     // If item is within absorption radius, pull it toward player
     if (distToPlayer < itemAbsorptionRadius && distToPlayer > 0) {
       let angle = atan2(player_Y - items_Y[i], player_X - items_X[i]);
       items_X[i] += cos(angle) * itemAbsorptionSpeed;
       items_Y[i] += sin(angle) * itemAbsorptionSpeed;
     }
-    
+
     // Draw at world coords
     if (itemData && itemData.spriteSheet) {
       let frameIndex = floor((frameCount + items_Frame[i]) / itemData.frameSpeed) % itemData.frames;
@@ -231,7 +227,7 @@ function UpdateItems() {
       let frameHeight = itemData.spriteSheet.height;
       let sx = frameIndex * frameWidth;
       let sy = 0;
-      
+
       copy(
         itemData.spriteSheet,
         sx, sy,
@@ -239,63 +235,53 @@ function UpdateItems() {
         items_X[i] - 16, items_Y[i] - 16,
         32, 32
       );
-    }    
+    }
     // Recalculate distance after moving item (for final pickup check)
     distToPlayer = dist(items_X[i], items_Y[i], player_X, player_Y);
-    
-    // Collect item when it gets close enough
+
+    // loots item when it gets close enough
     if (distToPlayer < pickupRadius) {
       if (itemType === "powerup") {
-        console.log("Collected powerup at world pos:", items_X[i], items_Y[i]);
         QueuePowerupChoices();
         playSound('getpowerup');
 
       } else if (itemType === "exptoken") {
-        console.log("Collected exp token: +" + items_Amount[i], "at world pos:", items_X[i], items_Y[i]);
         Exp += items_Amount[i];
         playSound('getexptoken');
 
-      }  else if (itemType === "midexptoken") {
-        console.log("Collected midexp token: +" + items_Amount[i], "at world pos:", items_X[i], items_Y[i]);
+      } else if (itemType === "midexptoken") {
         Exp += items_Amount[i];
         playSound('getexptoken');
 
-      }  else if (itemType === "bigexptoken") {
-        console.log("Collected big exp token: +" + items_Amount[i], "at world pos:", items_X[i], items_Y[i]);
+      } else if (itemType === "bigexptoken") {
         Exp += items_Amount[i];
         playSound('getexptoken');
 
       } else if (itemType === "ability") {
-        console.log("ABILITY TOKEN NOT YET IMPLEMENTED +" + items_Amount[i]);
         playSound('getability');
 
       } else if (itemType === "support") {
-        console.log("Collected support at world pos:", items_X[i], items_Y[i]);
         ShowSupportChoices();
         playSound('getsupport');
 
       } else if (itemType === "goldtoken") {
-        console.log("Collected gold token: +" + items_Amount[i], "at world pos:", items_X[i], items_Y[i]);
         Gold += items_Amount[i];
-        playSound('getgoldtoken'); 
+        playSound('getgoldtoken');
 
       } else if (itemType === "biggoldtoken") {
-        console.log("Collected big gold token: +" + items_Amount[i], "at world pos:", items_X[i], items_Y[i]);
         Gold += items_Amount[i];
-        playSound('getgoldtoken');         
+        playSound('getgoldtoken');
 
       } else if (itemType === "sucker") {
-        console.log("Collected sucker at world pos:", items_X[i], items_Y[i]);
         ActivateSuckerBoost();
         playSound('getsucker');
 
-      }  else if (itemType === "exploder") {
-        console.log("Collected exploder at world pos:", items_X[i], items_Y[i]);
+      } else if (itemType === "exploder") {  // 'sploder not in yet
         // 
         playSound('getexploder');
 
       }
-      
+
       // Remove the item
       items_X.splice(i, 1);
       items_Y.splice(i, 1);
@@ -304,7 +290,7 @@ function UpdateItems() {
       items_Amount.splice(i, 1);
       continue;
     }
-    
+
     // Remove if too far from player
     if (distToPlayer > 2000) {
       items_X.splice(i, 1);
@@ -319,12 +305,12 @@ function UpdateItems() {
 // Will need to retune these later but yolo for now
 function getCurrentValue(name) {
   switch (name) {
-    case "Power +2": return shot_Power;
+    case "Power +3": return shot_Power;
     case "Count +1": return shot_Count;
     case "Speed +1": return shot_Speed;
     case "Speed +1": return shot_Speed;
     case "Delay -1": return shot_Delay;
-    case "Penetration +1": return shot_Penetration;    
+    case "Penetration +1": return shot_Penetration;
     case "Diameter +1": return shot_Diameter;
     case "Duration +2": return shot_Duration;
     case "Duration +5": return shot_Duration;
@@ -336,7 +322,7 @@ function getCurrentValue(name) {
 function getProjectedValue(powerup) {
   const current = getCurrentValue(powerup.name);
   switch (powerup.name) {
-    case "Power +2": return current + 2;
+    case "Power +3": return current + 3;
     case "Count +1": return current + 1;
     case "Speed +1": return current + 1;
     case "Speed +1": return current + 1;
@@ -400,263 +386,257 @@ function QueuePowerupChoices() {
 
 // Shows specific Support Options
 function QueueSupportChoices() {
-    const choices = [...supportOptions];
-    supportQueue.push(choices);
+  const choices = [...supportOptions];
+  supportQueue.push(choices);
 
-    if (!activeSupportDialog) {
-        ShowNextSupportDialog();
-    }
+  if (!activeSupportDialog) {
+    ShowNextSupportDialog();
+  }
 }
 
 // Modify ShowNextSupportDialog function
 function ShowNextSupportDialog() {
-    if (supportQueue.length === 0) {
-        TryResumeGame();
-        activeSupportDialog = null;
-        return;
-    }
+  if (supportQueue.length === 0) {
+    TryResumeGame();
+    activeSupportDialog = null;
+    return;
+  }
 
-    const choices = supportQueue.shift();
-    activeSupportDialog = {
-        choices: choices
-    };
+  const choices = supportQueue.shift();
+  activeSupportDialog = {
+    choices: choices
+  };
 
-    game_Paused = true;
-    game_State = false;
-    
-    // Enable click protection when dialog opens
-    dialogClickProtection = true;
-    dialogClickProtectionTimer = DIALOG_CLICK_PROTECTION_DELAY;
+  game_Paused = true;
+  game_State = false;
+
+  // Enable click protection when dialog opens
+  dialogClickProtection = true;
+  dialogClickProtectionTimer = DIALOG_CLICK_PROTECTION_DELAY;
 }
 
-// Modify DrawSupportDialog function
+// DrawSupportDialog function
 function DrawSupportDialog() {
-    if (!activeSupportDialog) return;
+  if (!activeSupportDialog) return;
 
-    // Update click protection timer
-    if (dialogClickProtection && dialogClickProtectionTimer > 0) {
-        dialogClickProtectionTimer--;
-        if (dialogClickProtectionTimer <= 0) {
-            dialogClickProtection = false;
-        }
+  // Update click protection timer
+  if (dialogClickProtection && dialogClickProtectionTimer > 0) {
+    dialogClickProtectionTimer--;
+    if (dialogClickProtectionTimer <= 0) {
+      dialogClickProtection = false;
     }
+  }
 
-    const dialogWidth = 500;
-    const dialogHeight = 300;
-    const dialogX = width / 2 - dialogWidth / 2;
-    const dialogY = height / 2 - dialogHeight / 2;
+  const dialogWidth = 500;
+  const dialogHeight = 300;
+  const dialogX = width / 2 - dialogWidth / 2;
+  const dialogY = height / 2 - dialogHeight / 2;
 
-    // Semi-transparent overlay 
-    push();
-    resetMatrix();
-    fill(0, 0, 0, 150);
-    noStroke();
-    rect(0, 0, width, height);
-    pop();
+  // Semi-transparent overlay 
+  push();
+  resetMatrix();
+  fill(0, 0, 0, 150);
+  noStroke();
+  rect(0, 0, width, height);
+  pop();
 
-    // Dialog box - 
-    push();
-    fill(40, 40, 80);
-    stroke(150, 150, 200);
-    strokeWeight(2);
-    rect(dialogX, dialogY, dialogWidth, dialogHeight, 10);
+  // Dialog box
+  push();
+  fill(40, 40, 80);
+  stroke(150, 150, 200);
+  strokeWeight(2);
+  rect(dialogX, dialogY, dialogWidth, dialogHeight, 10);
 
-    // Title - 
-    fill(255, 200, 100);
-    textSize(24);
-    textStyle(BOLD);
-    textAlign(CENTER, TOP);
-    text("Choose Support Unit", width / 2, dialogY + 20);
-    pop();
+  // Title
+  fill(255, 200, 100);
+  textSize(24);
+  textStyle(BOLD);
+  textAlign(CENTER, TOP);
+  text("Choose Support Unit", width / 2, dialogY + 20);
+  pop();
 
-    // Buttons for each support option
-    const buttonWidth = 180;
-    const buttonHeight = 50;
-    const spacing = 20;
-    const startY = dialogY + 80;
+  // Buttons for each support option
+  const buttonWidth = 180;
+  const buttonHeight = 50;
+  const spacing = 20;
+  const startY = dialogY + 80;
 
-    activeSupportDialog.choices.forEach((opt, idx) => {
-        const btnX = width / 2 - buttonWidth / 2;
-        const btnY = startY + idx * (buttonHeight + spacing);
+  activeSupportDialog.choices.forEach((opt, idx) => {
+    const btnX = width / 2 - buttonWidth / 2;
+    const btnY = startY + idx * (buttonHeight + spacing);
+    const currentVal = opt.display();
+    const projected = currentVal;
+    const label = `${opt.name} (${currentVal} → ${projected})`;
 
-        const currentVal = opt.display();
-        const projected = currentVal;
-        const label = `${opt.name} (${currentVal} → ${projected})`;
+    if (!dialogClickConsumed && !dialogClickProtection) {
+      if (DrawButton(btnX, btnY, buttonWidth, buttonHeight, label)) {
+        opt.apply();
+        ClampStats();
+        activeSupportDialog = null;
+        ShowNextSupportDialog();
+        dialogClickConsumed = true;
+      }
+    } else {
+      push();
+      resetMatrix();
+      fill(80, 80, 120);
+      stroke(150, 150, 150);
+      strokeWeight(2);
+      rect(btnX, btnY, buttonWidth, buttonHeight, 5);
 
-        if (!dialogClickProtection) {
-            // Buttons are clickable - use DrawButton
-            if (DrawButton(btnX, btnY, buttonWidth, buttonHeight, label)) {
-                opt.apply();
-                ClampStats();
-
-                activeSupportDialog = null;
-                ShowNextSupportDialog();
-            }
-        } else {
-            // Buttons are disabled - draw them grayed out
-            push();
-            resetMatrix();
-            fill(80, 80, 120);
-            stroke(150, 150, 150);
-            strokeWeight(2);
-            rect(btnX, btnY, buttonWidth, buttonHeight, 5);
-
-            fill(200, 200, 200);
-            noStroke();
-            textSize(18);
-            textAlign(CENTER, CENTER);
-            textStyle(NORMAL);
-            text(label, btnX + buttonWidth / 2, btnY + buttonHeight / 2);
-            pop();
-        }
-    });
-
-    // Optional: Show "loading" text during protection period
-    if (dialogClickProtection) {
-        push();
-        fill(200, 200, 100, 150);
-        textSize(16);
-        textAlign(CENTER);
-        text("Click to select...", width / 2, dialogY + dialogHeight - 30);
-        pop();
+      fill(200, 200, 200);
+      noStroke();
+      textSize(18);
+      textAlign(CENTER, CENTER);
+      textStyle(NORMAL);
+      text(label, btnX + buttonWidth / 2, btnY + buttonHeight / 2);
+      pop();
     }
+  });
+  // Shows "wait" message 
+  if (dialogClickProtection) {
+    push();
+    fill(200, 200, 100, 150);
+    textSize(16);
+    textAlign(CENTER);
+    text("Click to select...", width / 2, dialogY + dialogHeight - 30);
+    pop();
+  }
 }
 
 // 
 function QueuePowerupChoices() {
-    // Pick 3 random upgrades
-    const shuffled = [...powerupOptions].sort(() => 0.5 - Math.random());
-    const choices = shuffled.slice(0, 3);
+  // Pick 3 random upgrades
+  const shuffled = [...powerupOptions].sort(() => 0.5 - Math.random());
+  const choices = shuffled.slice(0, 3);
 
-    powerupQueue.push(choices);
+  powerupQueue.push(choices);
 
-    // If no dialog is currently open, show the first
-    if (!activePowerupDialog) {
-        ShowNextPowerupDialog();
-    }
+  // If no dialog is currently open, show the first
+  if (!activePowerupDialog) {
+    ShowNextPowerupDialog();
+  }
 }
 
 function ShowNextPowerupDialog() {
-    if (powerupQueue.length === 0) {
-        // No more dialogs, resume game
-        TryResumeGame();
-        activePowerupDialog = null;
-        return;
-    }
+  if (powerupQueue.length === 0) {
+    // No more dialogs, resume game
+    TryResumeGame();
+    activePowerupDialog = null;
+    return;
+  }
 
-    const choices = powerupQueue.shift();
-    activePowerupDialog = {
-        choices: choices,
-        selected: false
-    };
+  const choices = powerupQueue.shift();
+  activePowerupDialog = {
+    choices: choices,
+    selected: false
+  };
 
-    game_Paused = true;
-    game_State = false;
-    
-    // Enable click protection when dialog opens
-    dialogClickProtection = true;
-    dialogClickProtectionTimer = DIALOG_CLICK_PROTECTION_DELAY;
+  game_Paused = true;
+  game_State = false;
+
+  // Enable click protection when dialog opens
+  dialogClickProtection = true;
+  dialogClickProtectionTimer = DIALOG_CLICK_PROTECTION_DELAY;
 }
 
 // creates dialog box for power ups
 function DrawPowerupDialog() {
-    if (!activePowerupDialog) return;
+  if (!activePowerupDialog) return;
 
-    // Update click protection timer
-    if (dialogClickProtection && dialogClickProtectionTimer > 0) {
-        dialogClickProtectionTimer--;
-        if (dialogClickProtectionTimer <= 0) {
-            dialogClickProtection = false;
-            dialogClickConsumed = true;
-        }        
+  // Update click protection timer
+  if (dialogClickProtection && dialogClickProtectionTimer > 0) {
+    dialogClickProtectionTimer--;
+    if (dialogClickProtectionTimer <= 0) {
+      dialogClickProtection = false;
     }
+  }
 
-    const dialogWidth = 500;
-    const dialogHeight = 300;
-    const dialogX = width / 2 - dialogWidth / 2;
-    const dialogY = height / 2 - dialogHeight / 2;
+  const dialogWidth = 500;
+  const dialogHeight = 300;
+  const dialogX = width / 2 - dialogWidth / 2;
+  const dialogY = height / 2 - dialogHeight / 2;
 
-    // Semi-transparent overlay
-    push();
-    resetMatrix();
-    fill(0, 0, 0, 150);
-    noStroke();
-    rect(0, 0, width, height);
-    pop();
+  // Semi-transparent overlay
+  push();
+  resetMatrix();
+  fill(0, 0, 0, 150);
+  noStroke();
+  rect(0, 0, width, height);
+  pop();
 
-    // Dialog box
-    push();
-    fill(40, 40, 80);
-    stroke(150, 150, 200);
-    strokeWeight(2);
-    rect(dialogX, dialogY, dialogWidth, dialogHeight, 10);
-    fill(255, 200, 100);
-    textSize(24);
-    textStyle(BOLD);
-    textAlign(CENTER, TOP);
-    text("Gained Powerup!", width / 2, dialogY + 20);
-    pop();
+  // Dialog box
+  push();
+  fill(40, 40, 80);
+  stroke(150, 150, 200);
+  strokeWeight(2);
+  rect(dialogX, dialogY, dialogWidth, dialogHeight, 10);
+  fill(255, 200, 100);
+  textSize(24);
+  textStyle(BOLD);
+  textAlign(CENTER, TOP);
+  text("Gained Powerup!", width / 2, dialogY + 20);
+  pop();
 
-    // Powerup buttons
-    const buttonWidth = 180;
-    const buttonHeight = 50;
-    const spacing = 20;
-    const startY = dialogY + 80;
+  // Powerup buttons
+  const buttonWidth = 180;
+  const buttonHeight = 50;
+  const spacing = 20;
+  const startY = dialogY + 80;
 
-    activePowerupDialog.choices.forEach((powerup, idx) => {
-        const btnX = width / 2 - buttonWidth / 2;
-        const btnY = startY + idx * (buttonHeight + spacing);
-        const currentVal = getCurrentValue(powerup.name);
-        const newVal = getProjectedValue(powerup);
-        const label = `${powerup.name} (${currentVal} → ${newVal})`;
+  activePowerupDialog.choices.forEach((powerup, idx) => {
+    const btnX = width / 2 - buttonWidth / 2;
+    const btnY = startY + idx * (buttonHeight + spacing);
+    const currentVal = getCurrentValue(powerup.name);
+    const newVal = getProjectedValue(powerup);
+    const label = `${powerup.name} (${currentVal} → ${newVal})`;
 
-        // Only process clicks if Support dialog is NOT open
-        if (!dialogClickProtection && !activeSupportDialog) {
-            // Buttons are clickable
-            if (DrawButton(btnX, btnY, buttonWidth, buttonHeight, label)) {
-                powerup.apply();
-                ClampStats();
-                activePowerupDialog = null;
-                ShowNextPowerupDialog();
-            }
-        } else {
-            // Buttons are disabled - draw them grayed out
-            push();
-            resetMatrix();
-            fill(80, 80, 120);
-            stroke(150, 150, 150);
-            strokeWeight(2);
-            rect(btnX, btnY, buttonWidth, buttonHeight, 5);
-            fill(200, 200, 200);
-            noStroke();
-            textSize(18);
-            textAlign(CENTER, CENTER);
-            textStyle(NORMAL);
-            text(label, btnX + buttonWidth / 2, btnY + buttonHeight / 2);
-            pop();
-        }
-    });
-
-    // Show "loading" text during protection period
-    if (dialogClickProtection) {
-        push();
-        fill(200, 200, 100, 150);
-        textSize(16);
-        textAlign(CENTER);
-        text("Click to select...", width / 2, dialogY + dialogHeight - 30);
-        pop();
+    // Only process clicks if click not consumed and Support dialog is NOT open
+    if (!dialogClickConsumed && !dialogClickProtection && !activeSupportDialog) {
+      // Buttons are clickable
+      if (DrawButton(btnX, btnY, buttonWidth, buttonHeight, label)) {
+        powerup.apply();
+        ClampStats();
+        activePowerupDialog = null;
+        ShowNextPowerupDialog();
+        dialogClickConsumed = true;
+      }
+    } else {
+      push();
+      resetMatrix();
+      fill(80, 80, 120);
+      stroke(150, 150, 150);
+      strokeWeight(2);
+      rect(btnX, btnY, buttonWidth, buttonHeight, 5);
+      fill(200, 200, 200);
+      noStroke();
+      textSize(18);
+      textAlign(CENTER, CENTER);
+      textStyle(NORMAL);
+      text(label, btnX + buttonWidth / 2, btnY + buttonHeight / 2);
+      pop();
     }
+  });
+
+  if (dialogClickProtection) {
+    push();
+    fill(200, 200, 100, 150);
+    textSize(16);
+    textAlign(CENTER);
+    text("Click to select...", width / 2, dialogY + dialogHeight - 30);
+    pop();
+  }
 }
 
 // Sucker item drop
 function ActivateSuckerBoost() {
   if (!suckerBoostActive) {
     previousAbsorptionRadius = itemAbsorptionRadius;
-    
+
     itemAbsorptionRadius = 3000;
     suckerBoostActive = true;
     suckerBoostTimer = suckerBoostDuration;
-    
+
   } else {
     // If already active, reset the timer allows for INFINITE SUCC 
     suckerBoostTimer = suckerBoostDuration;
@@ -666,12 +646,12 @@ function ActivateSuckerBoost() {
 function UpdateSuckerBoost() {
   if (suckerBoostActive) {
     suckerBoostTimer--;
-    
+
     // Display feedback to player
     if (suckerBoostTimer % 60 === 0) { // Log every second
       console.log("Sucker boost active for " + Math.ceil(suckerBoostTimer / 60) + " more seconds");
     }
-    
+
     if (suckerBoostTimer <= 0) {
       // Revert to previous absorption radius
       itemAbsorptionRadius = previousAbsorptionRadius;

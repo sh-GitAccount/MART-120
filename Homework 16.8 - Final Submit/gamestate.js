@@ -498,12 +498,12 @@ var TitlePulse = {
   startTime: 0,
   flashAlpha: 0,
   flashDir: 1,
-  duration: 5000,      // total warning length before boss spawns
+  duration: 5000,      
   fadeOut: false,
   fadeOutAlpha: 255
 };
 
-// This is called when you want to trigger the warning/announcer
+// This is called when to trigger the warning/announcer
 function triggerBossWarning() {
   bossWarning.active = true;
   bossWarning.startTime = millis();
@@ -514,7 +514,6 @@ function triggerBossWarning() {
   game_State = false; 
   warningActive = true;
 }
-
 
 function updateBossWarning() {
   if (!bossWarning.active) return;
@@ -564,7 +563,7 @@ function updateBossWarning() {
       bossWarning.active = false;
       bossWarning.fadeOut = false;
       bossWarning.fadeOutAlpha = 255;
-      game_State = true; // resume gameplay
+      game_State = true; 
     } else {
       push();
       fill(0, 0, 0, 255 - bossWarning.fadeOutAlpha);
@@ -590,7 +589,7 @@ function DrawPauseScreen() {
   });
   const buttonY = height - 80;
 
-  // OPTIONS button (leftmost)
+  // OPTIONS button 
   if (DrawButton(width / 2 - 320, buttonY, 90, 50, "OPTIONS")) {
     mostRecentScreen = "playing";
     game_Screen = "options";
@@ -604,7 +603,7 @@ function DrawPauseScreen() {
     playSound("confirm");
   }
   
-  // TITLE SCREEN button (rightmost)
+  // TITLE SCREEN button 
   if (DrawButton(width - 300 - 50, buttonY, 155, 50, "TITLE SCREEN")) {
   titleScreenConfirmOpen = true;
   }
@@ -776,7 +775,6 @@ function ResetAllArrays() { // and other stuff too hopefully I will remember to 
   currentAbilityIndex = 0;
   abilityOnCooldown = false;
   abilityCooldownTimer = 0;
-
 
   saveGame();
 }
