@@ -2,6 +2,7 @@
 
 // Enemy spawner stuff
 function SpawnEnemy(type, x, y, spawnSide = null, parentDiameter = 40) {
+    console.log("SpawnEnemy called for:", type, "Paused?", game_Paused);
   let enemy = {
     type: type,
     x: x,
@@ -20,7 +21,7 @@ function SpawnEnemy(type, x, y, spawnSide = null, parentDiameter = 40) {
     orbitMaxDistance: 200,
     orbitSpeed: 7
   };
-  
+
   switch (type) {
     case "dummy":
       enemy.diameter = 60;
@@ -41,11 +42,11 @@ function SpawnEnemy(type, x, y, spawnSide = null, parentDiameter = 40) {
       enemy.immune = true;
       enemy.hitSound = "bounce";
       break;
-      
+
     case "minidia":
       enemy.diameter = parentDiameter / 2 + 4;
       enemy.health = 30;
-      enemy.speed = 2; 
+      enemy.speed = 2;
       enemy.xSpeed = random() < 0.5 ? random(-6, -2) : random(2, 6);
       enemy.ySpeed = random() < 0.5 ? random(-6, -2) : random(2, 6);
       enemy.sound = "deathminidiamond";
@@ -53,11 +54,11 @@ function SpawnEnemy(type, x, y, spawnSide = null, parentDiameter = 40) {
       enemy.exp = 3;
       enemy.gold = 1;
       break;
-      
+
     case "lilfella":
       enemy.diameter = 30;
       enemy.health = 30;
-      enemy.speed = 1.6;  
+      enemy.speed = 1.6;
       enemy.xSpeed = random() * 8 - 4;
       enemy.ySpeed = random() * 8 - 4;
       enemy.sound = "deathlilfella";
@@ -69,7 +70,7 @@ function SpawnEnemy(type, x, y, spawnSide = null, parentDiameter = 40) {
     case "bigfella":
       enemy.diameter = 42;
       enemy.health = 300;
-      enemy.speed = 1.7;  
+      enemy.speed = 1.7;
       enemy.xSpeed = random() * 8 - 4;
       enemy.ySpeed = random() * 8 - 4;
       enemy.sound = "deathlilfella";
@@ -77,19 +78,19 @@ function SpawnEnemy(type, x, y, spawnSide = null, parentDiameter = 40) {
       enemy.exp = 22;
       enemy.gold = 14;
       break;
-      
+
     case "girthyfella":
       enemy.diameter = 50;
       enemy.health = 1000;
-      enemy.speed = 1.75;  
+      enemy.speed = 1.75;
       enemy.xSpeed = random() * 8 - 4;
       enemy.ySpeed = random() * 8 - 4;
       enemy.sound = "deathlilfella";
       enemy.hitSound = "hitgrower";
       enemy.exp = 55;
       enemy.gold = 33;
-      break;      
-      
+      break;
+
     case "disc":
       enemy.diameter = random(40, 70);
       enemy.health = 200;
@@ -101,11 +102,11 @@ function SpawnEnemy(type, x, y, spawnSide = null, parentDiameter = 40) {
       enemy.exp = 15;
       enemy.gold = 26;
       break;
-      
+
     case "chungusjr":
       enemy.diameter = 175;
       enemy.health = 280;
-      enemy.speed = 1.2;  
+      enemy.speed = 1.2;
       enemy.xSpeed = random() * 8 - 4;
       enemy.ySpeed = random() * 8 - 4;
       enemy.sound = "deathchungusjr";
@@ -113,11 +114,11 @@ function SpawnEnemy(type, x, y, spawnSide = null, parentDiameter = 40) {
       enemy.exp = 22;
       enemy.gold = 20;
       break;
-      
+
     case "chungus":
       enemy.diameter = 200;
       enemy.health = 650;
-      enemy.speed = 1.0;  
+      enemy.speed = 1.0;
       enemy.xSpeed = random() * 8 - 4;
       enemy.ySpeed = random() * 8 - 4;
       enemy.sound = "deathchungus";
@@ -125,11 +126,11 @@ function SpawnEnemy(type, x, y, spawnSide = null, parentDiameter = 40) {
       enemy.exp = 44;
       enemy.gold = 30;
       break;
-      
+
     case "chungussr":
       enemy.diameter = 225;
       enemy.health = 2000;
-      enemy.speed = 0.8;  
+      enemy.speed = 0.8;
       enemy.xSpeed = random() * 8 - 4;
       enemy.ySpeed = random() * 8 - 4;
       enemy.sound = "deathchungussr";
@@ -141,51 +142,51 @@ function SpawnEnemy(type, x, y, spawnSide = null, parentDiameter = 40) {
     case "bozo":
       enemy.diameter = 60;
       enemy.health = 280;
-      enemy.speed = 0.9;  
+      enemy.speed = 0.9;
       enemy.xSpeed = random() * 8 - 4;
       enemy.ySpeed = random() * 8 - 4;
       enemy.sound = "deathdiamond";
       enemy.hitSound = "hitdiamond";
       enemy.exp = 60;
       enemy.gold = 43;
-      break;      
+      break;
 
     case "bozog":
       enemy.diameter = 68;
       enemy.health = 650;
-      enemy.speed = 0.9;  
+      enemy.speed = 0.9;
       enemy.xSpeed = random() * 8 - 4;
       enemy.ySpeed = random() * 8 - 4;
       enemy.sound = "deathdiamond";
       enemy.hitSound = "hitdiamond";
       enemy.exp = 99;
       enemy.gold = 72;
-      break; 
+      break;
 
     case "turbozo":
       enemy.diameter = 55;
       enemy.health = 1200;
-      enemy.speed = 0.9;  
+      enemy.speed = 0.9;
       enemy.xSpeed = random() * 8 - 4;
       enemy.ySpeed = random() * 8 - 4;
       enemy.sound = "deathchungus";
       enemy.hitSound = "hitchungus";
       enemy.exp = 133;
       enemy.gold = 88;
-      break;       
+      break;
 
     case "turbozog":
       enemy.diameter = 85;
       enemy.health = 5000;
-      enemy.speed = 0.9;  
+      enemy.speed = 0.9;
       enemy.xSpeed = random() * 8 - 4;
       enemy.ySpeed = random() * 8 - 4;
       enemy.sound = "deathdisc";
       enemy.hitSound = "hitdisc";
       enemy.exp = 180;
       enemy.gold = 115;
-      break;            
-      
+      break;
+
     case "dia":
       enemy.diameter = 65;
       enemy.health = 90;
@@ -206,7 +207,7 @@ function SpawnEnemy(type, x, y, spawnSide = null, parentDiameter = 40) {
           enemy.ySpeed = random() < 0.5 ? random(-4, -2) : random(2, 4);
       }
       break;
-      
+
     case "gigadia":
       enemy.diameter = 106;
       enemy.health = 380;
@@ -226,7 +227,7 @@ function SpawnEnemy(type, x, y, spawnSide = null, parentDiameter = 40) {
         default: enemy.xSpeed = random() < 0.5 ? random(-4, -2) : random(2, 4);
           enemy.ySpeed = random() < 0.5 ? random(-4, -2) : random(2, 4);
       }
-      break;      
+      break;
 
     case "superdia":
       enemy.diameter = 90;
@@ -247,8 +248,8 @@ function SpawnEnemy(type, x, y, spawnSide = null, parentDiameter = 40) {
         default: enemy.xSpeed = random() < 0.5 ? random(-4, -2) : random(2, 4);
           enemy.ySpeed = random() < 0.5 ? random(-4, -2) : random(2, 4);
       }
-      break;        
-      
+      break;
+
     case "grower":
       enemy.diameter = 32;
       enemy.health = 100;
@@ -269,8 +270,8 @@ function SpawnEnemy(type, x, y, spawnSide = null, parentDiameter = 40) {
       enemy.hitSound = "hitgrower";
       enemy.exp = 55;
       enemy.gold = 65;
-      break;   
-      
+      break;
+
     case "gigagrower":
       enemy.diameter = 42;
       enemy.health = 580;
@@ -280,12 +281,12 @@ function SpawnEnemy(type, x, y, spawnSide = null, parentDiameter = 40) {
       enemy.hitSound = "hitgrower";
       enemy.exp = 99;
       enemy.gold = 90;
-      break;       
-      
+      break;
+
     default:
       console.warn("Unknown enemy type: " + type);
       return;
-  }  
+  }
   enemies.push(enemy);
 }
 
@@ -293,43 +294,43 @@ function SpawnEnemy(type, x, y, spawnSide = null, parentDiameter = 40) {
 function SpawnBoss(type, x, y) {
   let boss;
 
-  if (stage ===1 ){
+  if (stage === 1) {
     boss = {
       type: type,
       worldX: x,  // Set world pos
       worldY: y,
       screenX: width / 2,
       screenY: 150,
-      
+
       // Center body
       center: {
-        health: 4500,
+        health: 25000,
         diameter: 80,
-        maxHealth: 4500,
+        maxHealth: 25000,
         hitSound: "boss1centerhit",
         deathSound: "boss1centerdeath"
       },
-      
+
       // Left body
       left: {
-        health: 2000,
+        health: 6500,
         diameter: 60,
-        maxHealth: 2000,
+        maxHealth: 6500,
         offsetX: -100,
         hitSound: "boss1lefthit",
         deathSound: "boss1leftdeath"
       },
-      
+
       // Right body
       right: {
-        health: 2500,
+        health: 7700,
         diameter: 60,
-        maxHealth: 2500,
+        maxHealth: 7700,
         offsetX: 100,
         hitSound: "boss1righthit",
         deathSound: "boss1rightdeath"
       },
-      
+
       // Firing mechanics
       centerFireTimer: 0,
       centerFireCooldown: 100,
@@ -337,26 +338,26 @@ function SpawnBoss(type, x, y) {
       leftFireCooldown: 90,
       rightFireTimer: 0,
       rightFireCooldown: 90,
-      
+
       // Behavior
       phase: 1,
       isAlive: true,
       leftDestroyed: false,   // Tracks death of secondary objects
-      rightDestroyed: false,  
+      rightDestroyed: false,
       bothDestroyed: false,
-      
+
       leftSweepShotIndex: 0,
       rightSweepShotIndex: 0,
       leftSweepShotDelay: 0,
       rightSweepShotDelay: 0,
       leftSweepCooldownTimer: 0,
-      rightSweepCooldownTimer: 0    
+      rightSweepCooldownTimer: 0
     }
   };
 
   // else if (stage === 2) {}
   // else if (stage === 3) {}, etc  
-  if (boss){
+  if (boss) {
     bosses.push(boss);
     console.log("Boss spawned at world position:", x, y);
   }
@@ -551,20 +552,18 @@ function getSpawnPositions(side, amount, radius) {
 // Convoulted kill boss work around because i'm lazy and tired
 function DestroyBossCenter(bossIndex) {
   let boss = bosses[bossIndex];
-  if (!boss) return;
+  if (!boss || !boss.isAlive) return;
   
   boss.center.health = 0;
   
-  // Check if all parts are now dead
   if (boss.center.health <= 0 && boss.left.health <= 0 && boss.right.health <= 0) {
     boss.isAlive = false;
     KillBoss(bossIndex);
   }
 }
-
 function DestroyBossLeft(bossIndex) {
   let boss = bosses[bossIndex];
-  if (!boss) return;
+  if (!boss || !boss.isAlive) return;
   
   boss.left.health = 0;
   
@@ -573,10 +572,9 @@ function DestroyBossLeft(bossIndex) {
     KillBoss(bossIndex);
   }
 }
-
 function DestroyBossRight(bossIndex) {
   let boss = bosses[bossIndex];
-  if (!boss) return;
+  if (!boss || !boss.isAlive) return;
   
   boss.right.health = 0;
   
@@ -587,36 +585,36 @@ function DestroyBossRight(bossIndex) {
 }
 
 // Kill Bosses
-function KillBoss(bossIndex) {    
+function KillBoss(bossIndex) {
   let boss = bosses[bossIndex];
-  
-  if (stage === 1){
+
+  if (stage === 1) {
     playSound("boss1centerexplode");
-    player_Health = max_Health; 
+    player_Health = max_Health;
     shield_Hit = false;
     shield_Active = true;
 
   }
-  
+
   HandleBossDrops(boss.worldX, boss.worldY, boss.type);
-  
+
   // Unlock next stage when boss dies
   if (stage < 4) {
     stagesUnlocked[stage + 1] = true;
     stagesCompleted[stage] = true;
   }
   stagesCompleted[stage] = true;
-    
+
   saveGame();
-  console.log("Game saved after boss defeat!"); 
+  console.log("Game saved after boss defeat!");
   playMusicTrack('victoryTheme');
-  
+
   // Trigger victory screen when slain
   victoryScreen.active = true;
   victoryScreen.startTime = millis();
   victoryScreen.countdownValue = 10;
   victoryScreen.transitionStarted = false;
-  
+
   boss.isAlive = false;
   bosses.splice(bossIndex, 1);
 }
@@ -624,8 +622,8 @@ function KillBoss(bossIndex) {
 
 // "Kill Enemy" effects such as diamond spawning mini's
 function KillEnemy(index) {
-    let enemy = enemies[index];
-      if (!enemy) return; // Safety check - enemy already removed
+  let enemy = enemies[index];
+  if (!enemy) return; // Safety check - enemy already removed
   // Spawn child minidia if Diamond
   if (enemy.type === "dia") {
     // Spawn 2 minidia with slight offset so they don't stack
@@ -654,8 +652,8 @@ function KillEnemy(index) {
       let offsetY = sin(angle) * 25;
       SpawnEnemy("minidia", enemy.x + offsetX, enemy.y + offsetY, null, enemy.diameter);
     }
-  }  
-  
+  }
+
   Kills++;
   HandleEnemyDrops(enemy.x, enemy.y, enemy);
   Gold += enemy.gold;
@@ -678,7 +676,7 @@ function DrawStar(x, y, outerRadius, innerRadius, outerRed, outerGreen, outerBlu
   const points = 5;
   const outerPoints = [];
   const innerPoints = [];
-  
+
   for (let i = 0; i < points * 2; i++) {
     const angle = (i * PI) / points - HALF_PI;
     const radius = i % 2 === 0 ? outerRadius : innerRadius;
@@ -687,7 +685,7 @@ function DrawStar(x, y, outerRadius, innerRadius, outerRed, outerGreen, outerBlu
       y: y + sin(angle) * radius
     });
   }
-  
+
   // Draw outer star
   strokeWeight(2);
   stroke(outerRed, outerGreen, outerBlue);
@@ -697,7 +695,7 @@ function DrawStar(x, y, outerRadius, innerRadius, outerRed, outerGreen, outerBlu
     vertex(point.x, point.y);
   }
   endShape(CLOSE);
-  
+
   // Draw inner star
   stroke(innerRed, innerGreen, innerBlue);
   fill(innerRed, innerGreen, innerBlue);
@@ -717,7 +715,7 @@ function DiamondCircle(x, y, diamondSize, circleRadius, diamondRed, diamondGreen
   stroke(diamondRed * 0.7, diamondGreen * 0.7, diamondBlue * 0.7);
   const halfDiamond = diamondSize / 2;
   quad(x, y - halfDiamond, x + halfDiamond, y, x, y + halfDiamond, x - halfDiamond, y);
-  
+
   // Draw circle in center
   fill(circleRed, circleGreen, circleBlue);
   stroke(circleRed * 0.7, circleGreen * 0.7, circleBlue * 0.7);
@@ -727,13 +725,13 @@ function DiamondCircle(x, y, diamondSize, circleRadius, diamondRed, diamondGreen
 // Triangle + Circle combo
 function TriangleCircle(x, y, triangleSize, circleRadius, triRed, triGreen, triBlue, circleRed, circleGreen, circleBlue) {
   const h = triangleSize * 0.866; // height of equilateral triangle
-  
+
   // Draw triangle
   strokeWeight(2);
   fill(triRed, triGreen, triBlue);
   stroke(triRed * 0.7, triGreen * 0.7, triBlue * 0.7);
   triangle(x, y - h / 2, x - triangleSize / 2, y + h / 2, x + triangleSize / 2, y + h / 2);
-  
+
   // Draw circle in center
   fill(circleRed, circleGreen, circleBlue);
   stroke(circleRed * 0.7, circleGreen * 0.7, circleBlue * 0.7);
@@ -747,7 +745,7 @@ function HexagonCircle(x, y, hexRadius, circleRadius, hexRed, hexGreen, hexBlue,
   fill(hexRed, hexGreen, hexBlue);
   stroke(hexRed * 0.7, hexGreen * 0.7, hexBlue * 0.7);
   drawPolygon(6, x, y, hexRadius, 0);
-  
+
   // Draw circle in center
   fill(circleRed, circleGreen, circleBlue);
   stroke(circleRed * 0.7, circleGreen * 0.7, circleBlue * 0.7);
@@ -760,11 +758,11 @@ function RingPattern(x, y, outerRadius, middleRadius, innerRadius, outerRed, out
   strokeWeight(2);
   fill(outerRed, outerGreen, outerBlue);
   circle(x, y, outerRadius * 2);
-  
+
   // Middle ring (creates the gap)
   fill(middleRed, middleGreen, middleBlue);
   circle(x, y, middleRadius * 2);
-  
+
   // Inner circle
   fill(innerRed, innerGreen, innerBlue);
   circle(x, y, innerRadius * 2);
@@ -774,16 +772,16 @@ function RingPattern(x, y, outerRadius, middleRadius, innerRadius, outerRed, out
 function StripedDiamond(x, y, outerDiameter, innerDiameter, outerRed, outerGreen, outerBlue, innerRed, innerGreen, innerBlue) {
   const halfOuter = outerDiameter / 2;
   const halfInner = innerDiameter / 2;
-  
+
   // Outer diamond
   strokeWeight(2);
   fill(outerRed, outerGreen, outerBlue);
   quad(x, y - halfOuter, x + halfOuter, y, x, y + halfOuter, x - halfOuter, y);
-  
+
   // Inner diamond (rotated 45 degrees)
   fill(innerRed, innerGreen, innerBlue);
   quad(x, y - halfInner, x + halfInner, y, x, y + halfInner, x - halfInner, y);
-  
+
   // Add cross division lines
   stroke(innerRed * 0.5, innerGreen * 0.5, innerBlue * 0.5);
   strokeWeight(1);
@@ -798,11 +796,11 @@ function TargetPattern(x, y, size, outerRed, outerGreen, outerBlue, midRed, midG
   noFill();
   stroke(outerRed, outerGreen, outerBlue);
   circle(x, y, size);
-  
+
   // Middle ring
   stroke(midRed, midGreen, midBlue);
   circle(x, y, size * 0.6);
-  
+
   // Inner circle (filled)
   fill(innerRed, innerGreen, innerBlue);
   stroke(innerRed, innerGreen, innerBlue);
@@ -813,16 +811,16 @@ function TargetPattern(x, y, size, outerRed, outerGreen, outerBlue, midRed, midG
 function PlusPattern(x, y, size, thickness, outerRed, outerGreen, outerBlue, innerRed, innerGreen, innerBlue) {
   const halfSize = size / 2;
   const halfThickness = thickness / 2;
-  
+
   // Vertical bar
   fill(outerRed, outerGreen, outerBlue);
   noStroke();
   rectMode(CENTER);
   rect(x, y, thickness, size);
-  
+
   // Horizontal bar
   rect(x, y, size, thickness);
-  
+
   // Inner cross (different color)
   fill(innerRed, innerGreen, innerBlue);
   rect(x, y, thickness / 2, size / 2);
@@ -832,22 +830,22 @@ function PlusPattern(x, y, size, thickness, outerRed, outerGreen, outerBlue, inn
 // Spiral shape (approximated with triangles)
 function Pyramid(x, y, size, outerRed, outerGreen, outerBlue, innerRed, innerGreen, innerBlue) {
   const numArms = 3;
-  
+
   for (let i = 0; i < numArms; i++) {
     const angle = (i / numArms) * TWO_PI;
     const nextAngle = ((i + 1) / numArms) * TWO_PI;
-    
+
     const x1 = x + cos(angle) * size * 0.8;
     const y1 = y + sin(angle) * size * 0.8;
     const x2 = x + cos(nextAngle) * size * 0.8;
     const y2 = y + sin(nextAngle) * size * 0.8;
-    
+
     fill(outerRed, outerGreen, outerBlue);
     stroke(outerRed * 0.7, outerGreen * 0.7, outerBlue * 0.7);
     strokeWeight(2);
     triangle(x, y, x1, y1, x2, y2);
   }
-  
+
   // Center circle
   fill(innerRed, innerGreen, innerBlue);
   stroke(innerRed, innerGreen, innerBlue);
@@ -858,13 +856,13 @@ function Pyramid(x, y, size, outerRed, outerGreen, outerBlue, innerRed, innerGre
 function DoubleDiamondRotated(x, y, size1, size2, color1Red, color1Green, color1Blue, color2Red, color2Green, color2Blue) {
   const half1 = size1 / 2;
   const half2 = size2 / 2;
-  
+
   // First diamond (normal orientation)
   fill(color1Red, color1Green, color1Blue);
   stroke(color1Red * 0.7, color1Green * 0.7, color1Blue * 0.7);
   strokeWeight(2);
   quad(x, y - half1, x + half1, y, x, y + half1, x - half1, y);
-  
+
   // Second diamond (rotated 45 degrees)
   fill(color2Red, color2Green, color2Blue);
   stroke(color2Red * 0.7, color2Green * 0.7, color2Blue * 0.7);
@@ -874,19 +872,19 @@ function DoubleDiamondRotated(x, y, size1, size2, color1Red, color1Green, color1
 // Flower pattern (circle with petals)
 function FlowerPattern(x, y, petalRadius, petalCount, centerRadius, petalRed, petalGreen, petalBlue, centerRed, centerGreen, centerBlue) {
   const petals = petalCount || 5;
-  
+
   // Draw petals
   fill(petalRed, petalGreen, petalBlue);
   stroke(petalRed * 0.7, petalGreen * 0.7, petalBlue * 0.7);
   strokeWeight(2);
-  
+
   for (let i = 0; i < petals; i++) {
     const angle = (i / petals) * TWO_PI;
     const petalX = x + cos(angle) * petalRadius * 0.6;
     const petalY = y + sin(angle) * petalRadius * 0.6;
     circle(petalX, petalY, petalRadius);
   }
-  
+
   // Draw center
   fill(centerRed, centerGreen, centerBlue);
   stroke(centerRed, centerGreen, centerBlue);
@@ -909,7 +907,7 @@ function drawChungusJr(x, y) {
   fill(220, 100, 220);
   drawPolygon(5, x, y, innerRadius, PI / 2);
 
-  pop(); 
+  pop();
 }
 
 // Draws chungus objects
@@ -1024,15 +1022,15 @@ function DrawEnemies() {
         quad(e.x, e.y - h, e.x + h, e.y, e.x, e.y + h, e.x - h, e.y);
         break;
       case "gigadia":
-        DiamondCircle(e.x, e.y, e.diameter, e.diameter/3,
-          235, 140, 220,    
-          155, 200, 220);   
-        break;        
+        DiamondCircle(e.x, e.y, e.diameter, e.diameter / 3,
+          235, 140, 220,
+          155, 200, 220);
+        break;
       case "superdia":
-        HexagonCircle(e.x, e.y, e.diameter/2, e.diameter/3,
-          235, 140, 220,    
-          155, 200, 220);   
-        break;          
+        HexagonCircle(e.x, e.y, e.diameter / 2, e.diameter / 3,
+          235, 140, 220,
+          155, 200, 220);
+        break;
       case "minidia":
         fill(235, 140, 220);
         let hh = e.diameter / 2;
@@ -1041,70 +1039,70 @@ function DrawEnemies() {
 
       case "grower":
         Pyramid(e.x, e.y, e.diameter,
-          185, 165, 60,      
-          255, 255, 100);   
+          185, 165, 60,
+          255, 255, 100);
         break;
       case "biggrower":
         Pyramid(e.x, e.y, e.diameter,
-          185, 165, 60,      
-          255, 255, 100);    
-        break;        
+          185, 165, 60,
+          255, 255, 100);
+        break;
       case "gigagrower":
         FlowerPattern(e.x, e.y, e.diameter / 3, 6, e.diameter / 4,
           150, 220, 50, 100, 220, 250);
-        break;        
+        break;
 
       case "lilfella":
         ConcentricCircle(e.x, e.y, e.diameter, e.diameter / 2,
           200, 250, 100, 50, 150, 220);
         break;
       case "bigfella":
-        DrawStar(e.x, e.y, e.diameter/2, e.diameter/4,
+        DrawStar(e.x, e.y, e.diameter / 2, e.diameter / 4,
           200, 250, 100, 50, 150, 220);
         break;
       case "girthyfella":
-        FlowerPattern(e.x, e.y, e.diameter /3, 6, e.diameter / 4,
+        FlowerPattern(e.x, e.y, e.diameter / 3, 6, e.diameter / 4,
           150, 220, 50, 100, 220, 250);
-        break;  
+        break;
 
       case "chungusjr":
-      drawChungusJr(e.x, e.y);    
+        drawChungusJr(e.x, e.y);
         break;
 
       case "chungus":
         drawChungus(e.x, e.y);
-      // TriangleCircle(e.x, e.y, e.diameter, e.diameter/3,
-      //  150, 220, 50,     // Triangle color: green
-      //  255, 100, 100);   // Circle color: red
+        // TriangleCircle(e.x, e.y, e.diameter, e.diameter/3,
+        //  150, 220, 50,     // Triangle color: green
+        //  255, 100, 100);   // Circle color: red
         break;
 
       case "chungussr":
         drawChungusSr(e.x, e.y);
-      // StripedDiamond(e.x, e.y, e.diameter, e.diameter/2,
-      //  220, 100, 220,    // Outer diamond: magenta
-      //  100, 220, 255);   // Inner diamond: cyan
+        // StripedDiamond(e.x, e.y, e.diameter, e.diameter/2,
+        //  220, 100, 220,    // Outer diamond: magenta
+        //  100, 220, 255);   // Inner diamond: cyan
         break;
 
       case "bozo":
-        DoubleSquare(e.x, e.y, e.diameter, e.diameter/3,
-          235, 140, 220,    
-          155, 55, 80);   
-        break;   
+        DoubleSquare(e.x, e.y, e.diameter, e.diameter / 3,
+          235, 140, 220,
+          155, 55, 80);
+        break;
       case "bozog":
-        StripedDiamond(e.x, e.y, e.diameter, e.diameter/3,
-          65, 80, 90,    
-          200, 100, 50);   
-        break;   
+        StripedDiamond(e.x, e.y, e.diameter, e.diameter / 3,
+          65, 80, 90,
+          200, 100, 50);
+        break;
       case "turbozo":
-        PlusPattern(e.x, e.y, e.diameter, e.diameter/3,
-          235, 140, 220,    
-          155, 55, 80);   
-        break;           
+        PlusPattern(e.x, e.y, e.diameter, e.diameter / 3,
+          235, 140, 220,
+          155, 55, 80);
+        break;
       case "turbozog":
-        PlusPattern(e.x, e.y, e.diameter, e.diameter/3,
-          200, 80, 50,    
-          50, 80, 200);   
-        break;           
+        PlusPattern(e.x, e.y, e.diameter, e.diameter / 3,
+          200, 80, 50,
+          50, 80, 200);
+        break;
 
     }
   }
@@ -1137,50 +1135,50 @@ function DrawBossPart(x, y, part, r, g, b) {
   fill(r, g, b);
   stroke(255);
   strokeWeight(2);
-  
+
   // Draw as a circle
   circle(x, y, part.diameter);
-  
+
   // Draw health bar
   let healthPercent = part.health / part.maxHealth;
   fill(255, 0, 0);
-  rect(x - part.diameter/2, y - part.diameter/2 - 20, part.diameter * healthPercent, 10);
+  rect(x - part.diameter / 2, y - part.diameter / 2 - 20, part.diameter * healthPercent, 10);
   stroke(255);
   noFill();
-  rect(x - part.diameter/2, y - part.diameter/2 - 20, part.diameter, 10);
-  
+  rect(x - part.diameter / 2, y - part.diameter / 2 - 20, part.diameter, 10);
+
   pop();
 }
 
 // Moves obstacles and other floaty things
 function MoveEnemies() {
   if (!game_State) return;
-  
+
   let maxEnemies = 300;
-  
+
   for (let i = enemies.length - 1; i >= 0; i--) {
     let enemy = enemies[i];
-    
+
     let distToPlayer = dist(enemy.x, enemy.y, player_X, player_Y);
-    
+
     // will cull if stray to far from player
     if (distToPlayer > 2000) {
       enemies.splice(i, 1);
       continue;
     }
-    
+
     if (enemies.length > maxEnemies && distToPlayer > 1500) {
       enemies.splice(i, 1);
       continue;
-    }    
+    }
     switch (enemy.type) {
       case "dummy":
-            enemy.xSpeed = 0;
-            enemy.ySpeed = 0;
+        enemy.xSpeed = 0;
+        enemy.ySpeed = 0;
         continue;
 
       case "disc":
-        RandomWanderDisc(enemy, i);  
+        RandomWanderDisc(enemy, i);
         break;
 
       case "turbozo":
@@ -1190,58 +1188,58 @@ function MoveEnemies() {
         RandomWanderDisc(enemy, i);
         break;
 
-      case "bozog":      
+      case "bozog":
       case "turbozog":
       case "chungussr":
       case "chungussr":
       case "minidia":
       case "lilfella":
       case "bigfella":
-      case "girthyfella":        
+      case "girthyfella":
         SeekPlayer(enemy);
         break;
-        
+
       case "dia":
         OrbitPlayer(enemy);
         break;
 
       case "gigadia":
         OrbitPlayer(enemy);
-        break;   
-        
+        break;
+
       case "superdia":
         OrbitPlayer(enemy);
-        break;           
-        
+        break;
+
       case "grower":
         WrapAroundScreen(enemy);
         break;
 
       case "biggrower":
         WrapAroundScreen(enemy);
-        break;   
-        
+        break;
+
       case "gigagrower":
         WrapAroundScreen(enemy);
-        break;           
-        
+        break;
+
       case "chip":
-      if (!enemy.nextDirectionChange) enemy.nextDirectionChange = millis() + 2000;
+        if (!enemy.nextDirectionChange) enemy.nextDirectionChange = millis() + 2000;
         if (millis() >= enemy.nextDirectionChange) {
-        enemy.xSpeed = random(4, 6) * (random() < 0.5 ? -1 : 1);
-        enemy.ySpeed = random(4, 6) * (random() < 0.5 ? -1 : 1);
+          enemy.xSpeed = random(4, 6) * (random() < 0.5 ? -1 : 1);
+          enemy.ySpeed = random(4, 6) * (random() < 0.5 ? -1 : 1);
 
           enemy.nextDirectionChange = millis() + 3000;
         }
-      BounceOffBoundaries(enemy);
-      break;
+        BounceOffBoundaries(enemy);
+        break;
     }
-    
+
     // Skip separation to prevent odd bouncing
     if (enemy.type !== "grower" && enemy.type !== "biggrower" && enemy.type !== "gigagrower" && enemy.type !== "minidia") {
       SeparateEnemies(enemy, enemies, i);
     }
-    
+
     enemy.x += enemy.xSpeed;
     enemy.y += enemy.ySpeed;
   }
@@ -1252,35 +1250,35 @@ function RandomWanderDisc(enemy, index) {
   const wanderSpeed = 3;
   const changeInterval = 120; // Frames between direction changes 
   const wanderDistance = 325; // doesn't mean he is lost tho
-  
+
   // Initialize timers if they don't exist
   if (!disc_DirectionChangeTimer[index]) {
     disc_DirectionChangeTimer[index] = 0;
     disc_DirectionChangeInterval[index] = changeInterval;
   }
-  
+
   // Increment timer
   disc_DirectionChangeTimer[index]++;
-  
+
   // Change direction when timer expires
   if (disc_DirectionChangeTimer[index] >= disc_DirectionChangeInterval[index]) {
     let randomAngle = random(TWO_PI);
     enemy.xSpeed = cos(randomAngle) * wanderSpeed;
     enemy.ySpeed = sin(randomAngle) * wanderSpeed;
-    
+
     // Reset timer with some variation so discs don't all change at once
     disc_DirectionChangeTimer[index] = 0;
     disc_DirectionChangeInterval[index] = changeInterval + random(-30, 30);
   }
-  
+
   // Keep disc within a reasonable area of the map
-  const mapCenterX = 0; 
-  const mapCenterY = 0; 
+  const mapCenterX = 0;
+  const mapCenterY = 0;
   const maxWanderDist = wanderDistance;
-  
+
   let distToCenter = dist(enemy.x, enemy.y, mapCenterX, mapCenterY);
   if (distToCenter > maxWanderDist) {
-    
+
     let angleToCenter = atan2(mapCenterY - enemy.y, mapCenterX - enemy.x);
     enemy.xSpeed = cos(angleToCenter) * wanderSpeed * 1.5;
     enemy.ySpeed = sin(angleToCenter) * wanderSpeed * 1.5;
@@ -1292,7 +1290,7 @@ function SeekPlayer(enemy) {
   let dx = player_X - enemy.x;
   let dy = player_Y - enemy.y;
   let distance = dist(enemy.x, enemy.y, player_X, player_Y);
-  
+
   if (distance > 0) {
     // Use enemy's custom speed if available, otherwise use default
     let baseSpeed = enemy.speed || 2;
@@ -1308,20 +1306,20 @@ function SeekPlayer(enemy) {
 // === used for enemy warping ===
 function WrapAroundScreen(enemy) {
   const wrapDistance = 200; // Distance off-screen before wrapping
-  
+
   // Calculate screen bounds relative to camera
   const screenLeft = cameraX - wrapDistance;
   const screenRight = cameraX + width + wrapDistance;
   const screenTop = cameraY - wrapDistance;
   const screenBottom = cameraY + height + wrapDistance;
-  
+
   // Wrap horizontally
   if (enemy.x < screenLeft) {
     enemy.x = screenRight;
   } else if (enemy.x > screenRight) {
     enemy.x = screenLeft;
   }
-  
+
   // Wrap vertically
   if (enemy.y < screenTop) {
     enemy.y = screenBottom;
@@ -1337,12 +1335,12 @@ function BounceOffBoundaries(enemy) {
   const bufferRight = 40;
   const bufferTop = 60;
   const bufferBottom = 40;
-  
+
   const minX = player_X - width / 2 + bufferLeft;
   const maxX = player_X + width / 2 - bufferRight;
   const minY = player_Y - height / 2 + bufferTop;
   const maxY = player_Y + height / 2 - bufferBottom;
-  
+
   if (enemy.x <= minX || enemy.x >= maxX) {
     enemy.xSpeed *= -1;
     enemy.x = constrain(enemy.x, minX, maxX);
@@ -1359,11 +1357,11 @@ function OrbitPlayer(enemy) {
   const minDistance = enemy.orbitMinDistance || 80;
   const maxDistance = enemy.orbitMaxDistance || 200;
   const orbitSpeed = enemy.orbitSpeed || 7;
-  
+
   let dx = player_X - enemy.x;
   let dy = player_Y - enemy.y;
   let distance = dist(enemy.x, enemy.y, player_X, player_Y);
-  
+
   if (distance < minDistance) {
     // Too close - move away
     if (distance > 0) {
@@ -1377,20 +1375,20 @@ function OrbitPlayer(enemy) {
   } else {
     // Within range - orbit with randomness
     let angle = atan2(dy, dx);
-    
+
     // Add random wobble to the angle
     let wobble = sin(frameCount * 0.02 + enemy.x * 0.001) * 0.3;
     let perpAngle = angle + HALF_PI + wobble;
-    
+
     // Move tangentially (perpendicular to player direction) for orbital motion
     enemy.xSpeed = cos(perpAngle) * orbitSpeed * 0.7;
     enemy.ySpeed = sin(perpAngle) * orbitSpeed * 0.7;
-    
+
     // Add small random drift
     enemy.xSpeed += random(-0.3, 0.3);
     enemy.ySpeed += random(-0.3, 0.3);
   }
-  
+
   // Cap speed
   let speed = dist(0, 0, enemy.xSpeed, enemy.ySpeed);
   if (speed > orbitSpeed) {
@@ -1403,20 +1401,20 @@ function OrbitPlayer(enemy) {
 function SeparateEnemies(enemy, allEnemies, currentIndex) {
   const separationRadius = enemy.diameter + 4;
   const maxSeparationDistance = separationRadius * 3; // increase or decrease for tighter/looser clumps
-  
+
   for (let i = 0; i < allEnemies.length; i++) {
     if (i === currentIndex) continue;
-    
+
     let other = allEnemies[i];
     let dx = enemy.x - other.x;
     let dy = enemy.y - other.y;
     let distance = sqrt(dx * dx + dy * dy); // Use sqrt instead of dist
-    
+
     // Only process if close enough
     if (distance < maxSeparationDistance && distance > 0) {
       let force = (maxSeparationDistance - distance) / maxSeparationDistance * 0.3;
       let angle = atan2(dy, dx);
-      
+
       enemy.xSpeed += cos(angle) * force;
       enemy.ySpeed += sin(angle) * force;
     }
@@ -1432,7 +1430,7 @@ function getSpawnPositionsAroundPlayer(amount, radius) {
 
   for (let i = 0; i < amount; i++) {
     let x, y;
-    let attempts = 0;    
+    let attempts = 0;
     // Tries to spawn 
     do {
       const angle = random() * TWO_PI;
@@ -1440,12 +1438,12 @@ function getSpawnPositionsAroundPlayer(amount, radius) {
       x = playerX + cos(angle) * r;
       y = playerY + sin(angle) * r;
       attempts++;
-    } while ((x < bufferLeft || x > width - bufferRight || 
-              y < bufferTop || y > height - bufferBottom) && attempts < 10);
-    
+    } while ((x < bufferLeft || x > width - bufferRight ||
+      y < bufferTop || y > height - bufferBottom) && attempts < 10);
+
     // If fail, uses constrained value isntead to force on screen
     x = constrain(x, bufferLeft, width - bufferRight);
-    y = constrain(y, bufferTop, height - bufferBottom);    
+    y = constrain(y, bufferTop, height - bufferBottom);
     positions.push([x, y]);
   }
 

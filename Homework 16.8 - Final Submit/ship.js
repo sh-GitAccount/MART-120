@@ -96,7 +96,7 @@ function ApplyShipStats() {
   burstCooldown = stats.burstCooldown;
   shield_Cooldown = stats.shield_Cooldown;
   shot_Penetration = stats.shot_Penetration;
-  shipSelected = stats.name;
+  shipSelected = stats.name;  
 
   health_Growth = stats.health_Growth;
   shield_Growth = stats.shield_Growth;

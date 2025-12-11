@@ -592,11 +592,12 @@ function UpdateLightningBolt() {
     boltData.damageProcessed = true;
     
     // Handle boss targets
-    if (boltData.targetData && boltData.targetData.type === 'boss') {
+    if (boltData.targetData && boltData.targetData.type.startsWith('boss_')) {  // janky af work around
       const boss = bosses[boltData.targetData.index];
       if (!boss || !boss.isAlive) continue;
       
-      boss.center.health -= powerStats.lightningbolt.boltDamage;
+      const targetPart = boltData.targetData.type.split('_')[1]; // 'center', 'left', or 'right'
+      boss[targetPart].health -= powerStats.lightningbolt.boltDamage;
       damage_Dealt += powerStats.lightningbolt.boltDamage;
       
       // Play sound based on bolt type
@@ -606,6 +607,11 @@ function UpdateLightningBolt() {
         playSound('lightningchain');
       } else if (boltData.type === "echo") {
         playSound('lightningecho');
+      }
+      
+      // Check if boss is dead
+      if (boss.center.health <= 0 && boss.left.health <= 0 && boss.right.health <= 0) {
+        boss.isAlive = false;
       }
       
       if (boltData.type === "normal") {
@@ -680,9 +686,12 @@ function UpdateLightningBolt() {
       }
     }
     
-  if (targetEnemy && targetEnemy.health <= 0) {
-        KillEnemy(targetIndex);
+    if (targetEnemy && targetEnemy.health <= 0) {
+      const actualIndex = enemies.indexOf(targetEnemy);
+      if (actualIndex !== -1) {
+        KillEnemy(actualIndex);
       }
+    }
   }
 
   const totalDuration = (powerStats.lightningbolt.boltCount - 1) * powerStats.lightningbolt.boltFrames + 200;
@@ -1898,19 +1907,16 @@ function UpdateCyclone() {
       const distToCyclone = dist(cyclone.x, cyclone.y, enemy.x, enemy.y);
       if (distToCyclone < 20) {
         // Check if this enemy is on cooldown
-        const enemyId = enemies.indexOf(enemy);
-        if (cyclone.hitCooldowns[enemyId] && cyclone.hitCooldowns[enemyId] > 0) {
-          cyclone.hitCooldowns[enemyId]--;
-          continue;
-        }
+      if (cyclone.hitCooldowns[enemy] && cyclone.hitCooldowns[enemy] > 0) {
+        cyclone.hitCooldowns[enemy]--;
+        continue;
+      }
+        // hit enemy
+      enemy.health -= cyclone.damage;
+      damage_Dealt += cyclone.damage;
+      cyclone.hitCooldowns[enemy] = 20;
         
-        // Hit enemy
-        enemy.health -= cyclone.damage;
-        damage_Dealt += cyclone.damage;
-        cyclone.hitCooldowns[enemyId] = 20; // 20 frame cooldown
-        
-        playSound(cyclone.impactSound);
-        
+        playSound(cyclone.impactSound);        
         if (enemy.health <= 0) {
           KillEnemy(j);
         }

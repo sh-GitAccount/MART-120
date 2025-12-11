@@ -1,19 +1,20 @@
 // ==++ -- Used for handling game state such as saves, loads, resets, etc -- ++== \\
 
 function updateTime(){
-  if (game_State)  time++;
+  if (game_State && !game_Paused)  time++;
   else return;
 }
 
 // more better time handler
 function UpdateGameTime() {
-    let now = millis();
-    let dt = (now - lastMillis) / 1000;
-    lastMillis = now;
-
-    if (!game_Paused) {
-        gameTime += dt;
-    }
+  if (game_Paused) {
+    return;
+  }
+  
+  let now = millis();
+  let dt = (now - lastMillis) / 1000;
+  lastMillis = now;
+  gameTime += dt;
 }
 
 // Save Game
@@ -21,8 +22,7 @@ function saveGame() {
   localStorage.setItem('equippedAttachments', JSON.stringify(equippedAttachments));
   localStorage.setItem('attachmentLevels_Current', JSON.stringify(attachmentLevels_Current));  
   localStorage.setItem('upgradeLevels_Current', JSON.stringify(upgradeLevels_Current));
-  localStorage.setItem('unlockedUpgrades', JSON.stringify(unlockedUpgrades));
-  
+  localStorage.setItem('unlockedUpgrades', JSON.stringify(unlockedUpgrades));  
   localStorage.setItem('stagesUnlocked', JSON.stringify(stagesUnlocked));
   localStorage.setItem('stagesCompleted', JSON.stringify(stagesCompleted));
 
@@ -77,7 +77,12 @@ function loadGame() {
 
 // Used to reset save data
 function resetSave() {    
-  console.log("Save file cleared! ")
+  console.log("Before reset - maxEquipped:", maxEquipped);
+  RemoveAllUnlockedUpgrades();
+  console.log("After RemoveAllUnlockedUpgrades - maxEquipped:", maxEquipped);
+
+  upgradeLevels_Current = {};
+  console.log("Save file cleared! ");  
   upgradeLevels_Current = {};
   unlockedUpgrades = [];
   abilities = [];
@@ -118,7 +123,6 @@ function ClearAllEnemies() {
 
 // Game Resetter 
 function RestartGame() {
-    console.error("=== RESTART STARTED ===");    
     // Force clear everything
     ClearAllEnemies();
     ResetBossProjectiles();
@@ -160,7 +164,6 @@ function RestartGame() {
     
     // Reset abilities
     ResetAllAbilities();
-    ResetAbilityCooldownSystem();
     abilities = [];
     currentAbilityIndex = 0;
         
@@ -250,7 +253,6 @@ function RestartGame() {
     game_Screen = "playing";  
     justRestarted = true;    
 
-    console.error("=== RESTART COMPLETE ===");
 }
 
 function StartGame() {
@@ -599,7 +601,9 @@ function DrawPauseScreen() {
   // RESUME button
   if (DrawButton(width / 2 - 200, buttonY, 90, 50, "RESUME")) {
     game_Screen = "playing";
+    game_Paused = false;
     game_State = true;
+    lastMillis = millis();
     playSound("confirm");
   }
   

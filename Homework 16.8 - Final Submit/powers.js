@@ -592,11 +592,12 @@ function UpdateLightningBolt() {
     boltData.damageProcessed = true;
     
     // Handle boss targets
-    if (boltData.targetData && boltData.targetData.type === 'boss') {
+    if (boltData.targetData && boltData.targetData.type.startsWith('boss_')) {  // janky af work around
       const boss = bosses[boltData.targetData.index];
       if (!boss || !boss.isAlive) continue;
       
-      boss.center.health -= powerStats.lightningbolt.boltDamage;
+      const targetPart = boltData.targetData.type.split('_')[1]; // 'center', 'left', or 'right'
+      boss[targetPart].health -= powerStats.lightningbolt.boltDamage;
       damage_Dealt += powerStats.lightningbolt.boltDamage;
       
       // Play sound based on bolt type
@@ -606,6 +607,11 @@ function UpdateLightningBolt() {
         playSound('lightningchain');
       } else if (boltData.type === "echo") {
         playSound('lightningecho');
+      }
+      
+      // Check if boss is dead
+      if (boss.center.health <= 0 && boss.left.health <= 0 && boss.right.health <= 0) {
+        boss.isAlive = false;
       }
       
       if (boltData.type === "normal") {
@@ -680,9 +686,12 @@ function UpdateLightningBolt() {
       }
     }
     
-  if (targetEnemy && targetEnemy.health <= 0) {
-        KillEnemy(targetIndex);
+    if (targetEnemy && targetEnemy.health <= 0) {
+      const actualIndex = enemies.indexOf(targetEnemy);
+      if (actualIndex !== -1) {
+        KillEnemy(actualIndex);
       }
+    }
   }
 
   const totalDuration = (powerStats.lightningbolt.boltCount - 1) * powerStats.lightningbolt.boltFrames + 200;
@@ -1774,7 +1783,6 @@ function TriggerCyclone(stats) {
   playSound('cyclone');
 }
 
-
 function UpdateCyclone() {
   if (!game_State || game_Paused) return;
     const state = activePowers.cyclone;
@@ -1788,11 +1796,12 @@ function UpdateCyclone() {
       if (state.timer >= volley.spawnTime) {
         state.volleyQueue.splice(v, 1);
         
+        const spawnDelay = 24;         
         for (let i = 0; i < volley.cycloneCount; i++) {
           const angle = volley.opposite ? 
-            volley.baseAngle + PI + (i * volley.angleSpacing) : 
-            volley.baseAngle + (i * volley.angleSpacing);
-          const speed = 7;
+          volley.baseAngle + PI + (i * volley.angleSpacing) : 
+          volley.baseAngle + (i * volley.angleSpacing);
+          const speed = 6;
           
           state.projectiles.push({
             x: player_X,
@@ -1801,7 +1810,7 @@ function UpdateCyclone() {
             vy: sin(angle) * speed,
             angle: angle,
             age: 0,
-            maxLifespan: 120,
+            maxLifespan: 165,
             currentFrame: 0,
             frameTimer: 0,
             maxFrames: 3,
@@ -1821,7 +1830,11 @@ function UpdateCyclone() {
   // Update and draw cyclone projectiles
   for (let i = state.projectiles.length - 1; i >= 0; i--) {
     const cyclone = state.projectiles[i];
-    
+      if (cyclone.age < cyclone.spawnDelay) {
+      cyclone.age++;
+      continue;
+    }
+
     // Update animation frame
     cyclone.frameTimer++;
     if (cyclone.frameTimer >= cyclone.frameDelay) {
@@ -1832,8 +1845,8 @@ function UpdateCyclone() {
     // Move projectile
     cyclone.age++;
     // Calculate spiral expansion - moves outward over time
-    const spiralRadius = (cyclone.age / cyclone.maxLifespan) * 400; // Expands to 400 pixels
-    const spiralAngle = cyclone.angle + (cyclone.age * 0.05 * cyclone.spiralDirection);
+    const spiralRadius = (cyclone.age / cyclone.maxLifespan) * 400; // distance it reaches
+    const spiralAngle = cyclone.angle + (cyclone.age * 0.15 * cyclone.spiralDirection);
     
     cyclone.x = player_X + cos(spiralAngle) * spiralRadius;
     cyclone.y = player_Y + sin(spiralAngle) * spiralRadius;
@@ -1894,19 +1907,16 @@ function UpdateCyclone() {
       const distToCyclone = dist(cyclone.x, cyclone.y, enemy.x, enemy.y);
       if (distToCyclone < 20) {
         // Check if this enemy is on cooldown
-        const enemyId = enemies.indexOf(enemy);
-        if (cyclone.hitCooldowns[enemyId] && cyclone.hitCooldowns[enemyId] > 0) {
-          cyclone.hitCooldowns[enemyId]--;
-          continue;
-        }
+      if (cyclone.hitCooldowns[enemy] && cyclone.hitCooldowns[enemy] > 0) {
+        cyclone.hitCooldowns[enemy]--;
+        continue;
+      }
+        // hit enemy
+      enemy.health -= cyclone.damage;
+      damage_Dealt += cyclone.damage;
+      cyclone.hitCooldowns[enemy] = 20;
         
-        // Hit enemy
-        enemy.health -= cyclone.damage;
-        damage_Dealt += cyclone.damage;
-        cyclone.hitCooldowns[enemyId] = 20; // 20 frame cooldown
-        
-        playSound(cyclone.impactSound);
-        
+        playSound(cyclone.impactSound);        
         if (enemy.health <= 0) {
           KillEnemy(j);
         }

@@ -751,6 +751,8 @@ function drawTextColumns(x, y, lineHeight, size, ...columns) {
 
 function Drawgame_Screen() {
   DrawBackgroundLayers();  
+  CursorUpdate();
+
   if (justRestarted) {
     ResetAllAbilities();
     justRestarted = false;
@@ -799,8 +801,7 @@ function Drawgame_Screen() {
   CheckCollisions();
   CheckShotCollisions();
   DrawBombExplosions();
-  Immune();            
-  
+  Immune();    
   pop();
 
   // Draws boss outside of pop
@@ -810,8 +811,7 @@ function Drawgame_Screen() {
   
   // ===== UI THAT STAYS FIXED ON SCREEN ===== \\
 
-  DisplayFPS();
-  CursorUpdate();
+  DisplayFPS();  
   CreateBorders();
   UpdateHud();        
  
@@ -824,9 +824,9 @@ function Drawgame_Screen() {
   DrawPowerupDialog();
   DrawSupportDialog();
   text("Press Z to pause", 10, height - 20);    
-  if (!mouseIsPressed) {
-    dialogClickConsumed = false;
-}
+    if (!mouseIsPressed) {
+      dialogClickConsumed = false;
+  }
 }
 
 // `` -- __ DRAW __ -- `` \\  What is my purpose? You call the real functions. Oh. My. God.

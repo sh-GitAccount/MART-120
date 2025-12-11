@@ -15,6 +15,7 @@ function keyPressed() {
     game_Screen = "playing";
     game_State = true;
     game_Paused = false;
+    lastMillis = millis();
     pauseKeyPressed = true;
   }
 
@@ -94,10 +95,11 @@ function mousePressed() {
   // Pause RESUME button
   if (game_Screen === "paused") {
     HandleAttachmentClick(mouseX, mouseY);
-    // RESUME button
+    // RESUME button "RESUME"
     if (mouseX > width / 2 - 200 && mouseX < width / 2 - 110 &&
       mouseY > height - 80 && mouseY < height - 30) {
       game_Screen = "playing";
+      game_Paused = false;
       game_State = true;
       saveGame();
       return;

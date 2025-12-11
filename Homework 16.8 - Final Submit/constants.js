@@ -3,7 +3,7 @@
 // TItle screen
 var menuPulseAlpha = 0;
 var menuPulseDir = 1;
-
+var hardMode = false;
 // Powers option 
 let powerChoicePulseAlpha = 0;
 let powerChoicePulseDir = 1;
@@ -317,7 +317,7 @@ const BOUNCE_COOLDOWN = 15; // frames between bounces
 // Attachment stuff
 var attachments = [];
 var equippedAttachments = [];
-var maxEquipped = 2;
+var maxEquipped = 0;
 var hoveredAttachmentId = null;
 var mouseOverAttachmentX = 0;
 var mouseOverAttachmentY = 0;
@@ -709,7 +709,7 @@ const attachmentLevels = {
         ]
       },
       2: {
-        cost: 2800,
+        cost: 3500,
         itemInfo: "Increases Shot Count by 3, reduces Shot Speed by 1.",
         stats: [
           { stat: "shot_Count", value: 3 },
@@ -717,7 +717,7 @@ const attachmentLevels = {
         ]
       },
       3: {
-        cost: 3500,
+        cost: 5000,
         itemInfo: "Increases Shot Count by 4.",
         stats: [
           { stat: "shot_Count", value: 4 }
@@ -861,16 +861,16 @@ const attachmentLevels = {
     levels: {
       0: { 
         cost: 800, 
-        itemInfo: "Increases Cooldown Reduction by 24 and reduces Shield Charge time by 6.", 
+        itemInfo: "Increases Cooldown Reduction by 16 and reduces Shield Charge time by 6.", 
         stats: [
           { stat: "shield_Cooldown", value: 6 },
-          { stat: "cooldown_Reduction", value: 24 }] },
+          { stat: "cooldown_Reduction", value: 16 }] },
       1: { 
         cost: 1200, 
-        itemInfo: "Increases Cooldown Reduction by 30 and reduces Shield Charge time by 12.", 
+        itemInfo: "Increases Cooldown Reduction by 26 and reduces Shield Charge time by 12.", 
         stats: [
           { stat: "shield_Cooldown", value: 12 },
-          { stat: "cooldown_Reduction", value: 30 }] },
+          { stat: "cooldown_Reduction", value: 26 }] },
       2: { 
         cost: 2500, 
         itemInfo: "Increases Cooldown Reduction by 36 and reduces Shield Charge time by 18.", 
@@ -1001,7 +1001,7 @@ const attachmentLevels = {
           { stat: "shot_Speed", value: 12 }, 
           { stat: "shot_Duration", value: 12 }] },
       2: { 
-        cost: 2400, 
+        cost: 2200, 
         itemInfo: "Increases Shot Speed and Duration by 14.", 
         stats: [
           { stat: "shot_Speed", value: 14 }, 
@@ -1663,7 +1663,7 @@ const upgradeLevels = {
     baseIcon: "../Images/placeholder.png",
     levels: {
       0: {
-        cost: 1580,
+        cost: 15800,
         itemInfo: "Increases Maximum Attachments by +1.",
         stats: [{ stat: "maxEquipped", value: 1 }]
       },
@@ -2085,8 +2085,8 @@ const shipStats = {
     shot_Delay: 22,
     itemAbsorptionRadius: 40,
 
+    shield_Growth: 2,
     health_Growth: 4,
-
     bounce_Value: 0,
 
     ship_Info: "A balanced ship with a standard single-shot blaster.",
@@ -2115,9 +2115,8 @@ const shipStats = {
     itemAbsorptionRadius: 50,
 
     health_Growth: 2,
-    shield_Growth: 2,
+    shield_Growth: 3,
     bounce_Value: 0,
-
 
     ship_Info: "Faster ship, fires rapid bursts of shots.",
     ship_Info2: "Faster Shield Recharge timer, less accurate shots.",
@@ -2145,7 +2144,7 @@ const shipStats = {
     burstCooldown: 60, 
     itemAbsorptionRadius: 50,
 
-    health_Growth: 5,
+    health_Growth: 6,
     bounce_Value: 0,
 
     ship_Info: "Slower ship, heavy fire power.",

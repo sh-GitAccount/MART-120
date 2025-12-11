@@ -20,68 +20,54 @@ function HandleEnemyDrops(x, y, enemy) {
 
   for (let drop of drops) {
     let roll = random();
-    console.log("Drop chance:", drop.chance, "Random roll:", roll, "Success:", roll < drop.chance);
 
     if (roll < drop.chance) {
-      console.log(">>> DROP TRIGGERED! Item type:", drop.item);
       switch (drop.item) {
         case "exptoken":
           let amount = drop.amount ?? enemy.exp;
           SpawnExpToken(x, y, amount);
-          console.log("Spawned exptoken at:", x, y, "Amount:", amount);
           break;
         case "midexptoken":
           let mamount = drop.amount ?? enemy.exp;
           SpawnMidExpToken(x, y, mamount);
-          console.log("Spawned midexptoken at:", x, y, "Amount:", mamount);
           break;
         case "bigexptoken":
           let bamount = drop.amount ?? enemy.exp;
           SpawnBigExpToken(x, y, bamount);
-          console.log("Spawned bigexptoken at:", x, y, "Amount:", bamount);
           break;
 
 
         case "goldtoken":
           SpawnGoldToken(x, y);
-          console.log("Spawned goldtoken at:", x, y);
           break;
 
         case "biggoldtoken":
           SpawnBigGoldToken(x, y);
-          console.log("Spawned biggoldtoken at:", x, y);
           break;
 
         case "powerup":
           SpawnPowerup(x, y);
-          console.log("Spawned powerup at:", x, y);
           break;
         case "ability":
           SpawnAbility(x, y, drop.abilityName);
-          console.log("Spawned ability at:", x, y);
           break;
         case "support":
           SpawnSupport(x, y);
-          console.log("Spawned support at:", x, y);
           break;
 
         case "sucker":
           SpawnSucker(x, y);
-          console.log("Spawned sucker at:", x, y);
           break;
         case "exploder":
           SpawnSupport(x, y);
-          console.log("Spawned exploder at:", x, y);
           break;
 
         default:
           SpawnItem(x, y, drop.amount);
-          console.log("Spawned generic item at:", x, y);
           break;
       }
     }
   }
-  console.log("Total items after drops:", items_X.length);
 }
 
 function HandleBossDrops(x, y, bossType) {
@@ -100,23 +86,18 @@ function HandleBossDrops(x, y, bossType) {
         case "bigexptoken":
           let amount = drop.amount ?? 50;
           SpawnBigExpToken(x, y, amount);
-          console.log("Boss dropped bigexptoken:");
           break;
         case "goldtoken":
           SpawnGoldToken(x, y, drop.amount ?? 25);
-          console.log("Boss dropped goldtoken!");
           break;
         case "ability":
           SpawnAbility(x, y, drop.abilityName);
-          console.log("Boss dropped ability!");
           break;
         case "sucker":
           SpawnSucker(x, y);
-          console.log("Boss dropped sucker!");
           break;
         case "biggoldtoken":
           SpawnBigGoldToken(x, y, drop.amount ?? 500);
-          console.log("Boss dropped biggoldtoken!");
           break;
       }
     }

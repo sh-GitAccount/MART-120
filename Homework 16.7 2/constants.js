@@ -317,7 +317,7 @@ const BOUNCE_COOLDOWN = 15; // frames between bounces
 // Attachment stuff
 var attachments = [];
 var equippedAttachments = [];
-var maxEquipped = 2;
+var maxEquipped = 0;
 var hoveredAttachmentId = null;
 var mouseOverAttachmentX = 0;
 var mouseOverAttachmentY = 0;
@@ -1001,7 +1001,7 @@ const attachmentLevels = {
           { stat: "shot_Speed", value: 12 }, 
           { stat: "shot_Duration", value: 12 }] },
       2: { 
-        cost: 2400, 
+        cost: 2200, 
         itemInfo: "Increases Shot Speed and Duration by 14.", 
         stats: [
           { stat: "shot_Speed", value: 14 }, 
@@ -1663,7 +1663,7 @@ const upgradeLevels = {
     baseIcon: "../Images/placeholder.png",
     levels: {
       0: {
-        cost: 1580,
+        cost: 15800,
         itemInfo: "Increases Maximum Attachments by +1.",
         stats: [{ stat: "maxEquipped", value: 1 }]
       },
@@ -2085,8 +2085,8 @@ const shipStats = {
     shot_Delay: 22,
     itemAbsorptionRadius: 40,
 
+    shield_Growth: 2,
     health_Growth: 4,
-
     bounce_Value: 0,
 
     ship_Info: "A balanced ship with a standard single-shot blaster.",
@@ -2115,9 +2115,8 @@ const shipStats = {
     itemAbsorptionRadius: 50,
 
     health_Growth: 2,
-    shield_Growth: 2,
+    shield_Growth: 3,
     bounce_Value: 0,
-
 
     ship_Info: "Faster ship, fires rapid bursts of shots.",
     ship_Info2: "Faster Shield Recharge timer, less accurate shots.",
@@ -2145,7 +2144,7 @@ const shipStats = {
     burstCooldown: 60, 
     itemAbsorptionRadius: 50,
 
-    health_Growth: 5,
+    health_Growth: 6,
     bounce_Value: 0,
 
     ship_Info: "Slower ship, heavy fire power.",

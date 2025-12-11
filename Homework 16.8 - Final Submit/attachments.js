@@ -230,6 +230,21 @@ function EquipAttachment(attachmentId) {
   saveGame();
 }
 
+// Remove all upgrades
+function RemoveAllUnlockedUpgrades() {
+  for (let upgradeId in upgradeLevels_Current) {
+    const level = upgradeLevels_Current[upgradeId] || 0;
+    if (level >= 0) {
+      const upgradeData = GetUpgradeLevelData(upgradeId, level);
+      if (upgradeData && upgradeData.stats) {
+        for (let statObj of upgradeData.stats) {
+          RemoveStat(statObj.stat, statObj.value);
+        }
+      }
+    }
+  }
+}
+
 // Attachment handling 
 function UnequipAttachment(slotIndex) {
   const attachmentId = equippedAttachments[slotIndex];
