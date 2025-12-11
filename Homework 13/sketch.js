@@ -113,7 +113,7 @@ for (var i = 0; i < obs_X.length; i++) {
 
 // Makin dem dere circledrawer ya 'earin' me now?
 function ClickCircle() {
-  if (mouseIsPressed && mouseButton === LEFT  && obs_Cooldown === 0) {
+  if (mouseIsPressed && mouseButton === LEFT  && cobs_Cooldown === 0) {
     mouse_X = mouseX;
     mouse_Y = mouseY;
     console.log("Mouse coordinates: X " + mouse_X + " :: Y " + mouse_Y);
@@ -127,7 +127,7 @@ function ClickCircle() {
     cobs_YSpeed[cobsCount] = Math.floor(Math.random() * 12) - 6;
     
     cobsCount++;
-    obs_Cooldown = 20    
+    cobs_Cooldown = 20    
     MoveCobs();
   }  
 }
@@ -179,8 +179,8 @@ function MovePlayer() {   // Handles movement of objects and frame timer! We be 
     grow_Speed *= -1; 
       }
   }
-  if (obs_Cooldown > 0) {
-      obs_Cooldown--;  // Keeps the cooldown from being perma triggered
+  if (cobs_Cooldown > 0) {
+      cobs_Cooldown--;  // Keeps the cooldown from being perma triggered
   }  
 }
 

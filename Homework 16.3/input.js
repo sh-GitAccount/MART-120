@@ -85,6 +85,12 @@ function mousePressed() {
       game_Screen = "shop";
       return; 
     }
+    if (DrawButton(width / 2 - 75, height / 2 + 190, 150, 60, "OPTIONS")) {
+      mostRecentScreen = "menu";
+      playSound("confirm");
+      game_Screen = "options";
+      return; 
+  }    
   }
 
   // Pause RESUME button
@@ -99,26 +105,39 @@ function mousePressed() {
       saveGame();
       return;
     }
+     // TITLE SCREEN button - now opens confirmation
+    if (mouseX > width - 350 && mouseX < width - 350 + 155 && 
+        mouseY > buttonY && mouseY < buttonY + 50) {
+      titleScreenConfirmOpen = true;
+      playSound("select");
+      return;
+    }
 
     // TITLE SCREEN button
-    if (mouseX > width - 350 && mouseX < width - 350 + 155 && mouseY > buttonY && mouseY < buttonY + 50) {
-      game_Screen = "menu";
-      Level = 1;
-      Exp = 0;
-      totalGold += Gold;
-      Gold = 0;
-      console.log("Current Gold added to Total Gold value and reset to 0!");
-      exp_Next = 25;
-      max_Health = baseMaxHealth;
-      player_Health = max_Health;
-      stage = 1;
-      bits = 0;
-      blasters = 0;
-      cannons = 0;
-      playSound("confirm");
-      stopMusicTrack();
-      playMusicTrack('menuTheme');
-      saveGame();
+    if (mouseX > width - 350 && mouseX < width - 350 + 155 && 
+        mouseY > buttonY && mouseY < buttonY + 50) {
+      
+      if (confirm("Return to Title Screen? Your progress will be saved.")) {
+        stopMusicTrack();
+        totalGold += Gold;
+        Gold = 0;
+        console.log("Current Gold added to Total Gold value and reset to 0!");
+        playMusicTrack('menuTheme');
+        playSound("confirm");
+        
+        Level = 1;
+        Exp = 0;
+        exp_Next = 25;
+        max_Health = baseMaxHealth;
+        player_Health = max_Health;
+        stage = 1;
+        bits = 0;
+        blasters = 0;
+        cannons = 0;
+        
+        game_Screen = "menu";
+        saveGame();
+      }
       return;
     }
   }
@@ -138,11 +157,111 @@ function mousePressed() {
   }
 }
 
+function DrawTitleScreenConfirmation() {
+  if (!titleScreenConfirmOpen) return;
+
+  const dialogWidth = 400;
+  const dialogHeight = 200;
+  const dialogX = width / 2 - dialogWidth / 2;
+  const dialogY = height / 2 - dialogHeight / 2;
+
+  // Semi-transparent overlay
+  fill(0, 0, 0, 100);
+  rect(0, 0, width, height);
+
+  // Dialog box
+  fill(40, 40, 80);
+  stroke(150, 150, 200);
+  strokeWeight(2);
+  rect(dialogX, dialogY, dialogWidth, dialogHeight, 10);
+
+  // Title
+  fill(255, 200, 100);
+  textSize(24);
+  textStyle(BOLD);
+  textAlign(CENTER, TOP);
+  text("Return to Title Screen?", width / 2, dialogY + 20);
+
+  // Message
+  fill(200);
+  textSize(16);
+  textStyle(NORMAL);
+  text("Your progress will be saved.", width / 2, dialogY + 60);
+  text("Continue?", width / 2, dialogY + 85);
+
+  // Buttons
+  const buttonWidth = 100;
+  const buttonHeight = 50;
+  const yesButtonX = dialogX + 50;
+  const noButtonX = dialogX + dialogWidth - buttonWidth - 50;
+  const buttonsY = dialogY + dialogHeight - 80;
+
+  // YES button
+  if (DrawButton(yesButtonX, buttonsY, buttonWidth, buttonHeight, "YES")) {
+    HandleTitleScreenConfirmation(yesButtonX + buttonWidth / 2, buttonsY + buttonHeight / 2);
+  }
+
+  // NO button
+  if (DrawButton(noButtonX, buttonsY, buttonWidth, buttonHeight, "NO")) {
+    HandleTitleScreenConfirmation(noButtonX + buttonWidth / 2, buttonsY + buttonHeight / 2);
+  }
+}
+
+function HandleTitleScreenConfirmation(mx, my) {
+  const dialogWidth = 400;
+  const dialogHeight = 200;
+  const dialogX = width / 2 - dialogWidth / 2;
+  const dialogY = height / 2 - dialogHeight / 2;
+  
+  const buttonWidth = 100;
+  const buttonHeight = 50;
+  const yesButtonX = dialogX + 50;
+  const noButtonX = dialogX + dialogWidth - buttonWidth - 50;
+  const buttonsY = dialogY + dialogHeight - 80;
+
+  // YES button
+  if (mx > yesButtonX && mx < yesButtonX + buttonWidth &&
+      my > buttonsY && my < buttonsY + buttonHeight) {
+    // Confirmed - go to title screen
+    HandleWavePause(false);
+    stopMusicTrack();
+    totalGold += Gold;
+    Gold = 0;
+    console.log("Current Gold added to Total Gold value and reset to 0!");
+    playMusicTrack('menuTheme');
+    playSound("confirm");
+    
+    Level = 1;
+    Exp = 0;
+    exp_Next = 25;
+    max_Health = baseMaxHealth;
+    player_Health = max_Health;
+    stage = 1;
+    bits = 0;
+    blasters = 0;
+    cannons = 0;
+
+    game_Screen = "menu";
+    titleScreenConfirmOpen = false;
+    saveGame();
+    return;
+  }
+
+  // NO button
+  if (mx > noButtonX && mx < noButtonX + buttonWidth &&
+      my > buttonsY && my < buttonsY + buttonHeight) {
+    // Cancelled - stay in pause menu
+    titleScreenConfirmOpen = false;
+    playSound("cancel");
+    return;
+  }
+}
+
 // shop click
 function HandleShopClick(mx, my) {
-  // If confirmation box is open, DON'T process grid clicks!
+  // If confirmation box is open stop
   if (shopConfirmOpen) {
-    return; // Early exit - let the confirmation box handle clicks
+    return; // 
   }
 
   const cols = attachmentGrid[0].length;

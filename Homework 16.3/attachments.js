@@ -205,14 +205,23 @@ function ToggleAttachment(attachmentId) {
 
 function EquipAttachment(attachmentId) {
   equippedAttachments.push(attachmentId);
-  const attachmentData = GetCurrentAttachmentData(attachmentId); // Get current level stats!
+  const attachmentData = GetCurrentAttachmentData(attachmentId); 
 
-  // Apply all stat bonuses
-  for (let statObj of attachmentData.stats) {
-    ApplyStat(statObj.stat, statObj.value);
+  // Special case: Mirror Shots enables bouncing and disables penetration
+  if (attachmentId === 12) {
+    shot_Penetration = 0;
+    console.log("Mirror Shots equipped - Penetration disabled, Bounces enabled");
   }
+
+  // Apply all stat bonuses from the CURRENT LEVEL data
+  if (attachmentData && attachmentData.stats) {
+    for (let statObj of attachmentData.stats) {
+      ApplyStat(statObj.stat, statObj.value);
+    }
+  }
+  
   // Apply conversions
-  if (attachmentData.conversion) {
+  if (attachmentData && attachmentData.conversion) {
     ApplyConversion(
       attachmentData.conversion.fromStat,
       attachmentData.conversion.toStat,
@@ -229,14 +238,25 @@ function EquipAttachment(attachmentId) {
 // Attachment handling 
 function UnequipAttachment(slotIndex) {
   const attachmentId = equippedAttachments[slotIndex];
-  const attachmentData = GetCurrentAttachmentData(attachmentId); // Get current level stats!
+  const attachmentData = GetCurrentAttachmentData(attachmentId); // Get current level data
 
-  // Remove all stat bonuses
-  for (let statObj of attachmentData.stats) {
-    RemoveStat(statObj.stat, statObj.value);
+  // Special case: Re-enable penetration when Mirror Shots is unequipped
+  if (attachmentId === 12) {
+    const currentShip = shipStats[selectedShip];
+    shot_Penetration = currentShip.shot_Penetration;
+    bounce_Value = 0;
+    console.log("Mirror Shots unequipped - Penetration restored, Bounces disabled");
   }
+
+  // Remove all stat bonuses from the CURRENT LEVEL data
+  if (attachmentData && attachmentData.stats) {
+    for (let statObj of attachmentData.stats) {
+      RemoveStat(statObj.stat, statObj.value);
+    }
+  }
+  
   // Remove conversions
-  if (attachmentData.conversion) {
+  if (attachmentData && attachmentData.conversion) {
     RemoveConversion(
       attachmentData.conversion.fromStat,
       attachmentData.conversion.toStat
@@ -248,7 +268,7 @@ function UnequipAttachment(slotIndex) {
   RecalculateConversions();
   DetermineFirePattern();
   saveGame(); 
-}
+}a
 
 // Apply the stat when attachments change
 function ApplyStat(statName, value) {
@@ -295,6 +315,8 @@ function ApplyStat(statName, value) {
     itemAbsorptionRadius += value;
   } else if (statName === "pickupRadius_multiply") {
     itemAbsorptionRadius *= (1 + value);
+  } else if (statName === "bounce_Value") { 
+    bounce_Value += value;
   }
   RecalculateConversions();
   ClampStats();
@@ -345,6 +367,8 @@ function RemoveStat(statName, value) {
     itemAbsorptionRadius += value;
   } else if (statName === "pickupRadius_multiply") {
     itemAbsorptionRadius *= (1 + value);
+  } else if (statName === "bounce_Value") { 
+    bounce_Value -= value;
   }
   RecalculateConversions();
   ClampStats();

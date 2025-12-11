@@ -97,13 +97,6 @@ function ApplyShipStats() {
   shot_Penetration = stats.shot_Penetration;
   shipSelected = stats.name;
 
-  // Lock old ability and unlock new one
-  const newAbility = shipAbilities[shipSelected];
-  if (newAbility) {
-    UnlockAbility(newAbility);
-    currentShipAbility = newAbility;
-  }
-
   baseMaxHealth = stats.baseMaxHealth;
   baseShieldValue = stats.baseShieldValue;
 
@@ -116,6 +109,32 @@ function ApplyShipStats() {
   } else if (shot_Type === 3) {
     weapon_Type = "Array";
   }
+
+  // Lock old ability and unlock new one
+  const newAbility = shipAbilities[shipSelected];
+  if (newAbility) {
+    UnlockAbility(newAbility);
+    currentShipAbility = newAbility;
+  }
+
+  for (let attachmentId of equippedAttachments) {
+    const attachmentData = GetCurrentAttachmentData(attachmentId);
+    if (attachmentData && attachmentData.stats) {
+      for (let statObj of attachmentData.stats) {
+        ApplyStat(statObj.stat, statObj.value);
+      }
+    }
+    if (attachmentData && attachmentData.conversion) {
+      ApplyConversion(
+        attachmentData.conversion.fromStat,
+        attachmentData.conversion.toStat,
+        attachmentData.conversion.percentage
+      );
+    }
+  }
+  
+  RecalculateConversions();
+  ClampStats();
 }
 
 // Update to the ship selection screen

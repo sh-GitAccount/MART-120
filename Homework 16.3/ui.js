@@ -41,6 +41,7 @@ function DrawMenuScreen() {
   // Draw START and SHOP buttons visually 
   DrawButton(width / 2 - 75, height / 2 + 50, 150, 60, "START");
   DrawButton(width / 2 - 75, height / 2 + 120, 150, 60, "SHOP");
+  DrawButton(width / 2 - 75, height / 2 + 190, 150, 60, "OPTIONS");
 
   textSize(24);
   fill(150);
@@ -63,12 +64,15 @@ function DrawShopScreen() {
   background(20);
 
   textAlign(CENTER);
-  textSize(48);
+  textSize(40);
   fill(255);
-  text("SHOP", width / 2, 60);
+  text("SHOP", width / 2, 40);
 
-  textSize(22);
-  text("Total Gold: " + totalGold, width / 2, 110);
+  textSize(20);
+  text("Total Gold: " + totalGold, width / 2, 80);
+
+  textSize(20);
+  text("Attachment Selection", width / 2, 110);
 
   const rows = attachmentGrid.length;
   const cols = attachmentGrid[0].length;
@@ -151,7 +155,6 @@ function DrawShopScreen() {
   }
   if (!mouseIsPressed) shopMouseReleased = true;
 
-  // Draw tooltip OR confirmation box case dependent
   if (shopConfirmOpen && shopSelectedAttachment !== null) {
     // Draw confirmation box in tooltip style
     drawShopConfirmationTooltip(shopSelectedAttachment, startX, startY, rows, cols, cellSize, gap, gridWidth);
@@ -334,6 +337,172 @@ function TryUpgrade(itemKey, cost) {
     playSound("upgrade");
   } else {
     playSound("error");
+  }
+}
+
+function DrawOptionsScreen() {
+  background(20, 20, 40);
+
+  fill(255);
+  textAlign(CENTER, CENTER);
+  textSize(48);
+  textStyle(BOLD);
+  text("OPTIONS", width / 2, 80);
+
+  // ===== NEBULA TOGGLE =====
+  const toggleY = 180;
+  const toggleSize = 40;
+  const toggleX = width / 2 - 100;
+
+  fill(200);
+  textSize(24);
+  textAlign(LEFT, CENTER);
+  text("Draw Nebula:", width / 2 - 300, toggleY);
+
+  // Toggle button
+  if (nebulaEnabled) {
+    fill(100, 200, 100);
+  } else {
+    fill(100, 100, 150);
+  }
+  stroke(200);
+  strokeWeight(2);
+  rect(toggleX, toggleY - toggleSize / 2, toggleSize, toggleSize, 5);
+
+  // Toggle label
+  fill(255);
+  textAlign(CENTER, CENTER);
+  textSize(20);
+  textStyle(BOLD);
+  text(nebulaEnabled ? "ON" : "OFF", toggleX + toggleSize / 2, toggleY);
+
+  // Check if toggle clicked
+  if (mouseIsPressed && optionsMouseReleased &&
+      mouseX > toggleX && mouseX < toggleX + toggleSize &&
+      mouseY > toggleY - toggleSize / 2 && mouseY < toggleY + toggleSize / 2) {
+    nebulaEnabled = !nebulaEnabled;
+    nebulaOff = !nebulaEnabled; 
+    optionsMouseReleased = false;
+    console.log("Nebula toggled to: " + nebulaEnabled);
+  }
+
+  // ===== MUSIC VOLUME SLIDER =====
+  const sliderY = 280;
+  const sliderWidth = 300;
+  const sliderHeight = 20;
+  const sliderX = width / 2 - sliderWidth / 2;
+
+  fill(200);
+  textSize(24);
+  textAlign(LEFT, CENTER);
+  text("Music Volume:", width / 2 - 300, sliderY);
+
+  // Slider background
+  fill(50);
+  stroke(150);
+  strokeWeight(2);
+  rect(sliderX, sliderY - sliderHeight / 2, sliderWidth, sliderHeight, 5);
+
+  // Slider fill
+  fill(100, 200, 100);
+  noStroke();
+  rect(sliderX, sliderY - sliderHeight / 2, sliderWidth * musicVolume, sliderHeight, 5);
+
+  // Slider handle
+  fill(200, 255, 200);
+  stroke(100);
+  strokeWeight(2);
+  circle(sliderX + sliderWidth * musicVolume, sliderY, sliderHeight + 5);
+
+  // Volume percentage display
+  fill(255);
+  textSize(18);
+  textAlign(LEFT);
+  text(Math.round(musicVolume * 100) + "%", sliderX + sliderWidth + 20, sliderY);
+
+  // Check if slider dragged
+  if (mouseIsPressed &&
+      mouseY > sliderY - sliderHeight / 2 - 10 &&
+      mouseY < sliderY + sliderHeight / 2 + 10) {
+    let newVolume = (mouseX - sliderX) / sliderWidth;
+    musicVolume = Math.max(0, Math.min(1, newVolume));
+    setMusicVolume(musicVolume);
+  }
+
+  // ===== SFX VOLUME SLIDER =====
+  const sfxSliderY = 380;
+
+  fill(200);
+  textSize(24);
+  textAlign(LEFT, CENTER);
+  text("SFX Volume:", width / 2 - 300, sfxSliderY);
+
+  // Slider background
+  fill(50);
+  stroke(150);
+  strokeWeight(2);
+  rect(sliderX, sfxSliderY - sliderHeight / 2, sliderWidth, sliderHeight, 5);
+
+  // Slider fill
+  fill(100, 150, 255);
+  noStroke();
+  rect(sliderX, sfxSliderY - sliderHeight / 2, sliderWidth * sfxVolume, sliderHeight, 5);
+
+  // Slider handle
+  fill(200, 220, 255);
+  stroke(100);
+  strokeWeight(2);
+  circle(sliderX + sliderWidth * sfxVolume, sfxSliderY, sliderHeight + 5);
+
+  // Volume percentage display
+  fill(255);
+  textSize(18);
+  textAlign(LEFT);
+  text(Math.round(sfxVolume * 100) + "%", sliderX + sliderWidth + 20, sfxSliderY);
+
+  // Check if slider dragged
+  if (mouseIsPressed &&
+      mouseY > sfxSliderY - sliderHeight / 2 - 10 &&
+      mouseY < sfxSliderY + sliderHeight / 2 + 10) {
+    let newVolume = (mouseX - sliderX) / sliderWidth;
+    sfxVolume = Math.max(0, Math.min(1, newVolume));
+    applySFXVolume();
+  }
+
+  // ===== BACK BUTTON =====
+  const buttonY = height - 100;
+  if (DrawButton(width / 2 - 100, buttonY, 200, 60, "BACK")) {
+    if (mostRecentScreen === "playing"){
+    game_Screen = "playing";
+    game_State = true;
+    saveGame();
+    return;      
+    }
+    else game_Screen = mostRecentScreen;
+
+    playSound("confirm");
+  }
+
+  textSize(14);
+  fill(150);
+  textAlign(CENTER);
+  text("Changes are saved automatically", width / 2, height - 30);
+
+  if (!mouseIsPressed) {    // makes it so that it doesn't click 283 times per second on a single click
+    optionsMouseReleased = true;
+  }  
+}
+
+// Apply SFX volume to all sound effects
+function applySFXVolume() {
+  for (let soundName in sounds) {
+    if (sounds[soundName] && Array.isArray(sounds[soundName])) {
+      for (let i = 0; i < sounds[soundName].length; i++) {
+        if (sounds[soundName][i]) {
+          sounds[soundName][i].setVolume(sfxVolume);
+        }
+      }
+    }
   }
 }
 
@@ -707,7 +876,6 @@ function DrawGameOverScreen() {
 }
 
 function DrawBackgroundLayers() {
-
   if (!nebulaOff) {
   DrawGridLayer();  
   DrawStarLayer();    

@@ -33,6 +33,7 @@ function loadGame() {
       attachments = data.attachments ?? [];
       stagesCleared = data.stagesCleared ?? 0;
       stagesUnlocked = data.stagesUnlocked ?? 1;
+      
     } catch (e) {
       console.error("Save data corrupted, restoring defaults: ", e);
       resetSave();
@@ -251,6 +252,7 @@ function CursorUpdate() {
 
 function LoadStage(stageNumber = stage) {
     ApplyShipStats();
+    ApplyStat();
     console.log("LoadStage called: stage =", stageNumber);
 
     stage = stageNumber;
@@ -309,21 +311,32 @@ function DrawPauseScreen() {
     tooltipWidth: 300,
     tooltipHeight: 150
   });
-
   const buttonY = height - 80;
+
+  // OPTIONS button (leftmost)
+  if (DrawButton(width / 2 - 320, buttonY, 90, 50, "OPTIONS")) {
+    mostRecentScreen = "playing";
+    game_Screen = "options";
+    playSound("confirm");
+  }
+  
+  // RESUME button
   if (DrawButton(width / 2 - 200, buttonY, 90, 50, "RESUME")) {
     game_Screen = "playing";
     game_State = true;
     playSound("confirm");
   }
+  
+  // TITLE SCREEN button (rightmost)
   if (DrawButton(width - 300 - 50, buttonY, 155, 50, "TITLE SCREEN")) {
-    game_Screen = "menu";
+  titleScreenConfirmOpen = true;
   }
-
+  
   fill(255);
   textSize(14);
   textAlign(CENTER, CENTER);
   text("Press Z to resume", width / 2, height - 20);
+  DrawTitleScreenConfirmation();
 }
 
 function ResetAllArrays() { // and other stuff too hopefully I will remember to update this when I add/change stuff but probly won't it is waht it is
@@ -357,7 +370,9 @@ function ResetAllArrays() { // and other stuff too hopefully I will remember to 
   shot_RemovalDelay = [];
 
   hit_Timer = 0;
-  
+  shot_BouncesRemaining = [];
+  shot_LastBounceTime = [];
+
   // Reset shield
   shield_Active = false;
   shield_Hit = false;

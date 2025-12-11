@@ -34,7 +34,7 @@ function SpawnEnemy(type, x, y, spawnSide = null, parentDiameter = 40) {
       
     case "minidia":
       enemy.diameter = parentDiameter / 2 + 4;
-      enemy.health = 3;
+      enemy.health = 30;
       enemy.speed = 2; 
       enemy.xSpeed = random() < 0.5 ? random(-6, -2) : random(2, 6);
       enemy.ySpeed = random() < 0.5 ? random(-6, -2) : random(2, 6);
@@ -46,7 +46,7 @@ function SpawnEnemy(type, x, y, spawnSide = null, parentDiameter = 40) {
       
     case "lilfella":
       enemy.diameter = 30;
-      enemy.health = 3;
+      enemy.health = 30;
       enemy.speed = 1.7;  
       enemy.xSpeed = random() * 8 - 4;
       enemy.ySpeed = random() * 8 - 4;
@@ -58,7 +58,7 @@ function SpawnEnemy(type, x, y, spawnSide = null, parentDiameter = 40) {
       
     case "disc":
       enemy.diameter = random(40, 70);
-      enemy.health = 20;
+      enemy.health = 200;
       enemy.speed = 2.5;
       enemy.xSpeed = random() * 8 - 4;
       enemy.ySpeed = random() * 8 - 4;
@@ -70,7 +70,7 @@ function SpawnEnemy(type, x, y, spawnSide = null, parentDiameter = 40) {
       
     case "chungusjr":
       enemy.diameter = 175;
-      enemy.health = 28;
+      enemy.health = 280;
       enemy.speed = 1.2;  
       enemy.xSpeed = random() * 8 - 4;
       enemy.ySpeed = random() * 8 - 4;
@@ -82,7 +82,7 @@ function SpawnEnemy(type, x, y, spawnSide = null, parentDiameter = 40) {
       
     case "chungus":
       enemy.diameter = 200;
-      enemy.health = 65;
+      enemy.health = 650;
       enemy.speed = 1.0;  
       enemy.xSpeed = random() * 8 - 4;
       enemy.ySpeed = random() * 8 - 4;
@@ -94,7 +94,7 @@ function SpawnEnemy(type, x, y, spawnSide = null, parentDiameter = 40) {
       
     case "chungussr":
       enemy.diameter = 225;
-      enemy.health = 200;
+      enemy.health = 2000;
       enemy.speed = 0.8;  
       enemy.xSpeed = random() * 8 - 4;
       enemy.ySpeed = random() * 8 - 4;
@@ -106,7 +106,7 @@ function SpawnEnemy(type, x, y, spawnSide = null, parentDiameter = 40) {
       
     case "dia":
       enemy.diameter = 65;
-      enemy.health = 9;
+      enemy.health = 90;
       enemy.sound = "deathdiamond";
       enemy.hitSound = "hitdiamond";
       enemy.exp = 4;
@@ -127,7 +127,7 @@ function SpawnEnemy(type, x, y, spawnSide = null, parentDiameter = 40) {
       
     case "gigadia":
       enemy.diameter = 126;
-      enemy.health = 38;
+      enemy.health = 380;
       enemy.sound = "deathdiamond";
       enemy.hitSound = "hitdiamond";
       enemy.exp = 12;
@@ -148,7 +148,7 @@ function SpawnEnemy(type, x, y, spawnSide = null, parentDiameter = 40) {
       
     case "grower":
       enemy.diameter = 32;
-      enemy.health = 10;
+      enemy.health = 100;
       enemy.xSpeed = 4;
       enemy.ySpeed = 4;
       enemy.sound = "deathgrower";

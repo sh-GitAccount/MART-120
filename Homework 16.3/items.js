@@ -266,11 +266,12 @@ function UpdateItems() {
 // Will need to retune these later but yolo for now
 function getCurrentValue(name) {
   switch (name) {
-    case "Power +1": return shot_Power;
+    case "Power +4": return shot_Power;
     case "Count +1": return shot_Count;
     case "Speed +1": return shot_Speed;
     case "Speed +2": return shot_Speed;
     case "Delay -2": return shot_Delay;
+    case "Penetration +1": return shot_Penetration;    
     case "Diameter +2": return shot_Diameter;
     case "Duration +3": return shot_Duration;
     case "Duration +5": return shot_Duration;
@@ -283,7 +284,7 @@ function getProjectedValue(powerup) {
   const current = getCurrentValue(powerup.name);
 
   switch (powerup.name) {
-    case "Power +1": return current + 1;
+    case "Power +4": return current + 4;
     case "Count +1": return current + 1;
     case "Speed +1": return current + 1;
     case "Speed +2": return current + 2;

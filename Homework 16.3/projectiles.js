@@ -30,7 +30,6 @@ function DetermineFirePattern() {
 
 // Makin dem dere shootin' n'stuff ya 'earin' me now?
 function Shot() {
-  if (burstCooldownTimer > 0) burstCooldownTimer--;
   if (shotTimer > 0) shotTimer--;
 
   if (game_State && mouseIsPressed && mouseButton === LEFT) {
@@ -39,10 +38,10 @@ function Shot() {
       shotTimer = shot_Delay;
       if (shotTimer < 1) shotTimer = 1;
     }
-    else if (shot_Type === 1 && burstCooldownTimer <= 0) {
+    else if (shot_Type === 1 && shotTimer <= 0) {
       FireBurst();
-      burstCooldownTimer = burstCooldown;
-      if (burstCooldownTimer < 1) burstCooldownTimer = 1;
+      shotTimer = shot_Delay;
+      if (shotTimer < 1) shotTimer = 1;
     }
     else if (shot_Type === 2) {
       FullAuto();
@@ -56,6 +55,7 @@ function Shot() {
 }
 
 // Core shootin' mechanic
+
 function AddShots(x, y, angles, speeds, diameters, sourceType, penetration, powers) {
   if (powers === undefined) {
     powers = new Array(angles.length).fill(shot_Power);
@@ -85,8 +85,10 @@ function AddShots(x, y, angles, speeds, diameters, sourceType, penetration, powe
     shot_WaveAmplitude.push(0);
     shot_WaveFrequency.push(0);
     shot_DistanceTraveled.push(0);
+    
+    shot_BouncesRemaining.push(bounce_Value);
+    shot_LastBounceTime.push(0); // Prevent insta re-bouncing
 
-    // push normalized power per-shot
     shot_PowerArray.push(powers[i]);
   }
   shot_CurrentAmount = shot_X.length;
@@ -616,13 +618,11 @@ function MoveShot() {
   if (!game_State) return;
 
   for (let i = shot_X.length - 1; i >= 0; i--) {
-    // Calculate proper proj speed 
     let speed = Math.sqrt(
       shot_xDistance[i] * shot_xDistance[i] +
       shot_yDistance[i] * shot_yDistance[i]
     );
 
-    // Standard movement
     let moveX = shot_xDistance[i];
     let moveY = shot_yDistance[i];
 
@@ -642,33 +642,19 @@ function MoveShot() {
     shot_Y[i] += moveY;
     shot_Timer[i]++;
 
-    if (reflect) {
-      if (shot_Timer[i] > shot_Duration) {
-        SpliceShot(i);
-        continue;
-      }
-
-      if (shot_X[i] <= 10 || shot_X[i] >= width - 10) {
-        shot_xDistance[i] *= -1;
-      }
-      if (shot_Y[i] <= 60 || shot_Y[i] >= height - 10) {
-        shot_yDistance[i] *= -1;
-      }
-
-    } else {
-      // remove shots if they're too far from the player
-      if (shot_Timer[i] > shot_Duration) {
-        SpliceShot(i);
-        continue;
-      }
-      
-      let distToPlayer = dist(shot_X[i], shot_Y[i], player_X, player_Y);
-      if (distToPlayer > 3000) {
-        SpliceShot(i);
-        continue;
-      }
+    // Check duration and distance - shots no longer bounce off boundaries
+    if (shot_Timer[i] > shot_Duration) {
+      SpliceShot(i);
+      continue;
+    }
+    
+    let distToPlayer = dist(shot_X[i], shot_Y[i], player_X, player_Y);
+    if (distToPlayer > 3000) {
+      SpliceShot(i);
+      continue;
     }
 
+    // Draw the shots
     let d = shot_Diameter_Array[i] || shot_Diameter;
     let source = shot_SourceType[i] || 0;
 
@@ -676,7 +662,6 @@ function MoveShot() {
     fill(255);
 
     if (source === 1) {
-      // Bit line shot
       stroke(0, 255, 255);
       strokeWeight(2);
       line(shot_X[i], shot_Y[i], shot_X[i] + moveX * 2, shot_Y[i] + moveY * 2);
@@ -688,7 +673,6 @@ function MoveShot() {
       continue;
 
     } else if (source === 3) {
-      // Blaster line
       stroke(0, 255, 0);
       strokeWeight(3);
       line(shot_X[i], shot_Y[i], shot_X[i] + moveX * 3, shot_Y[i] + moveY * 3);
@@ -696,7 +680,6 @@ function MoveShot() {
       continue;
 
     } else if (source === 4) {
-      // Shotgun scatter shot
       let r = 200;
       let g = 100 + speed * 6;
       let b = 50;
@@ -714,7 +697,6 @@ function MoveShot() {
     }
 
     if (shot_Type === 0) {  
-      // Standard shots
       let r = 0;
       let g = 40 + speed * 4;
       let b = 100 + speed * 8;
@@ -725,7 +707,6 @@ function MoveShot() {
       circle(shot_X[i], shot_Y[i], d);
 
     } else if (shot_Type === 1) { 
-      // Shotgun shots
       let r = 80 + speed * 8;
       let g = 100 + speed * 4;
       let b = 40;
@@ -736,7 +717,6 @@ function MoveShot() {
       square(shot_X[i], shot_Y[i], d);
 
     } else if (shot_Type === 2) { 
-      // Auto shots
       let r = 40;
       let g = 150 - speed * 8;
       let b = 100 + speed * 6;
@@ -754,7 +734,6 @@ function MoveShot() {
       noStroke();
 
     } else if (shot_Type === 3) { 
-      // Pyramid/array shots
       let r = 110 + speed * 4;
       let g = 80 + speed * 8;
       let b = 200 - speed * 2;
@@ -774,7 +753,11 @@ function CheckShotCollisions() {
   for (let i = shot_X.length - 1; i >= 0; i--) {
     if (shot_PendingRemoval.includes(i)) continue;
     
-    // Calculate previous position
+    // Skip shots that just bounced - prevent immediate re-collision
+    if (frameCount - shot_LastBounceTime[i] <= BOUNCE_COOLDOWN) {
+      continue;
+    }
+    
     const prevX = shot_X[i] - shot_xDistance[i];
     const prevY = shot_Y[i] - shot_yDistance[i];
     
@@ -782,30 +765,28 @@ function CheckShotCollisions() {
       let enemy = enemies[j];
       if (enemy.health <= 0) continue;
       
-      // Check if shot line intersects with enemy circle - prevents shots tunneling over enemies
       const distToLine = DistanceToLineSegment(enemy.x, enemy.y, prevX, prevY, shot_X[i], shot_Y[i]);
       const collisionDist = (shot_Diameter_Array[i] / 2) + (enemy.diameter / 2);
       
       if (distToLine < collisionDist) {
         if (shot_HitEnemies[i].includes(j)) continue;
         shot_HitEnemies[i].push(j);
+        
         if (!enemy.immune) {
           enemy.health -= shot_PowerArray[i];
           playSound(enemy.hitSound);
 
           if (enemy.type === "disc") {
-            // Reverse and slightly randomize the direction
             let reverseAngle = atan2(enemy.ySpeed, enemy.xSpeed) + PI;
-            let angleVariation = random(-PI / 4, PI / 4); // ±45 degrees
+            let angleVariation = random(-PI / 4, PI / 4);
             
             let newAngle = reverseAngle + angleVariation;
-            let speedVariation = random(0.8, 1.3); // Speed between 80-130% of current
+            let speedVariation = random(0.8, 1.3);
             let currentSpeed = dist(0, 0, enemy.xSpeed, enemy.ySpeed);
             
             enemy.xSpeed = cos(newAngle) * currentSpeed * speedVariation;
             enemy.ySpeed = sin(newAngle) * currentSpeed * speedVariation;
             
-            // Reset the direction change timer so it doesn't immediately change again
             let discIndex = enemies.indexOf(enemy);
             if (disc_DirectionChangeTimer[discIndex]) {
               disc_DirectionChangeTimer[discIndex] = 0;
@@ -816,25 +797,32 @@ function CheckShotCollisions() {
             playSound(enemy.deathSound);
             KillEnemy(j);
           }
-          SpliceShot(i);
+          
+          if (bounce_Value > 0 && shot_BouncesRemaining[i] > 0) {
+            BounceShot(i, enemy.x, enemy.y);
+          } else {
+            SpliceShot(i);
+          }
 
         } else {
           playSound(enemy.hitSound);
-          let distX = shot_X[i] - enemy.x;
-          let distY = shot_Y[i] - enemy.y;
-          if (Math.abs(distX) > Math.abs(distY)) shot_xDistance[i] *= -1;
-          else shot_yDistance[i] *= -1;
+          
+          if (bounce_Value > 0 && shot_BouncesRemaining[i] > 0) {
+            BounceShot(i, enemy.x, enemy.y);
+          } else {
+            SpliceShot(i);
+          }
           break;
         }
       }
     }
+    
     if (shot_CollisionCooldown[i] > 0) {
       shot_CollisionCooldown[i]--;
       if (shot_CollisionCooldown[i] === 0) shot_HitEnemies[i] = [];
     }
   }
   
-  // Remove pending shots in reverse order - essentially replaces the SpliceShots function
   for (let i = shot_X.length - 1; i >= 0; i--) {
     if (shot_RemovalDelay[i] !== undefined) {
       shot_RemovalDelay[i]--;
@@ -855,7 +843,42 @@ function CheckShotCollisions() {
         shot_DistanceTraveled.splice(i, 1);
         shot_PowerArray.splice(i, 1);
         shot_RemovalDelay.splice(i, 1);
+        shot_BouncesRemaining.splice(i, 1);    
+        shot_LastBounceTime.splice(i, 1);     
       }
     }
   }
+}
+
+// BOUNCY BOUNCY 
+function BounceShot(shotIndex, enemyX, enemyY) {
+  // Debug helper
+  if (shot_BouncesRemaining[shotIndex] === undefined || isNaN(shot_BouncesRemaining[shotIndex])) {
+    console.log("ERROR: shot_BouncesRemaining is invalid:", shot_BouncesRemaining[shotIndex]);
+    return;
+  }
+
+  let shotX = shot_X[shotIndex];
+  let shotY = shot_Y[shotIndex];
+  
+  let angleToEnemy = atan2(enemyY - shotY, enemyX - shotX);
+  let incomingAngle = atan2(shot_yDistance[shotIndex], shot_xDistance[shotIndex]);
+  
+  let bounceAngle = 2 * angleToEnemy - incomingAngle;
+
+  let speed = Math.sqrt(
+    shot_xDistance[shotIndex] * shot_xDistance[shotIndex] +
+    shot_yDistance[shotIndex] * shot_yDistance[shotIndex]
+  );
+  
+  shot_xDistance[shotIndex] = Math.cos(bounceAngle) * speed;
+  shot_yDistance[shotIndex] = Math.sin(bounceAngle) * speed;
+  
+  shot_BouncesRemaining[shotIndex]--;
+  shot_LastBounceTime[shotIndex] = frameCount;
+  
+  shot_HitEnemies[shotIndex] = [];
+  
+  console.log("Shot bounced! Bounces remaining:", shot_BouncesRemaining[shotIndex]);
+  playSound('bounce');
 }

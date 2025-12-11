@@ -3,12 +3,22 @@
 // Ability Stats
 var abilityStats = {};
 
+// Audio Settings
+var masterVolume = 0.8;
+var musicVolume = 0.8;
+var sfxVolume = 0.8;
+var nebulaEnabled = false;
+
 var nebulaOff = true; // handles the background thing, use to disable lagginess
+var titleScreenConfirmOpen = false
+
+// Used to take you back to the last screen
+var mostRecentScreen;
 
 const abilityBaseStats = {
   bomb: {
     cooldown: 1000,
-    damage: 16,
+    damage: 160,
     radius: 240,
     duration: 40
   },
@@ -37,14 +47,14 @@ const abilityBaseStats = {
   lightningbolt: {
     cooldown: 1600,
     boltCount: 6,
-    damage: 14,
+    damage: 140,
     duration: 40
   },
   singularity: {
     cooldown: 1320,
     duration: 100,
     radius: 150,
-    damage: 10
+    damage: 100
   }
 };
 
@@ -87,6 +97,7 @@ var suckerBoostDuration = 360; // 6 seconds at 60fps
 var previousAbsorptionRadius = 60;
 
 var pauseKeyPressed = false;
+var optionsMouseReleased = true;
 var shipSelected; // what ship you have selected
 
 var shipImages = {};
@@ -117,6 +128,9 @@ var player_Speed = 6;
 var diameter = 58;
 var grow_Speed = -0.05;
 var player_Hitbox = 50; // slightly smaller hitbox for player instead of using diameter, gives a bit of leeway so it's not pixel perfect
+
+var shield_Growth;
+var health_Growth;
 
 var shield_Cooldown = 600; // 10s base cd
 var shield_Cooldown_Timer = 0;
@@ -194,6 +208,11 @@ var shot_CollisionCooldown = [];
 var shot_Diameter_Array = [];
 var shot_Timer = [];
 
+var bounce_Value = 0; // 
+var shot_BouncesRemaining = [];
+var shot_LastBounceTime = [];
+const BOUNCE_COOLDOWN = 10; // frames between bounces
+
 // Attachment stuff
 var attachments = [];
 var equippedAttachments = [];
@@ -201,6 +220,10 @@ var maxEquipped = 2;
 var hoveredAttachmentId = null;
 var mouseOverAttachmentX = 0;
 var mouseOverAttachmentY = 0;
+
+// Upgrades stuff
+var upgradeLevels_Current = {};
+var upgradeList = {};
 
 var shot_CurrentAmount = 0;
 var shotTimer = 0;
@@ -234,12 +257,14 @@ var hypercharger = false;
 var convert_EnergyShield = false;
 
 var shot_MaxAmount;
+
 var shot_Penetration;
+var shot_Penetration_Bonus;
 const shot_Penetration_MAX = 12;
 
 var shot_Power;   // damage done by shot
 var shot_Power_Bonus;     // eventually will need to switch from flat modifiers, to using bonus values applied to base stat
-const shot_Power_MAX = 30;
+const shot_Power_MAX = 255;
 
 var shot_Count;   // number of shots to fire
 var shot_Count_Bonus;
@@ -341,7 +366,7 @@ var activePowerupChoices = [];
 const powerupOptions = [
 
   // Level 1-10 Power Ups
-  { name: "Power +1", apply: () => { shot_Power += 1; }, display: () => shot_Power + 1 },
+  { name: "Power +4", apply: () => { shot_Power += 4; }, display: () => shot_Power + 4 },
   { name: "Count +1", apply: () => { shot_Count += 1; }, display: () => shot_Count + 1 },
   { name: "Speed +2", apply: () => { shot_Speed += 1; }, display: () => shot_Speed + 1 },
   { name: "Delay -2", apply: () => { shot_Delay = Math.max(1, shot_Delay - 2); }, display: () => Math.max(1, shot_Delay - 2) },
@@ -369,7 +394,6 @@ const dropTable = {
     { item: "exptoken", chance: 1.0, amount: 3 },
     { item: "goldtoken", chance: 0.25, amount: 5 },
     { item: "sucker", chance: 0.008}  
-
   ],
 
   grower: [
@@ -412,7 +436,6 @@ const dropTable = {
 };
 
 var enemies = [];
-
 // What they done be lookin like
 const itemTable = {
   powerup: {
@@ -471,7 +494,6 @@ const itemTable = {
   }*/
 };
 
-
 // Attachment List/Info
 const attachmentLevels = {
   1: {
@@ -517,7 +539,7 @@ const attachmentLevels = {
     baseIcon: "../Images/attachment_hypershot.png",
     levels: {
       0: {
-        cost: 600,
+        cost: 500,
         itemInfo: "Increases Shot Speed by 5, reduces Diameter by 2 and reduces Burst Cooldown by 4.",
         stats: [
           { stat: "shot_Diameter", value: -2 },
@@ -526,7 +548,7 @@ const attachmentLevels = {
         ]
       },
       1: {
-        cost: 800,
+        cost: 1000,
         itemInfo: "Increases Shot Speed by 6, reduces Diameter by 1 and reduces Burst Cooldown by 5.",
         stats: [
           { stat: "shot_Diameter", value: -1 },
@@ -535,7 +557,7 @@ const attachmentLevels = {
         ]
       },
       2: {
-        cost: 1000,
+        cost: 2200,
         itemInfo: "Increases Shot Speed by 7, no Diameter penalty and reduces Burst Cooldown by 6.",
         stats: [
           { stat: "shot_Speed", value: 7 },
@@ -543,7 +565,7 @@ const attachmentLevels = {
         ]
       },
       3: {
-        cost: 1200,
+        cost: 3000,
         itemInfo: "Increases Shot Speed by 8, Diameter by 1 and reduces Burst Cooldown by 7.",
         stats: [
           { stat: "shot_Diameter", value: 1 },
@@ -559,27 +581,28 @@ const attachmentLevels = {
     baseIcon: "../Images/attachment_rapidloader.png",
     levels: {
       0: { 
-        cost: 600, 
+        cost: 500, 
         itemInfo: "Increases Fire Rate by 4, reduces Burst Cooldown by 5 and reduces Shot Speed by 3.", 
         stats: [
         { stat: "shot_Speed", value: -3 }, 
         { stat: "shot_Delay", value: -4 }, 
         { stat: "burst_Cooldown", value: 5 }] },
       1: { 
-        cost: 800, 
+        cost: 1000, 
         itemInfo: "Increases Fire Rate by 5, reduces Burst Cooldown by 6 and reduces Shot Speed by 2.", 
         stats: [
           { stat: "shot_Speed", value: -2 }, 
           { stat: "shot_Delay", value: -5 }, 
           { stat: "burst_Cooldown", value: 6 }] },
       2: { 
-        cost: 1000, 
+        cost: 2200, 
         itemInfo: "Increases Fire Rate by 6, reduces Burst Cooldown by 7 and reduces Shot Speed by 1.", 
         stats: [
           { stat: "shot_Speed", value: -1 }, 
           { stat: "shot_Delay", value: -6 }, 
           { stat: "burst_Cooldown", value: 7 }] },
-      3: { cost: 1200, 
+      3: { 
+        cost: 3000, 
         itemInfo: "Increases Fire Rate by 7, reduces Burst Cooldown by 8.", 
         stats: [
           { stat: "shot_Delay", value: -7 }, 
@@ -592,25 +615,25 @@ const attachmentLevels = {
     baseIcon: "../Images/attachment_lancerrounds.png",
     levels: {
       0: { 
-        cost: 600, 
+        cost: 500, 
         itemInfo: "Increases Shot Penetration by 1, reduces Fire Rate by 4", 
         stats: [
           { stat: "shot_Penetration", value: 1 }, 
           { stat: "shot_Delay", value: 4 }] },
       1: { 
-        cost: 800, 
+        cost: 1000, 
         itemInfo: "Increases Shot Penetration by 2, reduces Fire Rate by 3", 
         stats: [
           { stat: "shot_Penetration", value: 2 }, 
           { stat: "shot_Delay", value: 3 }] },
       2: { 
-        cost: 1000, 
+        cost: 2200, 
         itemInfo: "Increases Shot Penetration by 3, reduces Fire Rate by 2", 
         stats: [
           { stat: "shot_Penetration", value: 3 }, 
           { stat: "shot_Delay", value: 2 }] },
       3: { 
-        cost: 1200, 
+        cost: 3000, 
         itemInfo: "Increases Shot Penetration by 4, reduces Fire Rate by 1", 
         stats: [
           { stat: "shot_Penetration", value: 4 }, 
@@ -623,21 +646,21 @@ const attachmentLevels = {
     baseIcon: "../Images/attachment_magnifier.png",
     levels: {
       0: { 
-        cost: 600, 
+        cost: 500, 
         itemInfo: "Increases Shot Diameter by 12. (Does not effect Beam attacks).", 
         stats: [
           { stat: "shot_Diameter", value: 12 }] },
       1: { 
-        cost: 800, 
+        cost: 1000, 
         itemInfo: "Increases Shot Diameter by 15. (Does not effect Beam attacks).", 
         stats: [
           { stat: "shot_Diameter", value: 15 }] },
       2: { 
-        cost: 1000, 
+        cost: 2200, 
         itemInfo: "Increases Shot Diameter by 18. (Does not effect Beam attacks).", 
         stats: [{ stat: "shot_Diameter", value: 18 }] },
       3: { 
-        cost: 1200, 
+        cost: 3000, 
         itemInfo: "Increases Shot Diameter by 21. (Does not effect Beam attacks).", 
         stats: [
         { stat: "shot_Diameter", value: 21 }] }
@@ -649,24 +672,28 @@ const attachmentLevels = {
     baseIcon: "../Images/attachment_zeropointbattery.png",
     levels: {
       0: { 
-        cost: 600, 
-        itemInfo: "Increases Cooldown Reduction by 24.", 
+        cost: 800, 
+        itemInfo: "Increases Cooldown Reduction by 24 and reduces Shield Charge time by 6.", 
         stats: [
+          { stat: "shield_Cooldown", value: 6 },
           { stat: "cooldown_Reduction", value: 24 }] },
       1: { 
-        cost: 800, 
-        itemInfo: "Increases Cooldown Reduction by 30.", 
+        cost: 1200, 
+        itemInfo: "Increases Cooldown Reduction by 30 and reduces Shield Charge time by 12.", 
         stats: [
+          { stat: "shield_Cooldown", value: 12 },
           { stat: "cooldown_Reduction", value: 30 }] },
       2: { 
-        cost: 1000, 
-        itemInfo: "Increases Cooldown Reduction by 36.", 
+        cost: 2500, 
+        itemInfo: "Increases Cooldown Reduction by 36 and reduces Shield Charge time by 18.", 
         stats: [
+          { stat: "shield_Cooldown", value: 18 },
           { stat: "cooldown_Reduction", value: 36 }] },
       3: { 
-        cost: 1200, 
-        itemInfo: "Increases Cooldown Reduction by 42.", 
+        cost: 3500, 
+        itemInfo: "Increases Cooldown Reduction by 42 and reduces Shield Charge time by 24.", 
         stats: [
+          { stat: "shield_Cooldown", value: 24 },
           { stat: "cooldown_Reduction", value: 42 }] }
     }
   },
@@ -676,29 +703,29 @@ const attachmentLevels = {
     baseIcon: "../Images/attachment_gigarounds.png",
     levels: {
       0: { 
-        cost: 600, 
-        itemInfo: "Increases Shot Power by 1, and Shot Diameter by 8.", 
+        cost: 800, 
+        itemInfo: "Increases Shot Power by 4, and Shot Diameter by 8.", 
         stats: [
           { stat: "shot_Diameter", value: 8 }, 
-          { stat: "shot_Power", value: 1 }] },
+          { stat: "shot_Power", value: 4 }] },
       1: { 
-        cost: 800, 
-        itemInfo: "Increases Shot Power by 2, and Shot Diameter by 10.", 
+        cost: 1200, 
+        itemInfo: "Increases Shot Power by 5, and Shot Diameter by 10.", 
         stats: [
           { stat: "shot_Diameter", value: 10 }, 
-          { stat: "shot_Power", value: 2 }] },
+          { stat: "shot_Power", value: 5 }] },
       2: { 
-        cost: 1000, 
-        itemInfo: "Increases Shot Power by 3, and Shot Diameter by 12.", 
+        cost: 2500, 
+        itemInfo: "Increases Shot Power by 7, and Shot Diameter by 12.", 
         stats: [
           { stat: "shot_Diameter", value: 12 },
-          { stat: "shot_Power", value: 3 }] },
+          { stat: "shot_Power", value: 7 }] },
       3: { 
-        cost: 1200,
-        itemInfo: "Increases Shot Power by 4, and Shot Diameter by 14.", 
+        cost: 3500,
+        itemInfo: "Increases Shot Power by 10, and Shot Diameter by 14.", 
         stats: [
           { stat: "shot_Diameter", value: 14 }, 
-          { stat: "shot_Power", value: 4 }] }
+          { stat: "shot_Power", value: 10 }] }
     }
   },
 
@@ -707,29 +734,29 @@ const attachmentLevels = {
     baseIcon: "../Images/attachment_defensematrix.png",
     levels: {
       0: { 
-        cost: 600, 
-        itemInfo: "Increases Shield Value by 2, reduces Shield Charge time by 50.", 
+        cost: 800, 
+        itemInfo: "Increases Shield Value by 20, reduces Shield Charge time by 50.", 
         stats: [
           { stat: "shield_Cooldown", value: -50 }, 
-          { stat: "shield_Value", value: 2 }] },
+          { stat: "shield_Value", value: 20 }] },
       1: { 
-        cost: 800, 
-        itemInfo: "Increases Shield Value by 3, reduces Shield Charge time by 60.", 
+        cost: 1200, 
+        itemInfo: "Increases Shield Value by 30, reduces Shield Charge time by 60.", 
         stats: [
           { stat: "shield_Cooldown", value: -60 },
-          { stat: "shield_Value", value: 3 }] },
+          { stat: "shield_Value", value: 30 }] },
       2: { 
-        cost: 1000, 
-        itemInfo: "Increases Shield Value by 4, reduces Shield Charge time by 70.", 
+        cost: 2400, 
+        itemInfo: "Increases Shield Value by 40, reduces Shield Charge time by 70.", 
         stats: [
           { stat: "shield_Cooldown", value: -70 }, 
-          { stat: "shield_Value", value: 4 }] },
+          { stat: "shield_Value", value: 40 }] },
       3: { 
-        cost: 1200, 
-        itemInfo: "Increases Shield Value by 5, reduces Shield Charge time by 80.", 
+        cost: 3500, 
+        itemInfo: "Increases Shield Value by 50, reduces Shield Charge time by 80.", 
         stats: [
           { stat: "shield_Cooldown", value: -80 }, 
-          { stat: "shield_Value", value: 5 }] }
+          { stat: "shield_Value", value: 50 }] }
     }
   },
 
@@ -738,28 +765,28 @@ const attachmentLevels = {
     baseIcon: "../Images/attachment_turbocharger.png",
     levels: {
       0: { 
-        cost: 600, 
-        itemInfo: "Increases Shot Speed by 4, Fire Rate by 2, but reduces Shot Power by 1.", 
+        cost: 800, 
+        itemInfo: "Increases Shot Speed by 4, Fire Rate by 2, but reduces Shot Power by 6.", 
         stats: [
           { stat: "shot_Delay", value: -2 }, 
           { stat: "shot_Speed", value: 4 }, 
-          { stat: "shot_Power", value: -1 }] },
+          { stat: "shot_Power", value: -6 }] },
       1: { 
-        cost: 800, 
-        itemInfo: "Increases Shot Speed by 5, Fire Rate by 3, but reduces Shot Power by 1.", 
+        cost: 1200, 
+        itemInfo: "Increases Shot Speed by 5, Fire Rate by 3, but reduces Shot Power by 4.", 
         stats: [
           { stat: "shot_Delay", value: -3 }, 
           { stat: "shot_Speed", value: 5 }, 
-          { stat: "shot_Power", value: -1 }] },
+          { stat: "shot_Power", value: -4 }] },
       2: { 
-        cost: 1000, 
-        itemInfo: "Increases Shot Speed by 6, Fire Rate by 4, but reduces Shot Power by 1.", 
+        cost: 2400, 
+        itemInfo: "Increases Shot Speed by 6, Fire Rate by 4, but reduces Shot Power by 2.", 
         stats: [
           { stat: "shot_Delay", value: -4 }, 
           { stat: "shot_Speed", value: 6 }, 
-          { stat: "shot_Power", value: -1 }] },
+          { stat: "shot_Power", value: -2 }] },
       3: { 
-        cost: 1200, 
+        cost: 3500, 
         itemInfo: "Increases Shot Speed by 7, Fire Rate by 5.", 
         stats: [
           { stat: "shot_Delay", value: -5 }, 
@@ -772,25 +799,25 @@ const attachmentLevels = {
     baseIcon: "../Images/attachment_photonrounds.png",
     levels: {
       0: { 
-        cost: 600, 
+        cost: 800, 
         itemInfo: "Increases Shot Speed and Duration by 10.", 
         stats: [
           { stat: "shot_Speed", value: 10 }, 
           { stat: "shot_Duration", value: 10 }] },
       1: { 
-        cost: 800, 
+        cost: 1200, 
         itemInfo: "Increases Shot Speed and Duration by 12.", 
         stats: [
           { stat: "shot_Speed", value: 12 }, 
           { stat: "shot_Duration", value: 12 }] },
       2: { 
-        cost: 1000, 
+        cost: 2400, 
         itemInfo: "Increases Shot Speed and Duration by 14.", 
         stats: [
           { stat: "shot_Speed", value: 14 }, 
           { stat: "shot_Duration", value: 14 }] },
       3: { 
-        cost: 1200, 
+        cost: 3500, 
         itemInfo: "Increases Shot Speed and Duration by 16.", 
         stats: [
           { stat: "shot_Speed", value: 16 }, 
@@ -803,28 +830,28 @@ const attachmentLevels = {
     baseIcon: "../Images/attachment_destructinator.png",
     levels: {
       0: { 
-        cost: 600, 
-        itemInfo: "Increases Shot Penetration by 2, but reduces Shot Duration by 4 and Shot Power by 2.", 
+        cost: 1400, 
+        itemInfo: "Increases Shot Penetration by 2, but reduces Shot Duration by 4 and Shot Power by 5.", 
         stats: [
           { stat: "shot_Duration", value: -4 }, 
           { stat: "shot_Penetration", value: 2 }, 
-          { stat: "shot_Power", value: -2 }] },
+          { stat: "shot_Power", value: -5 }] },
       1: { 
-        cost: 800, 
-        itemInfo: "Increases Shot Penetration by 3, but reduces Shot Duration by 3 and Shot Power by 2.", 
+        cost: 2000, 
+        itemInfo: "Increases Shot Penetration by 3, but reduces Shot Duration by 3 and Shot Power by 4.", 
         stats: [
           { stat: "shot_Duration", value: -3 }, 
           { stat: "shot_Penetration", value: 3 }, 
-          { stat: "shot_Power", value: -2 }] },
+          { stat: "shot_Power", value: -4 }] },
       2: { 
-        cost: 1000, 
-        itemInfo: "Increases Shot Penetration by 4, but reduces Shot Duration by 2 and Shot Power by 1.", 
+        cost: 3000, 
+        itemInfo: "Increases Shot Penetration by 4, but reduces Shot Duration by 2 and Shot Power by 2.", 
         stats: [
           { stat: "shot_Duration", value: -2 }, 
           { stat: "shot_Penetration", value: 4 }, 
-          { stat: "shot_Power", value: -1 }] },
+          { stat: "shot_Power", value: -2 }] },
       3: { 
-        cost: 1200, 
+        cost: 4000, 
         itemInfo: "Increases Shot Penetration by 5, reduces Shot Duration by 1.", 
         stats: [
           { stat: "shot_Duration", value: -1 }, 
@@ -838,27 +865,28 @@ const attachmentLevels = {
     levels: {
       0: { 
         cost: 1500, 
-        itemInfo: "Causes your shots to ricochet.", stats: [{ stat: "reflect", value: true }] },
+        itemInfo: "Causes your shots to ricochet, but disables Penetration. Grants +1 Bounce.", 
+        stats: [
+          { stat: "bounce_Value", value: 1 },
+          { stat: "reflect", value: true }] },
       1: { 
         cost: 800, 
-        itemInfo: "Causes your shots to ricochet and increases Shot Speed by 2.", 
+        itemInfo: "Causes your shots to ricochet, but disables Penetration. Grants +2 Bounce.", 
         stats: [
           { stat: "reflect", value: true },
-          { stat: "shot_Speed", value: 2 }] },          
+          { stat: "bounce_Value", value: 2 }] },          
       2: { 
         cost: 1200, 
-        itemInfo: "Causes your shots to ricochet, increases Shot Speed by 2 and reduces Burst Cooldown by 2.", 
+        itemInfo: "Causes your shots to ricochet, but disables Penetration. Grants +3 Bounce.", 
         stats: [
           { stat: "reflect", value: true },
-          { stat: "burst_Cooldown", value: 2 },          
-          { stat: "shot_Speed", value: 2 }] },    
+          { stat: "bounce_Value", value: 3 }] },    
       3: { 
         cost: 1800, 
-        itemInfo: "Causes your shots to ricochet, increases Shot Speed by 4, reduces Burst Cooldown by 4.", 
+        itemInfo: "Causes your shots to ricochet, but disables Penetration. Grants +4 Bounce.", 
         stats: [
           { stat: "reflect", value: true } ,
-          { stat: "burst_Cooldown", value: 4 },           
-          { stat: "shot_Speed", value: 4 }] },    
+          { stat: "bounce_Value", value: 4 }] },    
     }
   },
 
@@ -868,28 +896,28 @@ const attachmentLevels = {
     levels: {
       0: { 
         cost: 600, 
-        itemInfo: "Increases Shield Value by 4 and Health by 1.", 
-        stats: [
-          { stat: "shield_Value", value: 4 }, 
-          { stat: "max_Health", value: 1 }] },
-      1: { 
-        cost: 800, 
-        itemInfo: "Increases Shield Value by 5 and Health by 2.", 
+        itemInfo: "Increases Shield Value by 5 and Health by 10.", 
         stats: [
           { stat: "shield_Value", value: 5 }, 
-          { stat: "max_Health", value: 2 }] },
+          { stat: "max_Health", value: 10 }] },
+      1: { 
+        cost: 800, 
+        itemInfo: "Increases Shield Value by 10 and Health by 20.", 
+        stats: [
+          { stat: "shield_Value", value: 10 }, 
+          { stat: "max_Health", value: 20 }] },
       2: { 
         cost: 1000, 
-        itemInfo: "Increases Shield Value by 6 and Health by 3.",
+        itemInfo: "Increases Shield Value by 15 and Health by 35.",
          stats: [
-          { stat: "shield_Value", value: 6 }, 
-          { stat: "max_Health", value: 3 }] },
+          { stat: "shield_Value", value: 15 }, 
+          { stat: "max_Health", value: 35 }] },
       3: { 
         cost: 1200, 
-        itemInfo: "Increases Shield Value by 7 and Health by 4.", 
+        itemInfo: "Increases Shield Value by 20 and Health by 50.", 
         stats: [
-          { stat: "shield_Value", value: 7 }, 
-          { stat: "max_Health", value: 4 }] }
+          { stat: "shield_Value", value: 20 }, 
+          { stat: "max_Health", value: 50 }] }
     }
   },
 
@@ -988,30 +1016,30 @@ const attachmentLevels = {
     levels: {
       0: { 
         cost: 600, 
-        itemInfo: "Increases Shot Power by 3, Fire Rate by 3, and reduces Burst Cooldown by 3.",
+        itemInfo: "Increases Shot Power by 10, Fire Rate by 3, and reduces Burst Cooldown by 3.",
         stats: [
-        { stat: "shot_Power", value: 3 }, 
+        { stat: "shot_Power", value: 10 }, 
         { stat: "shot_Delay", value: 3 }, 
         { stat: "burst_Cooldown", value: 3 }] },
       1: { 
         cost: 800, 
-        itemInfo: "Increases Shot Power by 4, Fire Rate by 4, and reduces Burst Cooldown by 4.", 
+        itemInfo: "Increases Shot Power by 13, Fire Rate by 4, and reduces Burst Cooldown by 4.", 
         stats: [
-        { stat: "shot_Power", value: 4 }, 
+        { stat: "shot_Power", value: 13 }, 
         { stat: "shot_Delay", value: 4 }, 
         { stat: "burst_Cooldown", value: 4 }] },
       2: { 
         cost: 1000, 
-        itemInfo: "Increases Shot Power by 5, Fire Rate by 5, and reduces Burst Cooldown by 5.", 
+        itemInfo: "Increases Shot Power by 16, Fire Rate by 5, and reduces Burst Cooldown by 5.", 
         stats: [
-        { stat: "shot_Power", value: 5 }, 
+        { stat: "shot_Power", value: 16 }, 
         { stat: "shot_Delay", value: 5 }, 
         { stat: "burst_Cooldown", value: 5 }] },
       3: { 
         cost: 1200, 
-        itemInfo: "Increases Shot Power by 6, Fire Rate by 6, and reduces Burst Cooldown by 6.", 
+        itemInfo: "Increases Shot Power by 20, Fire Rate by 6, and reduces Burst Cooldown by 6.", 
         stats: [
-        { stat: "shot_Power", value: 6 }, 
+        { stat: "shot_Power", value: 20 }, 
         { stat: "shot_Delay", value: 6 }, 
         { stat: "burst_Cooldown", value: 6 }] }
     }
@@ -1081,33 +1109,33 @@ const attachmentLevels = {
     levels: {
       0: { 
         cost: 600, 
-        itemInfo: "Increases Shot Power by 1, Shot Speed by 2, and reduces Burst Cooldown by 4.", 
+        itemInfo: "Increases Shot Power by 5, Shot Speed by 2, and grants 4 Cooldown Reduction.", 
         stats: [
-        { stat: "shot_Power", value: 1 }, 
+        { stat: "shot_Power", value: 5 }, 
         { stat: "shot_Speed", value: 2 }, 
-        { stat: "burstCooldown", value: -4 },
-        { stat: "shot_WavePattern", value: 1 }] },
+        { stat: "cooldown_Reduction", value: 4 },
+     /* { stat: "shot_WavePattern", value: 1 } */] },
       1: { 
         cost: 800, 
-        itemInfo: "Increases Shot Power by 2, Shot Speed by 3, and reduces Burst Cooldown by 5.", 
+        itemInfo: "Increases Shot Power by 10, Shot Speed by 3, and grants 8 Cooldown Reduction.", 
         stats: [
-        { stat: "shot_Power", value: 2 }, 
+        { stat: "shot_Power", value: 10 }, 
         { stat: "shot_Speed", value: 3 }, 
-        { stat: "burstCooldown", value: -5 }] },
+        { stat: "cooldown_Reduction", value: 8 }] },
       2: { 
         cost: 1000, 
-        itemInfo: "Increases Shot Power by 3, Shot Speed by 4, and reduces Burst Cooldown by 6.", 
+        itemInfo: "Increases Shot Power by 15, Shot Speed by 4, and grants 12 Cooldown Reduction.", 
         stats: [
-        { stat: "shot_Power", value: 3 }, 
+        { stat: "shot_Power", value: 15 }, 
         { stat: "shot_Speed", value: 4 }, 
-        { stat: "burstCooldown", value: -6 }] },
+        { stat: "cooldown_Reduction", value: 12 }] },
       3: { 
         cost: 1200, 
-        itemInfo: "Increases Shot Power by 4, Shot Speed by 5, and reduces Burst Cooldown by 7.", 
+        itemInfo: "Increases Shot Power by 20, Shot Speed by 5, and grants 16 Cooldown Reduction.", 
         stats: [
-        { stat: "shot_Power", value: 4 }, 
+        { stat: "shot_Power", value: 20 }, 
         { stat: "shot_Speed", value: 5 }, 
-        { stat: "burstCooldown", value: -7 }] }
+        { stat: "cooldown_Reduction", value: 16 }] },
     }
   }
 };
@@ -1166,18 +1194,235 @@ const attachmentGrid = [
 attachmentImages = {};
 grayscaleAttachmentImages = {};
 
+const upgradeLevels = {
+  1: {
+    name: "Health Boost",
+    baseIcon: "../Images/upgrade_health.png",
+    levels: {
+      0: {
+        cost: 400,
+        itemInfo: "Increases max health by 5 for all ships.",
+        stats: [{ stat: "player_Health", value: 5 }]
+      },
+      1: {
+        cost: 800,
+        itemInfo: "Increases max health by 8 for all ships.",
+        stats: [{ stat: "player_Health", value: 8 }]
+      },
+      2: {
+        cost: 1200,
+        itemInfo: "Increases max health by 12 for all ships.",
+        stats: [{ stat: "player_Health", value: 12 }]
+      },
+      3: {
+        cost: 1600,
+        itemInfo: "Increases max health by 15 for all ships.",
+        stats: [{ stat: "player_Health", value: 15 }]
+      }
+    }
+  },
+  2: {
+    name: "Power Amplifier",
+    baseIcon: "../Images/upgrade_power.png",
+    levels: {
+      0: {
+        cost: 400,
+        itemInfo: "Increases shot power by 2 for all ships.",
+        stats: [{ stat: "shot_Power", value: 2 }]
+      },
+      1: {
+        cost: 800,
+        itemInfo: "Increases shot power by 4 for all ships.",
+        stats: [{ stat: "shot_Power", value: 4 }]
+      },
+      2: {
+        cost: 1200,
+        itemInfo: "Increases shot power by 6 for all ships.",
+        stats: [{ stat: "shot_Power", value: 6 }]
+      },
+      3: {
+        cost: 1600,
+        itemInfo: "Increases shot power by 8 for all ships.",
+        stats: [{ stat: "shot_Power", value: 8 }]
+      }
+    }
+  },
+  3: {
+    name: "Speed Enhancement",
+    baseIcon: "../Images/upgrade_speed.png",
+    levels: {
+      0: {
+        cost: 400,
+        itemInfo: "Increases shot speed by 3 for all ships.",
+        stats: [{ stat: "shot_Speed", value: 3 }]
+      },
+      1: {
+        cost: 800,
+        itemInfo: "Increases shot speed by 6 for all ships.",
+        stats: [{ stat: "shot_Speed", value: 6 }]
+      },
+      2: {
+        cost: 1200,
+        itemInfo: "Increases shot speed by 9 for all ships.",
+        stats: [{ stat: "shot_Speed", value: 9 }]
+      },
+      3: {
+        cost: 1600,
+        itemInfo: "Increases shot speed by 12 for all ships.",
+        stats: [{ stat: "shot_Speed", value: 12 }]
+      }
+    }
+  },
+  4: {
+    name: "Efficiency Module",
+    baseIcon: "../Images/upgrade_efficiency.png",
+    levels: {
+      0: {
+        cost: 500,
+        itemInfo: "Reduces fire rate by 2 for all ships.",
+        stats: [{ stat: "shot_Delay", value: -2 }]
+      },
+      1: {
+        cost: 1000,
+        itemInfo: "Reduces fire rate by 4 for all ships.",
+        stats: [{ stat: "shot_Delay", value: -4 }]
+      },
+      2: {
+        cost: 1500,
+        itemInfo: "Reduces fire rate by 6 for all ships.",
+        stats: [{ stat: "shot_Delay", value: -6 }]
+      },
+      3: {
+        cost: 2000,
+        itemInfo: "Reduces fire rate by 8 for all ships.",
+        stats: [{ stat: "shot_Delay", value: -8 }]
+      }
+    }
+  },
+  5: {
+    name: "Resilience Core",
+    baseIcon: "../Images/upgrade_resilience.png",
+    levels: {
+      0: {
+        cost: 500,
+        itemInfo: "Increases shield value by 2 for all ships.",
+        stats: [{ stat: "shield_Value", value: 2 }]
+      },
+      1: {
+        cost: 1000,
+        itemInfo: "Increases shield value by 4 for all ships.",
+        stats: [{ stat: "shield_Value", value: 4 }]
+      },
+      2: {
+        cost: 1500,
+        itemInfo: "Increases shield value by 6 for all ships.",
+        stats: [{ stat: "shield_Value", value: 6 }]
+      },
+      3: {
+        cost: 2000,
+        itemInfo: "Increases shield value by 8 for all ships.",
+        stats: [{ stat: "shield_Value", value: 8 }]
+      }
+    }
+  },
+  6: {
+    name: "Precision System",
+    baseIcon: "../Images/upgrade_precision.png",
+    levels: {
+      0: {
+        cost: 400,
+        itemInfo: "Increases shot diameter by 3 for all ships.",
+        stats: [{ stat: "shot_Diameter", value: 3 }]
+      },
+      1: {
+        cost: 800,
+        itemInfo: "Increases shot diameter by 6 for all ships.",
+        stats: [{ stat: "shot_Diameter", value: 6 }]
+      },
+      2: {
+        cost: 1200,
+        itemInfo: "Increases shot diameter by 9 for all ships.",
+        stats: [{ stat: "shot_Diameter", value: 9 }]
+      },
+      3: {
+        cost: 1600,
+        itemInfo: "Increases shot diameter by 12 for all ships.",
+        stats: [{ stat: "shot_Diameter", value: 12 }]
+      }
+    }
+  },
+  7: {
+    name: "Longevity Protocol",
+    baseIcon: "../Images/upgrade_longevity.png",
+    levels: {
+      0: {
+        cost: 400,
+        itemInfo: "Increases shot duration by 5 for all ships.",
+        stats: [{ stat: "shot_Duration", value: 5 }]
+      },
+      1: {
+        cost: 800,
+        itemInfo: "Increases shot duration by 10 for all ships.",
+        stats: [{ stat: "shot_Duration", value: 10 }]
+      },
+      2: {
+        cost: 1200,
+        itemInfo: "Increases shot duration by 15 for all ships.",
+        stats: [{ stat: "shot_Duration", value: 15 }]
+      },
+      3: {
+        cost: 1600,
+        itemInfo: "Increases shot duration by 20 for all ships.",
+        stats: [{ stat: "shot_Duration", value: 20 }]
+      }
+    }
+  },
+  8: {
+    name: "Penetration Upgrade",
+    baseIcon: "../Images/upgrade_penetration.png",
+    levels: {
+      0: {
+        cost: 500,
+        itemInfo: "Increases shot penetration by 1 for all ships.",
+        stats: [{ stat: "shot_Penetration", value: 1 }]
+      },
+      1: {
+        cost: 1000,
+        itemInfo: "Increases shot penetration by 2 for all ships.",
+        stats: [{ stat: "shot_Penetration", value: 2 }]
+      },
+      2: {
+        cost: 1500,
+        itemInfo: "Increases shot penetration by 3 for all ships.",
+        stats: [{ stat: "shot_Penetration", value: 3 }]
+      },
+      3: {
+        cost: 2000,
+        itemInfo: "Increases shot penetration by 4 for all ships.",
+        stats: [{ stat: "shot_Penetration", value: 4 }]
+      }
+    }
+  }
+};
+
+const upgradeGrid = [
+  [1, 2, 3, 4],
+  [5, 6, 7, 8]
+];
+
+
 // Damage values for enemies
 const ENEMY_TYPES = {
-  DISC: 2,
-  CHIP: 3,
-  MINIDIA: 1,
-  GROWER: 1,
-  CHUNGUSJR: 3,
-  CHUNGUS: 5,
-  CHUNGUSSR: 8,
-  DIA: 1,
-  GIGADIA: 3,
-  LILFELLA: 1
+  DISC: 20,
+  CHIP: 30,
+  MINIDIA: 10,
+  GROWER: 10,
+  CHUNGUSJR: 30,
+  CHUNGUS: 50,
+  CHUNGUSSR: 80,
+  DIA: 10,
+  GIGADIA: 30,
+  LILFELLA: 10
 };
 
 // Wave spawning stuff
@@ -1256,14 +1501,14 @@ const shipStats = {
     name: "Fox",
     shot_Type: 0,
     shield_Cooldown: 600,
-    shield_Value: 1,
-    baseShieldValue: 1,
+    shield_Value: 15,
+    baseShieldValue: 15,
     cooldown_Reduction: 0,
-    player_Health: 6,
-    baseMaxHealth: 6,
+    player_Health: 60,
+    baseMaxHealth: 60,
     player_Speed: 6,
     basePlayerSpeed: 6,
-    shot_Power: 4,
+    shot_Power: 40,
     shot_Speed: 26,
     shot_Duration: 36,
     shot_Count: 1,
@@ -1271,6 +1516,10 @@ const shipStats = {
     shot_Penetration: 0,
     shot_Delay: 22,
     itemAbsorptionRadius: 60,
+
+    health_Growth: 4,
+
+    bounce_Value: 0,
 
     ship_Info: "A balanced ship with a standard single-shot blaster.",
     ship_Info2: "Shot Count fires projectiles in a radial pattern.",
@@ -1281,14 +1530,14 @@ const shipStats = {
     name: "Model xr-52",
     shot_Type: 2,
     shield_Cooldown: 480,
-    baseShieldValue: 3,
-    shield_Value: 3,
+    baseShieldValue: 30,
+    shield_Value: 30,
     cooldown_Reduction: 0,
-    player_Health: 4,
-    baseMaxHealth: 4,
+    player_Health: 40,
+    baseMaxHealth: 40,
     player_Speed: 7,
     basePlayerSpeed: 7,
-    shot_Power: 2,
+    shot_Power: 20,
     shot_Speed: 30,
     shot_Duration: 34,
     shot_Count: 4,
@@ -1296,6 +1545,11 @@ const shipStats = {
     shot_Penetration: 0,
     shot_Delay: 32,
     itemAbsorptionRadius: 85,
+
+    health_Growth: 2,
+    shield_Growth: 2,
+    bounce_Value: 0,
+
 
     ship_Info: "Faster ship, fires rapid bursts of shots.",
     ship_Info2: "Faster Shield Recharge timer, less accurate shots.",
@@ -1306,22 +1560,25 @@ const shipStats = {
     name: "Imperial",
     shot_Type: 1,
     shield_Cooldown: 700,
-    shield_Value: 1,
-    baseShieldValue: 1,
+    shield_Value: 10,
+    baseShieldValue: 10,
     cooldown_Reduction: 0,
-    player_Health: 6,
-    baseMaxHealth: 6,
+    player_Health: 75,
+    baseMaxHealth: 75,
     player_Speed: 5,
     basePlayerSpeed: 5,
-    shot_Power: 2,
+    shot_Power: 20,
     shot_Speed: 18,
     shot_Duration: 36,
     shot_Count: 2,
     shot_Diameter: 21,
     shot_Penetration: 0,
-    shot_Delay: 27,
-    burstCooldown: 60,
+    shot_Delay: 60,
+    burstCooldown: 60, 
     itemAbsorptionRadius: 50,
+
+    health_Growth: 5,
+    bounce_Value: 0,
 
     ship_Info: "Slower ship, heavy fire power.",
     ship_Info2: "Fires double shot count, slower speed and fire rate.",
@@ -1333,14 +1590,14 @@ const shipStats = {
     shot_Type: 3,
     shot_FirePattern: 0,
     shield_Cooldown: 550,
-    shield_Value: 1,
-    baseShieldValue: 1,
+    shield_Value: 10,
+    baseShieldValue: 10,
     cooldown_Reduction: 0,
-    player_Health: 6,
-    baseMaxHealth: 6,
+    player_Health: 60,
+    baseMaxHealth: 60,
     player_Speed: 6,
     basePlayerSpeed: 6,
-    shot_Power: 2,
+    shot_Power: 20,
     shot_Speed: 21,
     shot_Duration: 24,
     shot_Count: 1,
@@ -1349,6 +1606,10 @@ const shipStats = {
     shot_Delay: 30,
     burstCooldown: 50,
     itemAbsorptionRadius: 55,
+
+    health_Growth: 3,
+    shield_Growth: 1,    
+    bounce_Value: 0,
     
     ship_Info: "The OP ship. Shorter range shots, but damn they crank.",
     ship_Info2: "Garbo early game, but scale god.",

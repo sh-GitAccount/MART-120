@@ -316,9 +316,11 @@ function LevelUp() {
     ShowSupportChoices();
   }
 
-  max_Health += 1; // Base max health increase
-  player_Health += 1;
-  exp_Next = Math.trunc(10 + (1 + Level ** 3) * 1.1);
+  max_Health += health_Growth; // Base max health increase
+  player_Health += health_Growth;
+  shield_Value += shield_Growth;
+
+  exp_Next = Math.trunc(10 + (1 + Level ** 3) + 10);
   exp = 0;
   RecalculateConversions();
   ClampStats();
@@ -576,7 +578,7 @@ function Drawgame_Screen() {
     justRestarted = false;
     return;   
   }
-  
+    
   UpdateAbilityCooldown();
   UpdateBarrage();
   UpdateSpiral();
@@ -610,6 +612,7 @@ function Drawgame_Screen() {
   pop();
   
   // ===== UI THAT STAYS FIXED ON SCREEN ===== \\
+
   DisplayFPS();
   CursorUpdate();
   CreateBorders();
@@ -619,7 +622,8 @@ function Drawgame_Screen() {
   textSize(14);
   textAlign(LEFT);
   DisplayMillis();
-  text("Press Z to pause", 10, height - 20);
+  text("Press Z to pause", 10, height - 20);  
+  
 }
 
 // `` -- __ DRAW __ -- `` \\  What is my purpose? You call the real functions. Oh. My. God.
@@ -647,6 +651,10 @@ function draw() {
   }
   else if (game_Screen === "gameOver") {
     DrawGameOverScreen();
+    CursorUpdate();
+  }
+  else if (game_Screen === "options") {
+    DrawOptionsScreen();
     CursorUpdate();
   }
 }
