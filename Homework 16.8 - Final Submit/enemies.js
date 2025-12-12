@@ -561,6 +561,7 @@ function DestroyBossCenter(bossIndex) {
     KillBoss(bossIndex);
   }
 }
+
 function DestroyBossLeft(bossIndex) {
   let boss = bosses[bossIndex];
   if (!boss || !boss.isAlive) return;
@@ -572,6 +573,7 @@ function DestroyBossLeft(bossIndex) {
     KillBoss(bossIndex);
   }
 }
+
 function DestroyBossRight(bossIndex) {
   let boss = bosses[bossIndex];
   if (!boss || !boss.isAlive) return;
@@ -1236,7 +1238,7 @@ function MoveEnemies() {
     }
 
     // Skip separation to prevent odd bouncing
-    if (enemy.type !== "grower" && enemy.type !== "biggrower" && enemy.type !== "gigagrower" && enemy.type !== "minidia") {
+    if (enemy.type !== "grower" && enemy.type !== "biggrower" && enemy.type !== "gigagrower" && enemy.type !== "minidia" !== "dummy") {
       SeparateEnemies(enemy, enemies, i);
     }
 

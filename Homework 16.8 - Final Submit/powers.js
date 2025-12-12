@@ -592,7 +592,7 @@ function UpdateLightningBolt() {
     boltData.damageProcessed = true;
     
     // Handle boss targets
-    if (boltData.targetData && boltData.targetData.type.startsWith('boss_')) {  // janky af work around
+    if (boltData.targetData && boltData.targetData.type.startsWith('boss_')) {
       const boss = bosses[boltData.targetData.index];
       if (!boss || !boss.isAlive) continue;
       
@@ -609,9 +609,15 @@ function UpdateLightningBolt() {
         playSound('lightningecho');
       }
       
-      // Check if boss is dead
-      if (boss.center.health <= 0 && boss.left.health <= 0 && boss.right.health <= 0) {
-        boss.isAlive = false;
+      // Check if this part is destroyed and call the appropriate destroy function
+      if (boss[targetPart].health <= 0) {
+        if (targetPart === 'center') {
+          DestroyBossCenter(boltData.targetData.index);
+        } else if (targetPart === 'left') {
+          DestroyBossLeft(boltData.targetData.index);
+        } else if (targetPart === 'right') {
+          DestroyBossRight(boltData.targetData.index);
+        }
       }
       
       if (boltData.type === "normal") {
@@ -723,6 +729,7 @@ function TriggerSingularity(stats) {
   state.active = true;
   state.timer = 0;
   state.caughtEnemies = [];
+  state.caughtBosses = [];
   state.x = mouseX + cameraX;
   state.y = mouseY + cameraY;
   playSound('singularity');
@@ -735,7 +742,7 @@ function UpdateSingularity() {
   if (!state || !state.active) return;
 
   state.timer++;
-
+  
   push();
   translate(-cameraX, -cameraY);
   // Center glow
@@ -751,7 +758,6 @@ function UpdateSingularity() {
   stroke(50, 200, 255, 100);
   strokeWeight(1);
   circle(state.x, state.y, powerStats.singularity.radius * 2.2);
-
   // Draw electricity arcs
   stroke(100, 200, 255, 200);
   strokeWeight(2);
@@ -763,11 +769,10 @@ function UpdateSingularity() {
     const y2 = state.y + sin(angle + 0.3) * (powerStats.singularity.radius * 0.7);
     line(x1, y1, x2, y2);
   }
-
   pop();
   noStroke();
-
-  // pull logic -- not supposed to work on bosses or chip because chip is chip 
+  
+  // Pull logic for regular enemies only
   enemies.forEach((enemy, i) => {
     if (enemy.type === "chip") return;
     const d = dist(enemy.x, enemy.y, state.x, state.y);
@@ -779,7 +784,18 @@ function UpdateSingularity() {
       enemy.y += sin(angle) * pullStrength;
     }
   });
-
+  
+  // Check for bosses in range for damage (no pull)
+  for (let b = 0; b < bosses.length; b++) {
+    const boss = bosses[b];
+    if (!boss || !boss.isAlive) continue;
+    
+    const d = dist(boss.worldX, boss.worldY, state.x, state.y);
+    if (d < powerStats.singularity.radius * 1.4) {
+      if (!state.caughtBosses.includes(b)) state.caughtBosses.push(b);
+    }
+  }
+  
   // Damage logic
   if (state.timer >= powerStats.singularity.duration) {
     const enemiesToKill = [];
@@ -805,29 +821,37 @@ function UpdateSingularity() {
     });
     
     // Damage bosses 
-    if (state.caughtBosses) {
-      state.caughtBosses.forEach(b => {
-        if (b >= 0 && b < bosses.length) {
-          const boss = bosses[b];
-          if (boss && boss.isAlive) {
-            const damageAmount = powerStats.singularity.singularityDamage + state.caughtEnemies.length * powerStats.singularity.damagePerEnemy;
-            
-            if (boss.center.health > 0) {
-              boss.center.health -= damageAmount;
-              damage_Dealt += damageAmount;
+    state.caughtBosses.forEach(bossIndex => {
+      if (bossIndex >= 0 && bossIndex < bosses.length) {
+        const boss = bosses[bossIndex];
+        if (boss && boss.isAlive) {
+          const damageAmount = powerStats.singularity.singularityDamage + state.caughtEnemies.length * powerStats.singularity.damagePerEnemy;
+          
+          // Damage each part and check if destroyed
+          if (boss.center.health > 0) {
+            boss.center.health -= damageAmount;
+            damage_Dealt += damageAmount;
+            if (boss.center.health <= 0) {
+              DestroyBossCenter(bossIndex);
             }
-            if (boss.left.health > 0) {
-              boss.left.health -= damageAmount;
-              damage_Dealt += damageAmount;
+          }
+          if (boss.left.health > 0) {
+            boss.left.health -= damageAmount;
+            damage_Dealt += damageAmount;
+            if (boss.left.health <= 0) {
+              DestroyBossLeft(bossIndex);
             }
-            if (boss.right.health > 0) {
-              boss.right.health -= damageAmount;
-              damage_Dealt += damageAmount;
+          }
+          if (boss.right.health > 0) {
+            boss.right.health -= damageAmount;
+            damage_Dealt += damageAmount;
+            if (boss.right.health <= 0) {
+              DestroyBossRight(bossIndex);
             }
           }
         }
-      });
-    }
+      }
+    });
     
     state.active = false;
     state.caughtEnemies = [];
@@ -1021,6 +1045,17 @@ function UpdateFireball() {
         boss[hitPart].health -= fireball.damage;
         damage_Dealt += fireball.damage;
         playSound(fireball.impactSound);
+        
+        // Check if this part is destroyed 
+        if (boss[hitPart].health <= 0) {
+          if (hitPart === 'center') {
+            DestroyBossCenter(b);
+          } else if (hitPart === 'left') {
+            DestroyBossLeft(b);
+          } else if (hitPart === 'right') {
+            DestroyBossRight(b);
+          }
+        }
         
         fireball.penetrationRemaining--;
         if (fireball.penetrationRemaining <= 0) {
@@ -1223,17 +1258,37 @@ function UpdateFreeze() {
         }
       }
 
-      // Deal damage to bosses in radius
+    // Deal damage to bosses in radius
       for (let b = 0; b < bosses.length; b++) {
         const boss = bosses[b];
         if (!boss.isAlive) continue;
         
         const distToBoss = dist(boss.worldX, boss.worldY, iceberg.x, iceberg.y);
         if (distToBoss < radius) {
-          boss.center.health -= powerStats.freeze.freezeDamage;
-          damage_Dealt += powerStats.freeze.freezeDamage;
+          // Damage all three parts
+          if (boss.center.health > 0) {
+            boss.center.health -= powerStats.freeze.freezeDamage;
+            damage_Dealt += powerStats.freeze.freezeDamage;
+            if (boss.center.health <= 0) {
+              DestroyBossCenter(b);
+            }
+          }
+          if (boss.left.health > 0) {
+            boss.left.health -= powerStats.freeze.freezeDamage;
+            damage_Dealt += powerStats.freeze.freezeDamage;
+            if (boss.left.health <= 0) {
+              DestroyBossLeft(b);
+            }
+          }
+          if (boss.right.health > 0) {
+            boss.right.health -= powerStats.freeze.freezeDamage;
+            damage_Dealt += powerStats.freeze.freezeDamage;
+            if (boss.right.health <= 0) {
+              DestroyBossRight(b);
+            }
+          }
         }
-      }      
+      } 
       
       // Spawn ice shards ONLY when damage is first processed
       SpawnFreezeShards(iceberg.x, iceberg.y, powerStats.freeze.shardCount);
@@ -1391,7 +1446,18 @@ function UpdateFreezeShards(state) {
       if (hitPart) {
         boss[hitPart].health -= powerStats.freeze.freezeDamage * 0.3;
         damage_Dealt += powerStats.freeze.freezeDamage * 0.3;
-        shard.damageApplied.push(b);
+        shard.damageApplied.push(b);  // Track that we hit this boss
+        
+        // Check if this part is destroyed
+        if (boss[hitPart].health <= 0) {
+          if (hitPart === 'center') {
+            DestroyBossCenter(b);
+          } else if (hitPart === 'left') {
+            DestroyBossLeft(b);
+          } else if (hitPart === 'right') {
+            DestroyBossRight(b);
+          }
+        }
       }
     }
 
@@ -1573,7 +1639,19 @@ function UpdateDiamondBurst() {
         damage_Dealt += diamond.damage;
         diamond.hitEnemies.push(boss); 
         
-        playSound(diamond.impactSound);         
+        playSound(diamond.impactSound);
+        
+        // Check if this part is destroyed
+        if (boss[hitPart].health <= 0) {
+          if (hitPart === 'center') {
+            DestroyBossCenter(b);
+          } else if (hitPart === 'left') {
+            DestroyBossLeft(b);
+          } else if (hitPart === 'right') {
+            DestroyBossRight(b);
+          }
+        }
+        
         if (diamond.forkChainCount < diamond.maxForkChains) {
           diamond.forkChainCount++;
           
@@ -1584,7 +1662,7 @@ function UpdateDiamondBurst() {
           
           // Handle chain effect
           if (diamond.canChain && Math.random() < (powerStats.diamondburst.chainChance || 0)) {
-            SpawnChainedDiamond(diamond, boss, boss);  // Pass boss object instead of negative index
+            SpawnChainedDiamond(diamond, boss, b);  // Pass boss index 
           }
         }
       }
@@ -1957,6 +2035,17 @@ function UpdateCyclone() {
         damage_Dealt += cyclone.damage;
         
         playSound(cyclone.impactSound);
+        
+        // Check if this part is destroyed
+        if (boss[hitPart].health <= 0) {
+          if (hitPart === 'center') {
+            DestroyBossCenter(b);
+          } else if (hitPart === 'left') {
+            DestroyBossLeft(b);
+          } else if (hitPart === 'right') {
+            DestroyBossRight(b);
+          }
+        }
       }
     }
         

@@ -153,6 +153,48 @@ function DrawBombExplosions() {
     explosion.currentRadius = (explosion.age / explosion.duration) * explosion.maxRadius;
     let alpha = map(explosion.age, 0, explosion.duration, 255, 0);
     
+    // Damage enemies
+    for (let e = enemies.length - 1; e >= 0; e--) {
+      let enemy = enemies[e];
+      if (enemy && enemy.health > 0) {
+        let distToEnemy = dist(explosion.x, explosion.y, enemy.x, enemy.y);
+        if (distToEnemy < explosion.currentRadius) {
+          enemy.health -= bombDamage;
+          damage_Dealt += bombDamage;
+          if (enemy.health <= 0) {
+            KillEnemy(e);
+          }
+        }
+      }
+    }
+    
+    // Damage bosses
+    for (let b = 0; b < bosses.length; b++) {
+      let boss = bosses[b];
+      if (boss && boss.isAlive) {
+        // Center
+        let distToCenter = dist(explosion.x, explosion.y, boss.worldX, boss.worldY);
+        if (distToCenter < explosion.currentRadius && boss.center.health > 0) {
+          boss.center.health -= bombDamage;
+          damage_Dealt += bombDamage;
+        }
+        
+        // Left
+        let distToLeft = dist(explosion.x, explosion.y, boss.worldX + boss.left.offsetX, boss.worldY);
+        if (distToLeft < explosion.currentRadius && boss.left.health > 0) {
+          boss.left.health -= bombDamage;
+          damage_Dealt += bombDamage;
+        }
+        
+        // Right
+        let distToRight = dist(explosion.x, explosion.y, boss.worldX + boss.right.offsetX, boss.worldY);
+        if (distToRight < explosion.currentRadius && boss.right.health > 0) {
+          boss.right.health -= bombDamage;
+          damage_Dealt += bombDamage;
+        }
+      }
+    }
+    
     let ringCount = 8;
     for (let ring = 0; ring < ringCount; ring++) {
       let ringRadius = explosion.currentRadius - (ring * 80);

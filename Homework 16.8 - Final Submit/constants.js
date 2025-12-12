@@ -1817,7 +1817,7 @@ const ENEMY_TYPES = {
 // Wave spawning stuff
 
 // STAGE ONE 
-const stage1Waves = [
+const stage4Waves = [
   {
     startTime: 2, 
     spawns: [
@@ -2046,11 +2046,12 @@ const stage3Waves = [
 
 
 // Currently used for testing purposes
-const stage4Waves = [
+const stage1Waves = [
   {
     startTime: 0, 
     spawns: [
-      { type: "dummy", amount: 28, side: "circle", delay: 0.1, repeat: 1, cycleDelay: 4 }
+      { type: "dummy", amount: 20, side: "circle", delay: 0.1, repeat: 1, cycleDelay: 4 },
+      { type: "dummy", amount: 15, side: "grid", delay: 0.1, repeat: 1, cycleDelay: 4 }
     ]
   }
 ];
@@ -2156,7 +2157,7 @@ const shipStats = {
     name: "Jackhammer",
     shot_Type: 3,
     shot_FirePattern: 0,
-    shield_Cooldown: 550,
+    shield_Cooldown: 500,
     shield_Value: 10,
     baseShieldValue: 10,
     cooldown_Reduction: 0,
@@ -2164,13 +2165,13 @@ const shipStats = {
     baseMaxHealth: 60,
     player_Speed: 6,
     basePlayerSpeed: 6,
-    shot_Power: 26,
-    shot_Speed: 22,
+    shot_Power: 28,
+    shot_Speed: 23,
     shot_Duration: 22,
     shot_Count: 1,
     shot_Diameter: 14,
     shot_Penetration: 1,
-    shot_Delay: 30,
+    shot_Delay: 28,
     burstCooldown: 50,
     itemAbsorptionRadius: 45,
 
