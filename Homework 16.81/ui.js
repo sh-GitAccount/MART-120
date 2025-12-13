@@ -1736,17 +1736,20 @@ function PaintBackground() {
 
 // Hit cooldown timer so you don't die instantly the moment something touches you.
 function Immune() {
-  if (immune && game_State) {
-    fill(200, 75, 75);
-    stroke(225, 225, 120,);
-    strokeWeight(2);
-    textSize(16);
-    textStyle(BOLD);
-    text("IMMUNE: " + hit_Timer, player_X - 36, player_Y - 18);
-    hit_Timer--;
-    if (hit_Timer === 0) {
-      immune = false;
-    }
+  if (!immune || !game_State) return;
+
+  fill(200, 75, 75);
+  stroke(225, 225, 120);
+  strokeWeight(2);
+  textSize(16);
+  textStyle(BOLD);
+  text("IMMUNE: " + hit_Timer, player_X - 36, player_Y - 18);
+
+  hit_Timer--;
+
+  if (hit_Timer <= 0) {
+    hit_Timer = 0;     
+    immune = false;
   }
 }
 

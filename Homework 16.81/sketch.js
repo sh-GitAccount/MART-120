@@ -87,6 +87,7 @@ function setup() {
   QueueAllImagesForLazyLoad();
 }
 
+// claude.ai revision to loading assets
 function QueueAllSoundsForLazyLoad() {
   const soundMappings = [
     { name: 'error', path: '../Audio/Error.ogg' },
@@ -466,7 +467,7 @@ function getRandomNumber(number) {
 }
 // =================== \\
 
-// creates some random shit 
+// creates some random obstacles 
 // WAY TOO LAGGY - Not going to use this for now
 /*
 function GenerateWorldObstacles(count = 20) {
@@ -636,23 +637,21 @@ function DrawBossBoundary() {
 
 // Function for checking if immune and doing damage/collision 
 function DamageCheckByType(damage) {
-  if (!immune) {
-    if(frequencyShifter && shield_Active && !shield_Hit) {
-      let healAmount = Math.round(shield_Value * (shift_Percentage / 100)); // rounds off 
-      player_Health += healAmount;
-      if (player_Health > max_Health){
-        player_Health = max_Health;
-      }
-    }
-    
-    let actualDamage = HitShield(damage);
-    playSound('playerhit');
-    immune = true;
-    hit_Timer = 60 + hit_Timer_Bonus;    
-   
-    player_Health -= actualDamage;
+  if (immune) return;
+
+  if (frequencyShifter && shield_Active && !shield_Hit) {
+    let healAmount = Math.round(shield_Value * (shift_Percentage / 100));
+    player_Health = Math.min(player_Health + healAmount, max_Health);
   }
+
+  let actualDamage = HitShield(damage);
+  playSound('playerhit');
+  immune = true;
+  hit_Timer = Math.max(1, 60 + hit_Timer_Bonus); // safety check for infinite immune timer
+
+  player_Health -= actualDamage;
 }
+
 
 function CheckCollisions() {
   // Check enemies

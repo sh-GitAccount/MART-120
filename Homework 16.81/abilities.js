@@ -95,7 +95,7 @@ function UseShieldAbility() {
   const shield = shipAbilities.Shield;
   // Effect: for Shield, mark player immune
   immune = true;
-  hit_Timer = 135;
+  hit_Timer = 135 + hit_Timer_Bonus;
   playSound('barrier');
 
   // Set cooldown
